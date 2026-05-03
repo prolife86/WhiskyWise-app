@@ -38,17 +38,19 @@ class DetailFragment : Fragment() {
     }
 
     @Suppress("DEPRECATION")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_edit -> {
-            val id = arguments?.getInt("whiskyId") ?: return true
-            findNavController().navigate(R.id.action_detail_to_edit, bundleOf("whiskyId" to id))
-            true
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_edit -> {
+                val id = arguments?.getInt("whiskyId") ?: return true
+                findNavController().navigate(R.id.action_detail_to_edit, bundleOf("whiskyId" to id))
+                true
+            }
+            R.id.action_delete -> {
+                confirmDelete()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-        R.id.action_delete -> {
-            confirmDelete()
-            true
-        }
-        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
