@@ -1,6 +1,10 @@
-# WhiskyWise Android
+# WhiskyWise Mobile App
 
 A native Android companion app for the [WhiskyWise](https://github.com/prolife86/WhiskyWise) self-hosted spirits tracker.
+
+### Android (beta)
+
+Get the Android app on the [Google Play Store](https://play.google.com/store/apps/details?id=com.TBD.app)
 
 ## Features
 
