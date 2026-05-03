@@ -8,6 +8,10 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [Unreleased]
+
+---
+
 ## [0.0.1] — 2026-05-03 🚧 Initial Pre-release
 
 ### Added
