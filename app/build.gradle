@@ -11,8 +11,11 @@ android {
         applicationId "com.whiskywise.app"
         minSdk 26
         targetSdk 34
+        // ⚠️ versionCode and versionName are patched automatically by the
+        // GitHub Actions workflow (android.yml) using the git release tag.
+        // Do NOT edit these by hand — create a GitHub Release instead.
         versionCode 1
-        versionName "1.0.0"
+        versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -25,6 +28,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig true    // exposes BuildConfig.VERSION_NAME / VERSION_CODE
     }
 
     compileOptions {
