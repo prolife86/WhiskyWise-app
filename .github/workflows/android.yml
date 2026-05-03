@@ -1,24 +1,14 @@
 name: Android
 
-# Mirrors the versioning pattern of the WhiskyWise Docker workflow:
-#   - Version source of truth is the git tag (e.g. v1.2.3)
-#   - Publishing a GitHub Release triggers the full pipeline
-#   - Push to main triggers a debug build / lint check only
-#   - Pull requests trigger a build check only (no signing, no release)
-#
-# Job order:
-#   extract-version → build → sign-and-publish (release only)
+# Version source of truth is the git tag (e.g. v0.0.1)
+# Publishing a GitHub Release triggers the full pipeline.
+# Push to main or a PR triggers a debug build / lint check only.
 #
 # Secrets required (Settings → Secrets → Actions):
-#   KEYSTORE_BASE64    — base64-encoded .jks keystore file
-#                        generate:  keytool -genkey -v -keystore whiskywise.jks \
-#                                     -alias whiskywise -keyalg RSA -keysize 2048 \
-#                                     -validity 10000
-#                        encode:    base64 -i whiskywise.jks | pbcopy   (macOS)
-#                                   base64 whiskywise.jks               (Linux)
-#   KEYSTORE_PASSWORD  — the store password you chose above
-#   KEY_ALIAS          — the alias you chose above (e.g. whiskywise)
-#   KEY_PASSWORD       — the key password (often same as store password)
+#   KEYSTORE_BASE64   — base64-encoded .jks keystore file
+#   KEYSTORE_PASSWORD — the store password
+#   KEY_ALIAS         — the key alias (e.g. whiskywise)
+#   KEY_PASSWORD      — the key password
 
 on:
   release:
@@ -26,18 +16,20 @@ on:
 
   push:
     branches: [ "main" ]
-    paths:
-      - "app/**"
-      - "build.gradle"
-      - "settings.gradle"
+    paths-ignore:
+      - '**.md'
+      - '.github/ISSUE_TEMPLATE/**'
 
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - '.github/ISSUE_TEMPLATE/**'
 
   workflow_dispatch:
 
 jobs:
-  # ── 1. Determine version from git tag (same logic as Docker workflow) ──────
+  # ── 1. Extract version from git tag ───────────────────────────────────────
   extract-version:
     name: Extract version
     runs-on: ubuntu-latest
@@ -47,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -56,14 +48,12 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "release" ]]; then
             VERSION="${{ github.event.release.tag_name }}"
-            VERSION="${VERSION#v}"          # strip leading 'v'
+            VERSION="${VERSION#v}"
           else
-            VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.1")
             VERSION="${VERSION#v}"
           fi
 
-          # Convert semver → integer versionCode (e.g. 1.2.3 → 10203)
-          # Supports up to 99 minor/patch versions per segment.
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
           MINOR=$(echo "$VERSION" | cut -d. -f2)
           PATCH=$(echo "$VERSION" | cut -d. -f3)
@@ -74,7 +64,7 @@ jobs:
           echo "Detected version : $VERSION"
           echo "versionCode      : $VERSION_CODE"
 
-  # ── 2. Build ──────────────────────────────────────────────────────────────
+  # ── 2. Build ───────────────────────────────────────────────────────────────
   build:
     name: Build APK & AAB
     runs-on: ubuntu-latest
@@ -82,7 +72,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -94,13 +84,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Write version into build.gradle
-        # Injects the tag-derived version so the APK filename and
-        # About screen always match the GitHub Release.
+      - name: Patch versionCode and versionName
         run: |
           sed -i "s/versionCode 1$/versionCode ${{ needs.extract-version.outputs.version_code }}/" app/build.gradle
-          sed -i "s/versionName \"1.0.0\"/versionName \"${{ needs.extract-version.outputs.version }}\"/" app/build.gradle
-          echo "--- app/build.gradle after patch ---"
+          sed -i 's/versionName "0.0.1"/versionName "${{ needs.extract-version.outputs.version }}"/' app/build.gradle
+          echo "--- patched values ---"
           grep -E "versionCode|versionName" app/build.gradle
 
       - name: Run lint
@@ -115,7 +103,7 @@ jobs:
       - name: Build release APK (unsigned)
         run: ./gradlew assembleRelease --no-daemon
 
-      - name: Upload debug APK (always available as artifact)
+      - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: whiskywise-debug-${{ needs.extract-version.outputs.version }}
@@ -151,9 +139,15 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > whiskywise.jks
 
+      - name: Set up build tools path
+        id: buildtools
+        run: |
+          BUILD_TOOLS=$(ls $ANDROID_SDK_ROOT/build-tools | sort -V | tail -1)
+          echo "path=$ANDROID_SDK_ROOT/build-tools/$BUILD_TOOLS" >> "$GITHUB_OUTPUT"
+
       - name: Sign APK
         run: |
-          $ANDROID_SDK_ROOT/build-tools/$(ls $ANDROID_SDK_ROOT/build-tools | sort -V | tail -1)/apksigner sign \
+          ${{ steps.buildtools.outputs.path }}/apksigner sign \
             --ks whiskywise.jks \
             --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
             --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
@@ -168,31 +162,13 @@ jobs:
 
       - name: Verify APK signature
         run: |
-          $ANDROID_SDK_ROOT/build-tools/$(ls $ANDROID_SDK_ROOT/build-tools | sort -V | tail -1)/apksigner verify \
+          ${{ steps.buildtools.outputs.path }}/apksigner verify \
             --verbose \
             release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk
 
       - name: Attach APK & AAB to GitHub Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v${{ needs.extract-version.outputs.version }}"
           files: |
             release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk
             release/whiskywise-v${{ needs.extract-version.outputs.version }}.aab
-          append_body: true
-          body: |
-
-            ---
-            ### Android app  —  v${{ needs.extract-version.outputs.version }}
-            | File | Use for |
-            |---|---|
-            | `whiskywise-v${{ needs.extract-version.outputs.version }}.apk` | Direct install (sideload) |
-            | `whiskywise-v${{ needs.extract-version.outputs.version }}.aab` | Google Play Store upload |
-
-            **Sideload instructions**
-            1. Download the `.apk` above to your Android device.
-            2. Enable *Install from unknown sources* in Settings → Security.
-            3. Open the downloaded file and tap Install.
-
-            > The AAB is the format required for new Play Store submissions.
-            > Upload it via the [Google Play Console](https://play.google.com/console).
