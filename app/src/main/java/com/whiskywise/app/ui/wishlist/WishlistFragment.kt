@@ -1,0 +1,72 @@
+package com.whiskywise.app.ui.wishlist
+
+import android.os.Bundle
+import android.view.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.whiskywise.app.R
+import com.whiskywise.app.databinding.FragmentWishlistBinding
+import com.whiskywise.app.model.WhiskyRequest
+import com.whiskywise.app.ui.collection.WhiskyAdapter
+
+class WishlistFragment : Fragment() {
+
+    private var _binding: FragmentWishlistBinding? = null
+    private val binding get() = _binding!!
+    private val vm: WishlistViewModel by viewModels()
+    private lateinit var adapter: WhiskyAdapter
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentWishlistBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        adapter = WhiskyAdapter { /* detail view for wishlist items */ }
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = adapter
+        binding.swipeRefresh.setOnRefreshListener { vm.load() }
+
+        vm.items.observe(viewLifecycleOwner) { list ->
+            adapter.submitList(list)
+            binding.emptyState.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+        }
+        vm.isLoading.observe(viewLifecycleOwner) { binding.swipeRefresh.isRefreshing = it }
+        vm.error.observe(viewLifecycleOwner) { err ->
+            if (err != null) Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
+        }
+
+        binding.fab.setOnClickListener { showAddDialog() }
+
+        vm.load()
+    }
+
+    private fun showAddDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_wishlist, null)
+        val etName  = dialogView.findViewById<TextInputEditText>(R.id.etName)
+        val etNotes = dialogView.findViewById<TextInputEditText>(R.id.etNotes)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Add to wishlist")
+            .setView(dialogView)
+            .setPositiveButton("Add") { _, _ ->
+                val name = etName.text.toString().trim()
+                if (name.isBlank()) {
+                    Snackbar.make(binding.root, "Name is required", Snackbar.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                vm.add(WhiskyRequest(
+                    name          = name,
+                    wishlistNotes = etNotes.text.toString().trim().ifBlank { null },
+                ))
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    override fun onDestroyView() { super.onDestroyView(); _binding = null }
+}

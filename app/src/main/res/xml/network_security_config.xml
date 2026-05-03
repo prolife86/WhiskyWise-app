@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    WhiskyWise is a self-hosted app.
+    Users running on a local network (e.g. http://192.168.x.x:5000) need HTTP.
+    For production, HTTPS is strongly recommended.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

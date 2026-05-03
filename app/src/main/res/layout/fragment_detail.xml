@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="16dp"
+            android:visibility="gone" />
+
+        <!-- Hero photo -->
+        <ImageView
+            android:id="@+id/ivFront"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Whisky bottle photo" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Name + score row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/on_surface" />
+
+                <TextView
+                    android:id="@+id/tvScore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/amber" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDistillery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@color/amber"
+                android:layout_marginTop="4dp" />
+
+            <!-- Meta grid -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:layout_marginTop="16dp">
+
+                <include layout="@layout/row_meta" app:label="Region"  android:id="@+id/metaRegion" />
+                <include layout="@layout/row_meta" app:label="Age"     android:id="@+id/metaAge" />
+                <include layout="@layout/row_meta" app:label="ABV"     android:id="@+id/metaAbv" />
+                <include layout="@layout/row_meta" app:label="Status"  android:id="@+id/metaStatus" />
+                <include layout="@layout/row_meta" app:label="Price"   android:id="@+id/metaPrice" />
+                <include layout="@layout/row_meta" app:label="Store"   android:id="@+id/metaStore" />
+            </GridLayout>
+
+            <!-- Tasting notes -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Nose" android:textStyle="bold" android:textColor="@color/amber"
+                android:layout_marginTop="16dp" />
+            <TextView android:id="@+id/tvNose" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="@color/on_surface" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Palate" android:textStyle="bold" android:textColor="@color/amber"
+                android:layout_marginTop="12dp" />
+            <TextView android:id="@+id/tvPalate" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="@color/on_surface" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Finish" android:textStyle="bold" android:textColor="@color/amber"
+                android:layout_marginTop="12dp" />
+            <TextView android:id="@+id/tvFinish" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="@color/on_surface" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Notes" android:textStyle="bold" android:textColor="@color/amber"
+                android:layout_marginTop="12dp" />
+            <TextView android:id="@+id/tvNotes" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="@color/on_surface" />
+
+            <!-- Flavour profile -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Flavour Profile" android:textStyle="bold" android:textColor="@color/amber"
+                android:layout_marginTop="16dp" />
+            <TextView android:id="@+id/tvFlavor" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="@color/on_surface" />
+
+            <!-- Radar chart -->
+            <com.whiskywise.app.ui.detail.RadarView
+                android:id="@+id/radarView"
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

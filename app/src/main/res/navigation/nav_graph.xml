@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/collectionFragment">
+
+    <!-- Collection tab -->
+    <fragment
+        android:id="@+id/collectionFragment"
+        android:name="com.whiskywise.app.ui.collection.CollectionFragment"
+        android:label="Collection"
+        tools:layout="@layout/fragment_collection">
+
+        <action
+            android:id="@+id/action_collection_to_detail"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_collection_to_edit"
+            app:destination="@id/editWhiskyFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Detail -->
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.whiskywise.app.ui.detail.DetailFragment"
+        android:label="Whisky Detail"
+        tools:layout="@layout/fragment_detail">
+
+        <argument
+            android:name="whiskyId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+
+        <action
+            android:id="@+id/action_detail_to_edit"
+            app:destination="@id/editWhiskyFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <!-- Edit / Create -->
+    <fragment
+        android:id="@+id/editWhiskyFragment"
+        android:name="com.whiskywise.app.ui.detail.EditWhiskyFragment"
+        android:label="Edit Whisky"
+        tools:layout="@layout/fragment_edit_whisky">
+
+        <argument
+            android:name="whiskyId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+
+    <!-- Wishlist tab -->
+    <fragment
+        android:id="@+id/wishlistFragment"
+        android:name="com.whiskywise.app.ui.wishlist.WishlistFragment"
+        android:label="Wishlist"
+        tools:layout="@layout/fragment_wishlist" />
+
+    <!-- Settings tab -->
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.whiskywise.app.ui.settings.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
+
+</navigation>

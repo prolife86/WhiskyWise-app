@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- WhiskyWise brand palette — matches the amber/dark web UI -->
+    <color name="amber">#C8832A</color>
+    <color name="amber_dark">#A06820</color>
+
+    <!-- Dark background surfaces -->
+    <color name="background">#1A1612</color>
+    <color name="surface">#2A2320</color>
+    <color name="divider">#3A3330</color>
+
+    <!-- Text -->
+    <color name="on_surface">#EDE0D0</color>
+    <color name="on_surface_dim">#8A7A6A</color>
+
+    <!-- System -->
+    <color name="error">#CF6679</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Primary (alias for Material theming) -->
+    <color name="colorPrimary">@color/amber</color>
+    <color name="colorPrimaryVariant">@color/amber_dark</color>
+    <color name="colorSecondary">@color/amber</color>
+</resources>

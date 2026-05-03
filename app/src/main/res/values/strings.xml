@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WhiskyWise</string>
+    <string name="nav_collection">Collection</string>
+    <string name="nav_wishlist">Wishlist</string>
+    <string name="nav_settings">Settings</string>
+
+    <string-array name="status_options">
+        <item>stashed</item>
+        <item>open</item>
+        <item>retired</item>
+    </string-array>
+</resources>
