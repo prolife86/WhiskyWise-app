@@ -66,6 +66,74 @@ jobs:
 
           echo "version=$VERSION"           >> "$GITHUB_OUTPUT"
           echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+name: Android
+
+# Version source of truth is the git tag (e.g. v0.0.1)
+# Publishing a GitHub Release triggers the full pipeline.
+# Push to main or a PR triggers a debug build / lint check only.
+#
+# Secrets required (Settings → Secrets → Actions):
+#   KEYSTORE_BASE64   — base64-encoded .jks keystore file
+#   KEYSTORE_PASSWORD — the store password
+#   KEY_ALIAS         — the key alias (e.g. whiskywise)
+#   KEY_PASSWORD      — the key password
+
+on:
+  release:
+    types: [ published ]
+
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - '.github/ISSUE_TEMPLATE/**'
+
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - '.github/ISSUE_TEMPLATE/**'
+
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        default: 'Manual build'
+
+jobs:
+  # ── 1. Extract version from git tag ───────────────────────────────────────
+  extract-version:
+    name: Extract version
+    runs-on: ubuntu-latest
+    outputs:
+      version:      ${{ steps.set.outputs.version }}
+      version_code: ${{ steps.set.outputs.version_code }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set version from tag
+        id: set
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          else
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.1")
+            VERSION="${VERSION#v}"
+          fi
+
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          PATCH=$(echo "$VERSION" | cut -d. -f3)
+          VERSION_CODE=$(( ${MAJOR:-0} * 10000 + ${MINOR:-0} * 100 + ${PATCH:-0} ))
+
+          echo "version=$VERSION"           >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "Detected version : $VERSION"
           echo "versionCode      : $VERSION_CODE"
 
@@ -115,14 +183,14 @@ jobs:
         run: ./gradlew assembleRelease --no-daemon
 
       - name: Upload debug APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: whiskywise-debug-${{ needs.extract-version.outputs.version }}
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
 
       - name: Upload unsigned release artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: whiskywise-release-unsigned-${{ needs.extract-version.outputs.version }}
           path: |
@@ -141,7 +209,7 @@ jobs:
 
     steps:
       - name: Download unsigned release artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: whiskywise-release-unsigned-${{ needs.extract-version.outputs.version }}
           path: release/
@@ -170,6 +238,20 @@ jobs:
         run: |
           mv release/app-release.aab \
              release/whiskywise-v${{ needs.extract-version.outputs.version }}.aab
+
+      - name: Verify APK signature
+        run: |
+          ${{ steps.buildtools.outputs.path }}/apksigner verify \
+            --verbose \
+            release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk
+
+      - name: Attach APK & AAB to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk
+            release/whiskywise-v${{ needs.extract-version.outputs.version }}.aab
+skywise-v${{ needs.extract-version.outputs.version }}.aab
 
       - name: Verify APK signature
         run: |
