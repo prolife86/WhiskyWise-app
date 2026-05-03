@@ -27,6 +27,11 @@ on:
       - '.github/ISSUE_TEMPLATE/**'
 
   workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        default: 'Manual build'
 
 jobs:
   # ── 1. Extract version from git tag ───────────────────────────────────────
@@ -87,7 +92,7 @@ jobs:
       - name: Patch versionCode and versionName
         run: |
           sed -i "s/versionCode 1$/versionCode ${{ needs.extract-version.outputs.version_code }}/" app/build.gradle
-          sed -i 's/versionName "0.0.1"/versionName "${{ needs.extract-version.outputs.version }}"/' app/build.gradle
+          sed -i 's/versionName "[0-9]*\.[0-9]*\.[0-9]*"/versionName "${{ needs.extract-version.outputs.version }}"/' app/build.gradle
           echo "--- patched values ---"
           grep -E "versionCode|versionName" app/build.gradle
 
