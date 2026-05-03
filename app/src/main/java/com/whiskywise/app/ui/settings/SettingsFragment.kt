@@ -24,6 +24,7 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val store = TokenStore(requireContext())
         binding.tvServerUrl.text = store.getServerUrl() ?: "—"
+        binding.tvAppVersion.text = "v${com.whiskywise.app.BuildConfig.VERSION_NAME} (${com.whiskywise.app.BuildConfig.VERSION_CODE})"
 
         vm.tokens.observe(viewLifecycleOwner) { tokens ->
             binding.tvTokenCount.text = "${tokens.size} active token(s)"
