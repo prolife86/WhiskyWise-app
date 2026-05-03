@@ -4,7 +4,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 
 ### Android (beta)
 
-Get the Android app on the [Google Play Store](https://play.google.com/store/apps/details?id=com.TBD.app)
+Get the Android app on the [Google Play Store](https://play.google.com/store/apps/details?id=com.WhiskyWise.app)
 
 ## Features
 
@@ -93,13 +93,77 @@ app/
 - HTTP is permitted to support local network setups. Use HTTPS in production.  
 - Tokens can be revoked from **Settings → Log out** or from the WhiskyWise web UI.
 
-## Building a release APK
+## Versioning
 
-```bash
-./gradlew assembleRelease
+The Android app uses the **same git tag as the source of truth** as the WhiskyWise Docker workflow — no version numbers are ever edited by hand.
+
+### How it works
+
+```
+GitHub Release published (e.g. v1.2.3)
+        │
+        ▼
+extract-version job
+  strips 'v' prefix → "1.2.3"
+  converts to versionCode → 10203  (major*10000 + minor*100 + patch)
+        │
+        ▼
+build job
+  patches app/build.gradle with versionCode + versionName
+  runs lint
+  builds debug APK  → artifact (always)
+  builds release APK + AAB (unsigned) → artifact
+        │
+        ▼
+sign-and-publish job  (release events only)
+  decodes keystore from KEYSTORE_BASE64 secret
+  signs APK with apksigner
+  attaches signed APK + AAB to the GitHub Release
 ```
 
-Sign with your keystore and distribute via sideload or the Play Store.
+### Creating a release
+
+Identical flow to the Docker workflow — just publish a GitHub Release:
+
+1. Go to **Releases → Draft a new release**
+2. Create a new tag: `v1.2.3` (same tag triggers both Docker and Android builds)
+3. Write release notes and click **Publish release**
+4. The workflow builds, signs, and attaches the APK and AAB automatically
+
+### One-time setup: signing secrets
+
+You need a keystore to sign release builds. Create it once and store it as GitHub secrets:
+
+```bash
+# 1. Generate keystore (keep whiskywise.jks safe — losing it means you can't update the Play Store app)
+keytool -genkey -v \
+  -keystore whiskywise.jks \
+  -alias whiskywise \
+  -keyalg RSA -keysize 2048 -validity 10000
+
+# 2. Base64-encode it
+base64 -i whiskywise.jks | pbcopy          # macOS (copies to clipboard)
+base64 whiskywise.jks                      # Linux (print to terminal)
+```
+
+Then add these four secrets in **GitHub → Settings → Secrets → Actions**:
+
+| Secret | Value |
+|---|---|
+| `KEYSTORE_BASE64` | base64 output from step 2 |
+| `KEYSTORE_PASSWORD` | store password you chose |
+| `KEY_ALIAS` | `whiskywise` (or whatever alias you used) |
+| `KEY_PASSWORD` | key password you chose |
+
+### Build outputs per trigger
+
+| Trigger | Debug APK | Signed APK | AAB |
+|---|---|---|---|
+| Pull request | ✅ artifact | — | — |
+| Push to main | ✅ artifact | — | — |
+| GitHub Release | ✅ artifact | ✅ attached to release | ✅ attached to release |
+
+
 
 ## License
 
