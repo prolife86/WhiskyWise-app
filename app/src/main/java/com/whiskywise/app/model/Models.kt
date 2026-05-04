@@ -12,7 +12,7 @@ data class Whisky(
     val age: String? = null,
     val abv: Double? = null,
     val barcode: String? = null,
-    val status: String? = "stashed",      // open | stashed | retired
+    val status: String? = "stashed",
     val retired: Boolean = false,
     val price: Double? = null,
     val store: String? = null,
@@ -39,9 +39,15 @@ data class Whisky(
     @SerializedName("updated_at")      val updatedAt: String? = null,
 )
 
-// ── API response wrappers ─────────────────────────────────────────────────────
+// ── API response wrappers — concrete classes, no generics (avoids Gson type erasure) ──
 
-data class SingleResponse<T>(val data: T)
+data class WhiskyResponse(val data: Whisky)
+data class WhiskyListResponse(val data: List<Whisky>)
+data class TokenDataResponse(val data: TokenData)
+data class TokenListResponse(val data: List<TokenListItem>)
+data class StatsResponse(val data: Stats)
+data class DeleteResponse(val data: Map<String, Int>)
+data class PhotoResponse(val data: Map<String, String?>)
 
 data class CollectionResponse(
     val data: List<Whisky>,
