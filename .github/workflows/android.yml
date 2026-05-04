@@ -154,9 +154,14 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > whiskywise.jks
 
+      - name: Locate downloaded artifacts
+        run: find release/ -type f | sort
+
       - name: Sign APK with jarsigner
         run: |
-          cp release/app-release-unsigned.apk release/whiskywise-v${{ needs.extract-version.outputs.version }}-unaligned.apk
+          APK=$(find release/ -name "app-release-unsigned.apk" | head -1)
+          echo "Signing: $APK"
+          cp "$APK" release/whiskywise-v${{ needs.extract-version.outputs.version }}-unaligned.apk
           jarsigner \
             -keystore whiskywise.jks \
             -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
@@ -181,8 +186,9 @@ jobs:
 
       - name: Rename AAB
         run: |
-          mv release/app-release.aab \
-             release/whiskywise-v${{ needs.extract-version.outputs.version }}.aab
+          AAB=$(find release/ -name "app-release.aab" | head -1)
+          echo "Renaming: $AAB"
+          mv "$AAB" release/whiskywise-v${{ needs.extract-version.outputs.version }}.aab
 
       - name: Attach APK & AAB to GitHub Release
         uses: softprops/action-gh-release@v2
