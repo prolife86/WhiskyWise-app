@@ -3,8 +3,11 @@ package com.whiskywise.app.ui.detail
 import android.os.Bundle
 import android.view.*
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -22,39 +25,37 @@ class DetailFragment : Fragment() {
     private val binding get() = _binding!!
     private val vm: DetailViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    @Suppress("DEPRECATION")
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_detail, menu)
-    }
-
-    @Suppress("DEPRECATION")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_edit -> {
-                val id = arguments?.getInt("whiskyId") ?: return true
-                findNavController().navigate(R.id.action_detail_to_edit, bundleOf("whiskyId" to id))
-                true
-            }
-            R.id.action_delete -> {
-                confirmDelete()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val id = arguments?.getInt("whiskyId") ?: return
+
+        // Register menu using the non-deprecated MenuProvider API
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_detail, menu)
+            }
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_edit -> {
+                        findNavController().navigate(
+                            R.id.action_detail_to_edit,
+                            bundleOf("whiskyId" to id),
+                        )
+                        true
+                    }
+                    R.id.action_delete -> {
+                        confirmDelete()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         vm.whisky.observe(viewLifecycleOwner) { w ->
             if (w == null) return@observe
@@ -79,7 +80,6 @@ class DetailFragment : Fragment() {
             val token     = store.getToken() ?: ""
             binding.ivFront.loadWhiskyPhoto(ctx, w.photoFront, serverUrl, token)
 
-            // Radar values
             binding.radarView.setValues(
                 woody     = w.radarWoody,
                 smoky     = w.radarSmoky,
