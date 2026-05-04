@@ -7,7 +7,6 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
 import java.io.File
 
-/** Thin repository layer. Converts Retrofit [Response] into [Result]. */
 class WhiskyWiseRepository {
 
     private val api get() = RetrofitClient.api
