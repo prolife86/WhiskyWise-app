@@ -34,7 +34,7 @@ android {
     packaging {
         jniLibs {
             // MLKit barcode native libs cannot be stripped — package as-is
-            keepDebugSymbols += listOf(
+            keepDebugSymbols += [
                 "*/arm64-v8a/libbarhopper_v3.so",
                 "*/armeabi-v7a/libbarhopper_v3.so",
                 "*/x86/libbarhopper_v3.so",
@@ -43,7 +43,7 @@ android {
                 "*/armeabi-v7a/libimage_processing_util_jni.so",
                 "*/x86/libimage_processing_util_jni.so",
                 "*/x86_64/libimage_processing_util_jni.so",
-            )
+            ]
         }
     }
 
