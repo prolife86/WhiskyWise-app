@@ -10,18 +10,18 @@ interface WhiskyWiseApi {
     // ── Auth ──────────────────────────────────────────────────────────────────
 
     @POST("api/auth/token")
-    suspend fun login(@Body body: LoginRequest): Response<SingleResponse<TokenData>>
+    suspend fun login(@Body body: LoginRequest): Response<TokenDataResponse>
 
     @GET("api/auth/tokens")
-    suspend fun listTokens(): Response<SingleResponse<List<TokenListItem>>>
+    suspend fun listTokens(): Response<TokenListResponse>
 
     @DELETE("api/auth/token/{tid}")
-    suspend fun revokeToken(@Path("tid") tid: Int): Response<SingleResponse<Map<String, Int>>>
+    suspend fun revokeToken(@Path("tid") tid: Int): Response<DeleteResponse>
 
     // ── Stats ─────────────────────────────────────────────────────────────────
 
     @GET("api/v1/stats")
-    suspend fun getStats(): Response<SingleResponse<Stats>>
+    suspend fun getStats(): Response<StatsResponse>
 
     // ── Collection ────────────────────────────────────────────────────────────
 
@@ -41,33 +41,33 @@ interface WhiskyWiseApi {
     // ── Whisky CRUD ───────────────────────────────────────────────────────────
 
     @GET("api/v1/whisky/{id}")
-    suspend fun getWhisky(@Path("id") id: Int): Response<SingleResponse<Whisky>>
+    suspend fun getWhisky(@Path("id") id: Int): Response<WhiskyResponse>
 
     @POST("api/v1/whisky")
-    suspend fun createWhisky(@Body body: WhiskyRequest): Response<SingleResponse<Whisky>>
+    suspend fun createWhisky(@Body body: WhiskyRequest): Response<WhiskyResponse>
 
     @PUT("api/v1/whisky/{id}")
     suspend fun updateWhisky(
         @Path("id") id: Int,
         @Body body: WhiskyRequest,
-    ): Response<SingleResponse<Whisky>>
+    ): Response<WhiskyResponse>
 
     @DELETE("api/v1/whisky/{id}")
-    suspend fun deleteWhisky(@Path("id") id: Int): Response<SingleResponse<Map<String, Int>>>
+    suspend fun deleteWhisky(@Path("id") id: Int): Response<DeleteResponse>
 
     // ── Wishlist ──────────────────────────────────────────────────────────────
 
     @GET("api/v1/wishlist")
-    suspend fun getWishlist(): Response<SingleResponse<List<Whisky>>>
+    suspend fun getWishlist(): Response<WhiskyListResponse>
 
     @POST("api/v1/wishlist")
-    suspend fun createWishlistItem(@Body body: WhiskyRequest): Response<SingleResponse<Whisky>>
+    suspend fun createWishlistItem(@Body body: WhiskyRequest): Response<WhiskyResponse>
 
     @PUT("api/v1/wishlist/{id}")
     suspend fun updateWishlistItem(
         @Path("id") id: Int,
         @Body body: WhiskyRequest,
-    ): Response<SingleResponse<Whisky>>
+    ): Response<WhiskyResponse>
 
     // ── Photos ────────────────────────────────────────────────────────────────
 
@@ -77,16 +77,11 @@ interface WhiskyWiseApi {
         @Path("id")   id: Int,
         @Path("slot") slot: String,
         @Part         photo: MultipartBody.Part,
-    ): Response<SingleResponse<Map<String, String>>>
+    ): Response<PhotoResponse>
 
     @DELETE("api/v1/whisky/{id}/photo/{slot}")
     suspend fun deletePhoto(
         @Path("id")   id: Int,
         @Path("slot") slot: String,
-    ): Response<SingleResponse<Map<String, String?>>>
-
-    // ── Barcode lookup ────────────────────────────────────────────────────────
-
-    @GET("api/barcode-lookup")
-    suspend fun lookupBarcode(@Query("barcode") barcode: String): Response<Map<String, Any?>>
+    ): Response<PhotoResponse>
 }
