@@ -12,6 +12,13 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.0.2] — 2026-05-04 🐛 Hotfix
+
+### Fixed
+- **App crash on launch** — `SingleResponse<T>` generic wrapper caused a `Class cannot be cast to ParameterizedType` error at runtime due to Kotlin/Java type erasure. Replaced with concrete response classes (`WhiskyResponse`, `WhiskyListResponse`, `TokenDataResponse`, etc.) that Gson can deserialize without reflection issues.
+
+---
+
 ## [0.0.1] — 2026-05-03 🚧 Initial Pre-release
 
 ### Added
