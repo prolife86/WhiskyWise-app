@@ -154,33 +154,26 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > whiskywise.jks
 
-      - name: Sign APK with jarsigner
+      - name: Sign and zipalign APK
         run: |
           APK=$(find release/ -name "app-release-unsigned.apk" | head -1)
           echo "Signing: $APK"
-          cp "$APK" release/whiskywise-v${{ needs.extract-version.outputs.version }}-unaligned.apk
-          jarsigner \
-            -keystore whiskywise.jks \
-            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
-            -keypass "${{ secrets.KEY_PASSWORD }}" \
-            -sigalg SHA256withRSA \
-            -digestalg SHA-256 \
-            -storetype JKS \
-            release/whiskywise-v${{ needs.extract-version.outputs.version }}-unaligned.apk \
-            "${{ secrets.KEY_ALIAS }}"
-
-      - name: Zipalign APK
-        run: |
-          $ANDROID_SDK_ROOT/build-tools/$(ls $ANDROID_SDK_ROOT/build-tools | sort -V | tail -1)/zipalign \
-            -v 4 \
-            release/whiskywise-v${{ needs.extract-version.outputs.version }}-unaligned.apk \
-            release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk
+          BUILD_TOOLS=$ANDROID_SDK_ROOT/build-tools/$(ls $ANDROID_SDK_ROOT/build-tools | sort -V | tail -1)
+          $BUILD_TOOLS/apksigner sign \
+            --ks whiskywise.jks \
+            --ks-type JKS \
+            --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
+            --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
+            --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
+            --out release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk \
+            "$APK"
 
       - name: Verify APK signature
         run: |
-          $ANDROID_SDK_ROOT/build-tools/$(ls $ANDROID_SDK_ROOT/build-tools | sort -V | tail -1)/apksigner verify \
+          BUILD_TOOLS=$ANDROID_SDK_ROOT/build-tools/$(ls $ANDROID_SDK_ROOT/build-tools | sort -V | tail -1)
+          $BUILD_TOOLS/apksigner verify \
             --verbose \
-            release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk
+            release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk | head -5
 
       - name: Rename AAB
         run: |
