@@ -12,10 +12,36 @@ See that project's changelog for server-side changes.
 
 ---
 
-## [0.0.5] — 2026-05-05 👁️ Show, Don't Tell
+## [0.0.5] — 2026-05-05 👁️ It Was There All Along
 
 ### Fixed
-- **Radar chart blank** — flavour profile axes (Woody, Smoky, Cereal, Floral, Fruity,
+- **Radar chart showing no data** — all seven flavour axes (Woody, Smoky, Cereal, Floral,
+  Fruity, Medicinal, Fiery) defaulted to 0 because the edit form had no sliders to set
+  them. The data polygon collapsed to an invisible dot at the centre of the grid.
+  Added 0–5 `SeekBar` sliders with live value labels; values are now saved to the server
+  and the chart renders correctly.
+- **Cannot edit a saved whisky** — the edit form had no barcode, radar, or photo fields,
+  so editing an existing entry silently discarded everything not in the original form.
+  All fields are now present and pre-filled when editing.
+- **Photos not visible on whisky detail** — `loadWhiskyPhoto()` existed and worked, but
+  the edit form had no photo UI so no photos were ever uploaded. The detail view now
+  displays the front photo as a hero image when one is present.
+- **Cannot add photos** — the edit form now includes Front, Back, and Cask photo rows,
+  each with a **Choose** button (system image gallery) and a **Remove** button. Selected
+  images are uploaded to the server after the whisky record is saved; removals trigger
+  a server-side delete.
+- **Barcode not shown in detail view** — the `barcode` field existed in the model and API
+  but had no corresponding view in `fragment_detail.xml`. Added a `BARCODE` row that
+  appears only when a value is present.
+- **No barcode scanning when adding/editing a whisky** — the edit form had no barcode
+  field at all. Added a `Barcode` text input and a **Scan** button. Tapping Scan opens
+  a new full-screen `BarcodeScanActivity` (CameraX + MLKit Barcode Scanning, already in
+  the dependency tree) that auto-detects and returns the barcode without manual typing.
+- **API tokens cannot be revoked** — the Settings screen showed only a token count
+  `TextView`. `SettingsViewModel.revokeToken()` existed but had no UI to call it.
+  Replaced the count field with a `RecyclerView` listing each token by name, creation
+  date, and last-used date, each row with a **Revoke** button and confirmation dialog.
+  - **Radar chart blank** — flavour profile axes (Woody, Smoky, Cereal, Floral, Fruity,
   Medicinal, Fiery) were never editable, so all seven values were always saved as 0 and
   the data polygon collapsed to an invisible dot at the centre. Added 0–5 sliders to the
   edit form; values are now saved and rendered correctly.
@@ -38,10 +64,28 @@ See that project's changelog for server-side changes.
   last-used date, each with a **Revoke** button backed by a confirmation dialog.
 
 ### Added
+- `BarcodeScanActivity` — full-screen CameraX preview with MLKit barcode analysis;
+  auto-closes and returns the raw value to the edit form on first successful scan.
+- `TokenAdapter` + `item_token.xml` — `ListAdapter`-backed token rows for the Settings
+  screen; supports live list diffing when tokens are revoked.
+- `activity_barcode_scan.xml` — barcode scanner layout with `PreviewView` and
+  instructional overlay label.
+- `READ_MEDIA_IMAGES` permission (API 33+) and `READ_EXTERNAL_STORAGE` (≤ API 32)
+  for the system image gallery picker.
+- `androidx.recyclerview:recyclerview:1.3.2` as an explicit dependency (was previously
+  only transitive).
 - `BarcodeScanActivity` — full-screen CameraX barcode scanner using MLKit Barcode
   Scanning; returns the raw barcode value to the calling fragment.
 - `TokenAdapter` + `item_token.xml` — per-token list rows in the Settings screen.
-- `READ_MEDIA_IMAGES` / `READ_EXTERNAL_STOR
+- `READ_MEDIA_IMAGES` / `READ_EXTERNAL_STOR  
+
+### Changed
+- `EditWhiskyViewModel` — replaced boolean `_saved: LiveData<Boolean>` with
+  `_savedId: LiveData<Int?>` so the fragment receives the whisky ID on success and can
+  run photo uploads/deletes before navigating back.
+- `EditWhiskyFragment` — now waits for `savedId` before processing the photo queue,
+  then calls `popBackStack()`. Previously it navigated away immediately, making photo
+  operations unreachable.
 
 ---
 
