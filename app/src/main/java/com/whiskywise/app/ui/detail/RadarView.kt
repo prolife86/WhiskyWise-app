@@ -31,12 +31,12 @@ class RadarView @JvmOverloads constructor(
     private val dataPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color  = Color.parseColor("#c8a96e")
         style  = Paint.Style.FILL
-        alpha  = 80
+        alpha  = 60
     }
     private val dataStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color  = Color.parseColor("#c8a96e")
         style  = Paint.Style.STROKE
-        strokeWidth = 2f
+        strokeWidth = 2.5f
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color    = Color.parseColor("#c8a96e")
@@ -80,10 +80,14 @@ class RadarView @JvmOverloads constructor(
             canvas.drawLine(cx, cy, x, y, gridPaint)
         }
 
-        // Draw data polygon
+        // Draw data polygon.
+        // Use a minimum ratio of 0.04 so that even a value of 0 places the vertex
+        // slightly off-centre — this makes the polygon visible and avoids the
+        // degenerate case where all-zero values collapse to a single invisible point.
+        val minRatio = 0.04f
         val dataPath = Path()
         for (i in 0 until n) {
-            val ratio  = values[i].coerceIn(0, levels).toFloat() / levels
+            val ratio  = maxOf(values[i].coerceIn(0, levels).toFloat() / levels, minRatio)
             val (x, y) = point(i, r * ratio)
             if (i == 0) dataPath.moveTo(x, y) else dataPath.lineTo(x, y)
         }
@@ -93,7 +97,7 @@ class RadarView @JvmOverloads constructor(
 
         // Draw labels
         for (i in 0 until n) {
-            val (x, y) = point(i, r + 40f)
+            val (x, y) = point(i, r + 42f)
             canvas.drawText(labels[i], x, y + labelPaint.textSize / 3, labelPaint)
         }
     }
