@@ -21,4 +21,6 @@
     <color name="colorPrimary">@color/amber</color>
     <color name="colorPrimaryVariant">@color/amber_dark</color>
     <color name="colorSecondary">@color/amber</color>
+    <!-- Launcher icon background — matches app dark background -->
+    <color name="ic_launcher_background">#1C1410</color>
 </resources>
