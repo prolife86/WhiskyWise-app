@@ -16,10 +16,11 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | 🥃 Collection | Browse, search, filter by status (open / stashed / retired) |
 | 📝 Tasting notes | Full nose / palate / finish fields |
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
-| ➕ Add / Edit | Full whisky form with all API fields |
+| 📸 Photos | Add front / back / cask photos via gallery picker |
 | 📋 Wishlist | Browse and add wishlist items |
-| ⚙️ Settings | Server info, active token count, app version, logout |
+| ⚙️ Settings | Server info, token list with per-token revoke, app version, logout |
 | 🌐 Self-hosted | Works with HTTP (local network) and HTTPS |
+| 🔖 Barcode | Scan barcodes via camera or enter manually |
 
 ---
 
@@ -68,9 +69,9 @@ app/
         ├── login/LoginActivity
         ├── MainActivity              # Bottom nav host
         ├── collection/               # List, search, filter
-        ├── detail/                   # View, edit, RadarView canvas widget
+        ├── detail/                   # View, edit, RadarView, BarcodeScanActivity, photo upload
         ├── wishlist/
-        └── settings/                 # Server info, token count, logout
+        └── settings/                 # Server info, token list with revoke, logout
 ```
 
 **Notable resource folders:**
