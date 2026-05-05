@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Project-level Lint configuration.
+
+    androidx.camera.core.ExperimentalGetImage uses the old @experimental marker
+    system (not @RequiresOptIn), which means @OptIn annotations on call sites have
+    no effect and the compiler itself warns that they are useless. The only reliable
+    way to satisfy Lint for this specific annotation is to opt in project-wide here.
+-->
+<lint>
+    <issue id="UnsafeOptInUsageError">
+        <option name="opt-in" value="androidx.camera.core.ExperimentalGetImage" />
+    </issue>
+</lint>
