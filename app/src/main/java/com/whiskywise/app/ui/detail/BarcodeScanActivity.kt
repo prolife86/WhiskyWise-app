@@ -18,6 +18,7 @@ import com.whiskywise.app.R
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+@OptIn(ExperimentalGetImage::class)
 class BarcodeScanActivity : AppCompatActivity() {
 
     private lateinit var cameraExecutor: ExecutorService
@@ -39,7 +40,6 @@ class BarcodeScanActivity : AppCompatActivity() {
         else requestCamera.launch(Manifest.permission.CAMERA)
     }
 
-    @androidx.camera.core.ExperimentalGetImage
     private fun startCamera() {
         val previewView = findViewById<PreviewView>(R.id.barcodePreviewView)
         val future = ProcessCameraProvider.getInstance(this)
