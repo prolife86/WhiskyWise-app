@@ -54,6 +54,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 ```
 app/
 └── src/main/java/com/whiskywise/app/
+    ├── WhiskyWiseApp.kt              # Application class — initialises RetrofitClient on startup
     ├── api/
     │   ├── WhiskyWiseApi.kt          # Retrofit interface — all REST endpoints
     │   ├── RetrofitClient.kt         # OkHttp + Bearer token interceptor
@@ -71,6 +72,11 @@ app/
         ├── wishlist/
         └── settings/                 # Server info, token count, logout
 ```
+
+**Notable resource folders:**
+- `res/values/` — base theme, colours, strings
+- `res/values-v27/` — theme override for API 27+ (display cutout / notch support)
+- `res/mipmap-anydpi-v26/` — adaptive icon definitions (eliminates white circle on modern launchers)
 
 ---
 
@@ -130,8 +136,7 @@ sign-and-publish job  (release events only)
 
 | Trigger | Debug APK | Signed APK | AAB |
 |---|---|---|---|
-| Pull request | ✅ artifact | — | — |
-| Push to main | ✅ artifact | — | — |
+| Manual (`workflow_dispatch`) | ✅ artifact | — | — |
 | GitHub Release | ✅ artifact | ✅ attached to release | ✅ attached to release |
 
 ### Creating a release
@@ -143,35 +148,32 @@ sign-and-publish job  (release events only)
 
 ### One-time setup — signing secrets
 
-```bash
-# 1. Generate a keystore (keep whiskywise.jks safe — losing it means
-#    you cannot publish updates to the Play Store)
-keytool -genkey -v \
-  -keystore whiskywise.jks \
-  -alias whiskywise \
-  -keyalg RSA -keysize 2048 -validity 10000
+The easiest way is to use the included **Generate Keystore** workflow, which runs entirely in GitHub Actions — no local tools needed:
 
-# 2. Base64-encode it
-base64 -i whiskywise.jks | pbcopy   # macOS — copies to clipboard
-base64 whiskywise.jks               # Linux — prints to terminal
-```
-
-Add these four secrets in **GitHub → Settings → Secrets → Actions**:
+1. Go to **Actions → Generate Keystore (run once) → Run workflow**
+2. Enter a key alias, keystore password and key password
+3. Copy the base64 string from the **Print encoded keystore** step
+4. Add four secrets under **GitHub → Settings → Secrets → Actions**:
 
 | Secret | Value |
 |---|---|
-| `KEYSTORE_BASE64` | base64 output from step 2 |
-| `KEYSTORE_PASSWORD` | store password you chose |
-| `KEY_ALIAS` | `whiskywise` (or your chosen alias) |
-| `KEY_PASSWORD` | key password you chose |
+| `KEYSTORE_BASE64` | base64 string from step 3 |
+| `KEYSTORE_PASSWORD` | password you entered |
+| `KEY_ALIAS` | alias you entered (e.g. `whiskywise`) |
+| `KEY_PASSWORD` | key password you entered |
+
+5. Delete the `generate-keystore.yml` workflow from the repo once done
+6. Download and keep the `whiskywise-keystore-BACKUP` artifact safe — losing the keystore means you cannot publish updates to the Play Store
+
+> Prefer CLI? `keytool -genkeypair -keystore whiskywise.jks -alias whiskywise -keyalg RSA -keysize 2048 -validity 10000 -storetype JKS`, then `base64 -w 0 whiskywise.jks` (Linux) or `base64 -i whiskywise.jks` (macOS).
 
 ### GitHub Actions workflows
 
 | Workflow | Trigger | Purpose |
 |---|---|---|
-| `android.yml` | push / PR / release | Lint, build, sign, publish |
-| `close-blank-issues.yml` | issue opened | Closes issues not using a template |
-| `close-issues-on-release.yml` | release published | Closes issues labelled `awaiting release` |
+| `android.yml` | Release / manual | Lint, build, sign, publish |
+| `close-blank-issues.yml` | Issue opened | Closes issues not using a template |
+| `close-issues-on-release.yml` | Release published | Closes issues labelled `awaiting release` |
 
 All actions run on **Node.js 24** and are up to date as of May 2026.
 
@@ -181,7 +183,7 @@ All actions run on **Node.js 24** and are up to date as of May 2026.
 
 | Library | Version |
 |---|---|
-| Kotlin | 2.3.21 |
+| Kotlin | 2.3.21 (built into AGP 9.x — no separate plugin needed) |
 | Android Gradle Plugin | 9.2.0 |
 | Gradle | 9.5.0 |
 | compileSdk / targetSdk | 35 (Android 15) |
