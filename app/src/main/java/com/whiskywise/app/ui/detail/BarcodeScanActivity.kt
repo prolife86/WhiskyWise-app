@@ -42,7 +42,6 @@ class BarcodeScanActivity : AppCompatActivity() {
         else requestCamera.launch(Manifest.permission.CAMERA)
     }
 
-    @OptIn(ExperimentalGetImage::class)
     private fun startCamera() {
         val previewView = findViewById<PreviewView>(R.id.barcodePreviewView)
         val future = ProcessCameraProvider.getInstance(this)
