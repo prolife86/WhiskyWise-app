@@ -11,13 +11,24 @@ See that project's changelog for server-side changes.
 ## [Unreleased]
 
 ---
- 
+
+## [0.0.4] — 2026-05-05 🔧 It Actually Works Now
+
+### Fixed
+- **Empty collection screen** — `RecyclerView` was missing a `LayoutManager`. Android was quietly showing nothing. It now shows your whiskies.
+- **"RetrofitClient not initialised" crash** — when Android killed and restored the app process, it bypassed the login screen entirely, leaving the API client uninitialised. Added `WhiskyWiseApp` to initialise it at process start regardless of which screen Android opens first.
+- **Camera cutout / notch overlap** — content was rendering behind the front camera on punch-hole and notch devices. Status bar is now transparent and the layout respects system window insets.
+- **White circle launcher icon** — the app icon appeared as a bottle inside a white circle on Android 8+ adaptive icon launchers. Added proper adaptive icon definitions with the correct dark background.
+
+---
+
 ## [0.0.3] — 2026-05-04 🔧 Build & Code Quality
- 
+
 ### Fixed
 - **Deprecated toolbar menu API** — replaced `setHasOptionsMenu` / `onCreateOptionsMenu` / `onOptionsItemSelected` in `DetailFragment` with the modern `MenuProvider` API, eliminating the Kotlin deprecation warning.
 - **Gradle 10 compatibility warning** — added `android.suppressUnsupportedCompileSdk=35` to `gradle.properties` to silence the "deprecated Gradle features" warning ahead of the Gradle 10 migration.
 - **MLKit native library strip warning** — added `packaging { jniLibs { keepDebugSymbols } }` to `app/build.gradle` for the MLKit barcode `.so` files, which are pre-stripped by Google and cannot be stripped again by the Android build tools.
+
 ### Changed
 - **App icon** — replaced the placeholder bottle icon with a custom WhiskyWise icon: a classic single malt bottle with a cream label, red wax cap, and WW serif monogram. Generated at all five mipmap densities (mdpi → xxxhdpi).
 
