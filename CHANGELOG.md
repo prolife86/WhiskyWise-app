@@ -12,6 +12,34 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.0.6] — 2026-05-05 🔍 Visible Progress
+ 
+Turns out "fully implemented" and "actually works" are two different things.
+ 
+### Fixed
+- **Edit button didn't exist** — `MenuProvider` inflates menu items into a `Toolbar`.
+  There was no `Toolbar`. The edit button was therefore nowhere. Added a `Toolbar` to
+  `activity_main.xml` and wired it up as the support action bar — now the Edit and
+  Delete actions appear in the detail screen as intended, and the back arrow shows up
+  automatically when navigating into any sub-screen.
+- **Radar chart showed only a grid** — two issues conspiring: radar fields in
+  `WhiskyRequest` were `Int?` defaulting to `null`, which Gson silently omits from the
+  JSON payload, so the server never received the slider values and stored 0s. Meanwhile,
+  `RadarView` drew all-zero data as a single invisible point at the centre. Fixed both:
+  radar fields are now non-nullable `Int` (0 is always sent), and the chart uses a
+  minimum render ratio so the polygon is visible even when values genuinely are zero.
+- **Photos not loading** — `loadWhiskyPhoto()` assumed the server always returns a bare
+  filename. It doesn't — depending on server version the path may include `photos/` or
+  `api/photo/` as a prefix, producing a double-pathed URL that 404s every time. The URL
+  builder now normalises whatever the server returns before constructing the final URL.
+- **Photo buttons missing when adding a new whisky** — the layout had them. The code
+  wired them. They still weren't visible. Root cause: same missing `Toolbar` as above —
+  without it claiming `?attr/actionBarSize` at the top of the layout, fragments rendered
+  flush against the status bar and the scroll view was offset, making the lower half of
+  the form appear to be missing fields that were actually just out of frame.
+
+---
+
 ## [0.0.5] — 2026-05-05 (patch) · "While We Were Here"
  
 Turns out shipping a working UI is easier when the code is also correct.
