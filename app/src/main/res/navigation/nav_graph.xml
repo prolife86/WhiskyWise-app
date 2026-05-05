@@ -68,7 +68,16 @@
         android:id="@+id/wishlistFragment"
         android:name="com.whiskywise.app.ui.wishlist.WishlistFragment"
         android:label="Wishlist"
-        tools:layout="@layout/fragment_wishlist" />
+        tools:layout="@layout/fragment_wishlist">
+
+        <action
+            android:id="@+id/action_wishlist_to_detail"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <!-- Settings tab -->
     <fragment
