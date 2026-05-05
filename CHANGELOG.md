@@ -12,9 +12,30 @@ See that project's changelog for server-side changes.
 
 ---
 
-## [0.0.5] — 2026-05-05 👁️ It Was There All Along
-
+## [0.0.5] — 2026-05-05 (patch) · "While We Were Here"
+ 
+Turns out shipping a working UI is easier when the code is also correct.
+ 
 ### Fixed
+- **Stale collection after editing** — the list no longer requires a manual swipe-to-refresh
+  after saving a new or edited whisky. `onResume()` now does the obvious thing.
+- **Wishlist items were decorative** — tapping a wishlist entry did nothing. It now opens
+  the detail screen, like a normal list item in a normal app.
+- **Double photo upload on rotation** — rotating the screen after saving triggered the
+  photo queue a second time. The saved ID is now consumed immediately after use; events
+  are not a subscription service.
+- **Error Snackbar haunting subsequent screens** — a failed save would re-show its error
+  message after every screen rotation until the heat death of the ViewModel. Errors are
+  now cleared after display.
+- **`flavor_profile` silently dropped on edit** — the server-computed flavour classification
+  was never included in the update payload, so every save quietly erased it. The value is
+  now round-tripped correctly and the server can recompute it from the new radar values.
+- **Bearer token logged in release builds** — `HttpLoggingInterceptor` was set to `BODY`
+  unconditionally, writing auth tokens and whisky data to logcat in production. Logging is
+  now `NONE` in release builds.
+- **`@OptIn(ExperimentalGetImage)` on the wrong scope** — the annotation was on the class,
+  but Lint (correctly) requires it on the function containing the actual `proxy.image` call.
+  Moved to `startCamera()`. The CI build no longer fails.
 - **Radar chart showing no data** — all seven flavour axes (Woody, Smoky, Cereal, Floral,
   Fruity, Medicinal, Fiery) defaulted to 0 because the edit form had no sliders to set
   them. The data polygon collapsed to an invisible dot at the centre of the grid.
