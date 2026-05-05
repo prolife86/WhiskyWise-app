@@ -7,6 +7,17 @@
     android:background="@color/background"
     android:fitsSystemWindows="true">
 
+    <!-- Toolbar required for MenuProvider (edit/delete actions in DetailFragment).
+         NoActionBar theme means we must supply our own; without it, menu items
+         never inflate and the edit button is invisible. -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/surface"
+        app:titleTextColor="@color/on_surface"
+        app:navigationIconTint="@color/on_surface" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
