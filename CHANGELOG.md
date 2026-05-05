@@ -12,6 +12,39 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.0.5] — 2026-05-05 👁️ Show, Don't Tell
+
+### Fixed
+- **Radar chart blank** — flavour profile axes (Woody, Smoky, Cereal, Floral, Fruity,
+  Medicinal, Fiery) were never editable, so all seven values were always saved as 0 and
+  the data polygon collapsed to an invisible dot at the centre. Added 0–5 sliders to the
+  edit form; values are now saved and rendered correctly.
+- **Edit form discards data** — opening an existing whisky in the edit screen no longer
+  silently drops radar values, barcode and status; all fields are pre-filled from the
+  server response.
+- **Photos not visible** — `loadWhiskyPhoto()` was fully implemented but never called for
+  new or edited entries because the edit form had no photo UI. Photos now load correctly
+  in the detail view.
+- **Photos cannot be added** — the edit form now includes Front / Back / Cask photo rows
+  with a gallery picker and a Remove button. Selected images are uploaded to the server
+  after the whisky record is saved; removals trigger a server-side delete.
+- **Barcode not shown in detail view** — added a BARCODE row to the detail screen
+  (hidden when blank).
+- **No barcode scanning** — added a Barcode field and a **Scan** button to the edit form.
+  Tapping Scan opens a new `BarcodeScanActivity` (CameraX + MLKit, already in the
+  dependency tree) that scans and returns the value without any manual typing.
+- **API tokens cannot be revoked** — the Settings screen previously showed only a token
+  count. Replaced it with a `RecyclerView` listing each token's name, creation date and
+  last-used date, each with a **Revoke** button backed by a confirmation dialog.
+
+### Added
+- `BarcodeScanActivity` — full-screen CameraX barcode scanner using MLKit Barcode
+  Scanning; returns the raw barcode value to the calling fragment.
+- `TokenAdapter` + `item_token.xml` — per-token list rows in the Settings screen.
+- `READ_MEDIA_IMAGES` / `READ_EXTERNAL_STOR
+
+---
+
 ## [0.0.4] — 2026-05-05 🔧 It Actually Works Now
 
 ### Fixed
