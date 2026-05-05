@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.databinding.FragmentSettingsBinding
@@ -16,6 +17,8 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
     private val vm: SettingsViewModel by viewModels()
 
+    private lateinit var tokenAdapter: TokenAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
@@ -23,23 +26,30 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val store = TokenStore(requireContext())
-        binding.tvServerUrl.text = store.getServerUrl() ?: "—"
+        binding.tvServerUrl.text  = store.getServerUrl() ?: "—"
         binding.tvAppVersion.text = "v${com.whiskywise.app.BuildConfig.VERSION_NAME} (${com.whiskywise.app.BuildConfig.VERSION_CODE})"
 
-        vm.tokens.observe(viewLifecycleOwner) { tokens ->
-            binding.tvTokenCount.text = "${tokens.size} active token(s)"
+        tokenAdapter = TokenAdapter { token ->
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Revoke token?")
+                .setMessage("Remove \"${token.name}\"? It will no longer have access to the server.")
+                .setPositiveButton("Revoke") { _, _ -> vm.revokeToken(token.id) }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
-        vm.error.observe(viewLifecycleOwner) { err ->
+        binding.rvTokens.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvTokens.adapter = tokenAdapter
+
+        vm.tokens.observe(viewLifecycleOwner) { tokens -> tokenAdapter.submitList(tokens) }
+        vm.error.observe(viewLifecycleOwner)  { err ->
             if (err != null) Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
         }
 
         binding.btnLogout.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Log out?")
-                .setMessage("Your token will be removed from this device. You can also revoke it from the server.")
-                .setPositiveButton("Log out") { _, _ ->
-                    (requireActivity() as? MainActivity)?.logout()
-                }
+                .setMessage("Your token will be removed from this device.")
+                .setPositiveButton("Log out") { _, _ -> (requireActivity() as? MainActivity)?.logout() }
                 .setNegativeButton("Cancel", null)
                 .show()
         }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background">
@@ -10,62 +11,67 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <ProgressBar android:id="@+id/progressBar" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
-            android:visibility="gone"/>
+        <ProgressBar android:id="@+id/progressBar"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" android:visibility="gone"/>
 
-        <!-- Required -->
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Name *"
+        <!-- Name -->
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="12dp">
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Name *" android:layout_marginBottom="12dp">
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etName"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textCapWords"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Distillery"
+        <!-- Distillery -->
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="12dp">
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Distillery" android:layout_marginBottom="12dp">
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etDistillery"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textCapWords"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Region / Age -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:hint="Region"
+            <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:hint="Region"
                 android:layout_marginEnd="6dp" android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText android:id="@+id/etRegion"
                     android:layout_width="match_parent" android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:hint="Age"
+            <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:hint="Age"
                 android:layout_marginStart="6dp" android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText android:id="@+id/etAge"
                     android:layout_width="match_parent" android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
+        <!-- ABV / Score -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:hint="ABV %"
+            <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:hint="ABV %"
                 android:layout_marginEnd="6dp" android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText android:id="@+id/etAbv"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:inputType="numberDecimal"/>
             </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:hint="Score (0-10)"
+            <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:hint="Score (0-10)"
                 android:layout_marginStart="6dp" android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText android:id="@+id/etScore"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -73,76 +79,270 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
+        <!-- Price / Store -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:hint="Price"
+            <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:hint="Price"
                 android:layout_marginEnd="6dp" android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText android:id="@+id/etPrice"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:inputType="numberDecimal"/>
             </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_weight="1" android:hint="Store"
+            <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:hint="Store"
                 android:layout_marginStart="6dp" android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText android:id="@+id/etStore"
                     android:layout_width="match_parent" android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-        <!-- Status spinner -->
+        <!-- Barcode + Scan button -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:hint="Barcode"
+                android:layout_marginEnd="8dp">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/etBarcode"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="text"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnScanBarcode"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Scan"
+                app:backgroundTint="@color/amber"/>
+        </LinearLayout>
+
+        <!-- Status -->
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="Status" android:textColor="@color/on_surface_dim" android:textSize="12sp"/>
-        <Spinner android:id="@+id/spinnerStatus" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_marginBottom="12dp"
-            android:entries="@array/status_options"/>
+        <Spinner android:id="@+id/spinnerStatus"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" android:entries="@array/status_options"/>
 
         <!-- Tasting notes -->
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Nose"
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="12dp">
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Nose" android:layout_marginBottom="12dp">
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etNose"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textMultiLine" android:minLines="2"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Palate"
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="12dp">
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Palate" android:layout_marginBottom="12dp">
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etPalate"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textMultiLine" android:minLines="2"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="Finish"
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="12dp">
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Finish" android:layout_marginBottom="12dp">
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etFinish"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textMultiLine" android:minLines="2"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:hint="General notes"
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="24dp">
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="General notes" android:layout_marginBottom="16dp">
             <com.google.android.material.textfield.TextInputEditText android:id="@+id/etNotes"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:inputType="textMultiLine" android:minLines="3"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- ── Flavour Profile Sliders ──────────────────────────────────── -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="FLAVOUR PROFILE  (0 – 5)"
+            android:textColor="@color/amber" android:textStyle="bold"
+            android:textSize="13sp" android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+            <TextView android:layout_width="90dp" android:layout_height="wrap_content"
+                android:text="Woody" android:textColor="@color/on_surface"/>
+            <SeekBar android:id="@+id/seekWoody" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1" android:max="5"/>
+            <TextView android:id="@+id/tvWoody" android:layout_width="28dp"
+                android:layout_height="wrap_content" android:text="0"
+                android:textColor="@color/amber" android:textAlignment="center" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+            <TextView android:layout_width="90dp" android:layout_height="wrap_content"
+                android:text="Smoky" android:textColor="@color/on_surface"/>
+            <SeekBar android:id="@+id/seekSmoky" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1" android:max="5"/>
+            <TextView android:id="@+id/tvSmoky" android:layout_width="28dp"
+                android:layout_height="wrap_content" android:text="0"
+                android:textColor="@color/amber" android:textAlignment="center" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+            <TextView android:layout_width="90dp" android:layout_height="wrap_content"
+                android:text="Cereal" android:textColor="@color/on_surface"/>
+            <SeekBar android:id="@+id/seekCereal" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1" android:max="5"/>
+            <TextView android:id="@+id/tvCereal" android:layout_width="28dp"
+                android:layout_height="wrap_content" android:text="0"
+                android:textColor="@color/amber" android:textAlignment="center" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+            <TextView android:layout_width="90dp" android:layout_height="wrap_content"
+                android:text="Floral" android:textColor="@color/on_surface"/>
+            <SeekBar android:id="@+id/seekFloral" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1" android:max="5"/>
+            <TextView android:id="@+id/tvFloral" android:layout_width="28dp"
+                android:layout_height="wrap_content" android:text="0"
+                android:textColor="@color/amber" android:textAlignment="center" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+            <TextView android:layout_width="90dp" android:layout_height="wrap_content"
+                android:text="Fruity" android:textColor="@color/on_surface"/>
+            <SeekBar android:id="@+id/seekFruity" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1" android:max="5"/>
+            <TextView android:id="@+id/tvFruity" android:layout_width="28dp"
+                android:layout_height="wrap_content" android:text="0"
+                android:textColor="@color/amber" android:textAlignment="center" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+            <TextView android:layout_width="90dp" android:layout_height="wrap_content"
+                android:text="Medicinal" android:textColor="@color/on_surface"/>
+            <SeekBar android:id="@+id/seekMedicinal" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1" android:max="5"/>
+            <TextView android:id="@+id/tvMedicinal" android:layout_width="28dp"
+                android:layout_height="wrap_content" android:text="0"
+                android:textColor="@color/amber" android:textAlignment="center" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+            <TextView android:layout_width="90dp" android:layout_height="wrap_content"
+                android:text="Fiery" android:textColor="@color/on_surface"/>
+            <SeekBar android:id="@+id/seekFiery" android:layout_width="0dp"
+                android:layout_height="wrap_content" android:layout_weight="1" android:max="5"/>
+            <TextView android:id="@+id/tvFiery" android:layout_width="28dp"
+                android:layout_height="wrap_content" android:text="0"
+                android:textColor="@color/amber" android:textAlignment="center" android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <!-- ── Photos ──────────────────────────────────────────────────── -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="PHOTOS"
+            android:textColor="@color/amber" android:textStyle="bold"
+            android:textSize="13sp" android:layout_marginBottom="8dp"/>
+
+        <!-- Front photo -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <ImageView android:id="@+id/ivPhotoFront"
+                android:layout_width="72dp" android:layout_height="72dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_whisky_placeholder"
+                android:background="@color/divider"/>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:layout_marginStart="12dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Front" android:textColor="@color/on_surface_dim" android:textSize="12sp"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginTop="4dp">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnPickFront"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Choose" android:layout_marginEnd="8dp"/>
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnDeleteFront"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Remove" android:visibility="gone"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Back photo -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <ImageView android:id="@+id/ivPhotoBack"
+                android:layout_width="72dp" android:layout_height="72dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_whisky_placeholder"
+                android:background="@color/divider"/>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:layout_marginStart="12dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Back" android:textColor="@color/on_surface_dim" android:textSize="12sp"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginTop="4dp">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnPickBack"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Choose" android:layout_marginEnd="8dp"/>
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnDeleteBack"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Remove" android:visibility="gone"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Cask photo -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+            <ImageView android:id="@+id/ivPhotoCask"
+                android:layout_width="72dp" android:layout_height="72dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_whisky_placeholder"
+                android:background="@color/divider"/>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:layout_marginStart="12dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Cask" android:textColor="@color/on_surface_dim" android:textSize="12sp"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginTop="4dp">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnPickCask"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Choose" android:layout_marginEnd="8dp"/>
+                    <com.google.android.material.button.MaterialButton android:id="@+id/btnDeleteCask"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Remove" android:visibility="gone"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="Save"
-            android:backgroundTint="@color/amber"
+            app:backgroundTint="@color/amber"
             android:layout_marginBottom="24dp"/>
 
     </LinearLayout>

@@ -33,7 +33,6 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val id = arguments?.getInt("whiskyId") ?: return
 
-        // Register menu using the non-deprecated MenuProvider API
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -48,10 +47,7 @@ class DetailFragment : Fragment() {
                         )
                         true
                     }
-                    R.id.action_delete -> {
-                        confirmDelete()
-                        true
-                    }
+                    R.id.action_delete -> { confirmDelete(); true }
                     else -> false
                 }
             }
@@ -74,6 +70,14 @@ class DetailFragment : Fragment() {
             binding.tvNotes.text      = w.notes?.ifBlank { "—" } ?: "—"
             binding.tvFlavor.text     = w.flavorProfile?.replaceFirstChar { it.uppercase() } ?: "—"
 
+            // Barcode — show row only when a value exists
+            if (!w.barcode.isNullOrBlank()) {
+                binding.layoutBarcode.visibility = View.VISIBLE
+                binding.tvBarcode.text = w.barcode
+            } else {
+                binding.layoutBarcode.visibility = View.GONE
+            }
+
             val ctx       = requireContext()
             val store     = TokenStore(ctx)
             val serverUrl = store.getServerUrl() ?: ""
@@ -91,7 +95,9 @@ class DetailFragment : Fragment() {
             )
         }
 
-        vm.isLoading.observe(viewLifecycleOwner) { binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE }
+        vm.isLoading.observe(viewLifecycleOwner) {
+            binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
+        }
         vm.error.observe(viewLifecycleOwner) { err ->
             if (err != null) Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
         }

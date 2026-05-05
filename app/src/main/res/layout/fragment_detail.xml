@@ -17,12 +17,13 @@
             android:layout_margin="16dp"
             android:visibility="gone" />
 
+        <!-- Hero photo (front) -->
         <ImageView
             android:id="@+id/ivFront"
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:scaleType="centerCrop"
-            android:contentDescription="Whisky bottle" />
+            android:contentDescription="Whisky bottle front" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -118,6 +119,21 @@
                     <TextView android:id="@+id/tvStore" android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
                 </LinearLayout>
+            </LinearLayout>
+
+            <!-- Barcode (hidden when blank) -->
+            <LinearLayout
+                android:id="@+id/layoutBarcode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="BARCODE" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
+                <TextView android:id="@+id/tvBarcode" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:textColor="@color/on_surface"
+                    android:fontFamily="monospace"/>
             </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp"

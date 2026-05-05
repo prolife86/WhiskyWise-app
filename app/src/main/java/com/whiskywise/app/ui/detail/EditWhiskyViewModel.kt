@@ -8,6 +8,7 @@ import com.whiskywise.app.api.WhiskyWiseRepository
 import com.whiskywise.app.model.Whisky
 import com.whiskywise.app.model.WhiskyRequest
 import kotlinx.coroutines.launch
+import java.io.File
 
 class EditWhiskyViewModel : ViewModel() {
 
@@ -22,8 +23,13 @@ class EditWhiskyViewModel : ViewModel() {
     private val _error     = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    private val _saved     = MutableLiveData(false)
-    val saved: LiveData<Boolean> = _saved
+    /**
+     * Emits the saved whisky's ID once a create or update succeeds.
+     * The fragment observes this to trigger photo uploads, then navigates back.
+     * Null = not yet saved.
+     */
+    private val _savedId = MutableLiveData<Int?>()
+    val savedId: LiveData<Int?> = _savedId
 
     fun load(id: Int) {
         _isLoading.value = true
@@ -40,7 +46,7 @@ class EditWhiskyViewModel : ViewModel() {
         _isLoading.value = true
         viewModelScope.launch {
             repo.createWhisky(request).fold(
-                onSuccess = { _saved.value = true },
+                onSuccess = { w -> _savedId.value = w.id },
                 onFailure = { _error.value = it.message },
             )
             _isLoading.value = false
@@ -51,10 +57,33 @@ class EditWhiskyViewModel : ViewModel() {
         _isLoading.value = true
         viewModelScope.launch {
             repo.updateWhisky(id, request).fold(
-                onSuccess = { _saved.value = true },
+                onSuccess = { w -> _savedId.value = w.id },
                 onFailure = { _error.value = it.message },
             )
             _isLoading.value = false
+        }
+    }
+
+    /**
+     * Upload new photos and delete removed ones for [whiskyId],
+     * then call [onDone] on the main thread.
+     */
+    fun processPhotos(
+        whiskyId: Int,
+        uploads: Map<String, File>,
+        deletes: Set<String>,
+        onDone: () -> Unit,
+    ) {
+        viewModelScope.launch {
+            for (slot in deletes) {
+                repo.deletePhoto(whiskyId, slot)
+                    .onFailure { _error.value = "Could not remove $slot photo: ${it.message}" }
+            }
+            for ((slot, file) in uploads) {
+                repo.uploadPhoto(whiskyId, slot, file)
+                    .onFailure { _error.value = "Could not upload $slot photo: ${it.message}" }
+            }
+            onDone()
         }
     }
 }
