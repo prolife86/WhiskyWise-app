@@ -25,6 +25,11 @@ android {
         }
     }
 
+    lint {
+        lintConfig = file("../lint.xml")   // project-wide opt-ins (ExperimentalGetImage etc.)
+        abortOnError true
+    }
+
     buildFeatures {
         viewBinding true
         buildConfig true    // exposes BuildConfig.VERSION_NAME / VERSION_CODE
