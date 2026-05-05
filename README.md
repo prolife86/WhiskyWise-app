@@ -100,7 +100,7 @@ app/
 - The Bearer token is stored in Android `EncryptedSharedPreferences` (AES256-GCM).
 - Your password is sent only once at login and is never persisted.
 - HTTP is permitted to support local network / Home Assistant setups. Use HTTPS in production.
-- Tokens can be revoked from **Settings → Log out** or from the WhiskyWise web UI.
+- Tokens can be revoked individually from Settings → API Tokens → Revoke, or all at once via Log out.
 
 ---
 
