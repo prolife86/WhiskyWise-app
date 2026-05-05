@@ -1,5 +1,6 @@
 package com.whiskywise.app.api
 
+import com.whiskywise.app.BuildConfig
 import com.whiskywise.app.util.TokenStore
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,15 +16,24 @@ object RetrofitClient {
     val api: WhiskyWiseApi
         get() = _api ?: error("RetrofitClient not initialised — call init() first")
 
-    /** Call this once on app start (and again when the server URL changes). */
+    /**
+     * Call this once on app start (and again when the server URL changes).
+     *
+     * Note: the Bearer token is read dynamically from [TokenStore] on every request
+     * inside the auth interceptor, so a URL-identical re-init is intentionally skipped.
+     * If you ever change the token storage mechanism, revisit this guard.
+     */
     fun init(baseUrl: String, tokenStore: TokenStore) {
         // Normalise: ensure trailing slash for Retrofit
         val url = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
         if (url == _baseUrl && _api != null) return
         _baseUrl = url
 
+        // Only log request/response bodies in debug builds — release builds must never
+        // log Bearer tokens or whisky data to logcat.
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
+                    else HttpLoggingInterceptor.Level.NONE
         }
 
         val client = OkHttpClient.Builder()
