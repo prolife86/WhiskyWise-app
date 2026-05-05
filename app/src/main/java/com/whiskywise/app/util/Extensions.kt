@@ -17,11 +17,23 @@ fun ImageView.loadWhiskyPhoto(
         setImageResource(R.drawable.ic_whisky_placeholder)
         return
     }
-    val base = if (serverUrl.endsWith("/")) serverUrl.dropLast(1) else serverUrl
-    val url = "$base/api/photo/$photoPath"
-    val glideUrl = GlideUrl(url, LazyHeaders.Builder()
-        .addHeader("Authorization", "Bearer $token")
-        .build())
+    val base = serverUrl.trimEnd('/')
+
+    // The server may return either a bare filename ("abc.jpg") or a path that
+    // already includes the leading segment ("photos/abc.jpg"). Normalise both
+    // by always routing through /api/photo/ and stripping any duplicate prefix.
+    val cleanPath = photoPath.trimStart('/')
+        .removePrefix("api/photo/")
+        .removePrefix("photos/")
+
+    val url = "$base/api/photo/$cleanPath"
+
+    val glideUrl = GlideUrl(
+        url,
+        LazyHeaders.Builder()
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+    )
     Glide.with(context)
         .load(glideUrl)
         .placeholder(R.drawable.ic_whisky_placeholder)
