@@ -72,5 +72,15 @@ class CollectionFragment : Fragment() {
         vm.load()
     }
 
+    /**
+     * Reload the collection every time the fragment becomes visible again.
+     * This ensures the list is up-to-date after returning from the Edit/Create
+     * screen without requiring a manual swipe-to-refresh.
+     */
+    override fun onResume() {
+        super.onResume()
+        vm.load()
+    }
+
     override fun onDestroyView() { super.onDestroyView(); _binding = null }
 }

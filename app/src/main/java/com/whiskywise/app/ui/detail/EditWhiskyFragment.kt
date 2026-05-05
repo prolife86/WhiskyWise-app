@@ -29,6 +29,11 @@ class EditWhiskyFragment : Fragment() {
 
     private var editingId: Int = -1
 
+    // Server-computed flavor_profile — preserved when updating an existing entry so
+    // the server can re-derive it from the new radar values without us sending a stale
+    // value. We store whatever the server returned and pass it back verbatim.
+    private var existingFlavorProfile: String? = null
+
     // Which photo slot is awaiting the picker result
     private var pendingSlot: String? = null
 
@@ -36,6 +41,8 @@ class EditWhiskyFragment : Fragment() {
     private val uploadQueue = mutableMapOf<String, File>()
 
     // Slots queued for deletion on the server after save
+    // Note: photo_barcode is stored on the server model but has no upload UI in this
+    // app — it will never appear in either queue and is therefore preserved on the server.
     private val deleteQueue = mutableSetOf<String>()
 
     // ── Photo gallery picker ──────────────────────────────────────────────────
@@ -85,6 +92,10 @@ class EditWhiskyFragment : Fragment() {
             vm.load(editingId)
             vm.whisky.observe(viewLifecycleOwner) { w ->
                 if (w == null) return@observe
+                // Stash server-computed flavor_profile so we can send it back on save,
+                // allowing the server to re-derive it from the updated radar values.
+                existingFlavorProfile = w.flavorProfile
+
                 binding.etName.setText(w.name)
                 binding.etDistillery.setText(w.distillery)
                 binding.etRegion.setText(w.region)
@@ -132,10 +143,16 @@ class EditWhiskyFragment : Fragment() {
             binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
         }
         vm.error.observe(viewLifecycleOwner) { err ->
-            if (err != null) Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
+            if (err != null) {
+                Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
+                vm.clearError()
+            }
         }
         vm.savedId.observe(viewLifecycleOwner) { savedId ->
             if (savedId == null) return@observe
+            // Consume immediately to prevent re-delivery on rotation, which would
+            // otherwise re-run photo uploads and double-pop the back stack.
+            vm.clearSavedId()
             // Upload / delete photos, then navigate back
             vm.processPhotos(savedId, uploadQueue.toMap(), deleteQueue.toSet()) {
                 findNavController().popBackStack()
@@ -230,6 +247,9 @@ class EditWhiskyFragment : Fragment() {
             finish         = binding.etFinish.text.toString().trim().ifBlank { null },
             notes          = binding.etNotes.text.toString().trim().ifBlank { null },
             status         = statuses[binding.spinnerStatus.selectedItemPosition],
+            // Pass back the server's flavor_profile so it is preserved in the payload;
+            // the server recomputes it from the radar values after saving.
+            flavorProfile  = existingFlavorProfile,
             radarWoody     = binding.seekWoody.progress,
             radarSmoky     = binding.seekSmoky.progress,
             radarCereal    = binding.seekCereal.progress,

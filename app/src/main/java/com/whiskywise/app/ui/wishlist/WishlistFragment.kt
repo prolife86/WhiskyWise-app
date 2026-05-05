@@ -2,8 +2,10 @@ package com.whiskywise.app.ui.wishlist
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -26,7 +28,13 @@ class WishlistFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = WhiskyAdapter { /* detail view for wishlist items */ }
+        // Tap a wishlist item to open the detail view (same as the collection tab)
+        adapter = WhiskyAdapter { whisky ->
+            findNavController().navigate(
+                R.id.action_wishlist_to_detail,
+                bundleOf("whiskyId" to whisky.id),
+            )
+        }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
         binding.swipeRefresh.setOnRefreshListener { vm.load() }
@@ -37,11 +45,23 @@ class WishlistFragment : Fragment() {
         }
         vm.isLoading.observe(viewLifecycleOwner) { binding.swipeRefresh.isRefreshing = it }
         vm.error.observe(viewLifecycleOwner) { err ->
-            if (err != null) Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
+            if (err != null) {
+                Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
+                vm.clearError()
+            }
         }
 
         binding.fab.setOnClickListener { showAddDialog() }
 
+        vm.load()
+    }
+
+    /**
+     * Reload on resume so that changes made in the detail/edit screen
+     * (e.g. moving a wishlist item to the collection) are reflected immediately.
+     */
+    override fun onResume() {
+        super.onResume()
         vm.load()
     }
 

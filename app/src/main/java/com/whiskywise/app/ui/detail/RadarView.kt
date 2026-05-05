@@ -9,7 +9,7 @@ import kotlin.math.min
 import kotlin.math.sin
 
 /**
- * A simple hexagonal radar / spider chart matching the WhiskyWise web flavour profile chart.
+ * A heptagonal (7-axis) radar / spider chart matching the WhiskyWise web flavour profile chart.
  * Axes: woody, smoky, cereal, floral, fruity, medicinal, fiery  (0–5 scale)
  */
 class RadarView @JvmOverloads constructor(

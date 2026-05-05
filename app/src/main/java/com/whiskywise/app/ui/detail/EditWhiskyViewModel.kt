@@ -26,7 +26,8 @@ class EditWhiskyViewModel : ViewModel() {
     /**
      * Emits the saved whisky's ID once a create or update succeeds.
      * The fragment observes this to trigger photo uploads, then navigates back.
-     * Null = not yet saved.
+     * Null = not yet saved / already consumed.
+     * Call [clearSavedId] immediately after consuming to prevent re-delivery on rotation.
      */
     private val _savedId = MutableLiveData<Int?>()
     val savedId: LiveData<Int?> = _savedId
@@ -62,6 +63,19 @@ class EditWhiskyViewModel : ViewModel() {
             )
             _isLoading.value = false
         }
+    }
+
+    /**
+     * Consume [savedId] after handling it so that screen rotation
+     * does not re-trigger photo uploads and back-stack navigation.
+     */
+    fun clearSavedId() {
+        _savedId.value = null
+    }
+
+    /** Clear the error after it has been shown to the user. */
+    fun clearError() {
+        _error.value = null
     }
 
     /**

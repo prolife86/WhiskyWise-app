@@ -23,8 +23,10 @@ class WhiskyAdapter(
             b.tvStatus.text      = whisky.status?.replaceFirstChar { it.uppercase() } ?: ""
             b.tvRegion.text      = whisky.region ?: ""
 
-            val ctx   = b.root.context
-            val store = TokenStore(ctx)
+            val ctx = b.root.context
+            // Read TokenStore once per bind rather than constructing it inline multiple
+            // times — EncryptedSharedPreferences creation is non-trivial.
+            val store     = TokenStore(ctx)
             val serverUrl = store.getServerUrl() ?: ""
             val token     = store.getToken()     ?: ""
             b.ivPhoto.loadWhiskyPhoto(ctx, whisky.photoFront, serverUrl, token)

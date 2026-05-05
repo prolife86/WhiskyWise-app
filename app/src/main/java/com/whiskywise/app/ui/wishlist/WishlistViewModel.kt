@@ -26,7 +26,7 @@ class WishlistViewModel : ViewModel() {
         _isLoading.value = true
         viewModelScope.launch {
             repo.getWishlist().fold(
-                onSuccess = { _items.value = it },
+                onSuccess = { _items.value = it; _error.value = null },
                 onFailure = { _error.value = it.message },
             )
             _isLoading.value = false
@@ -36,9 +36,14 @@ class WishlistViewModel : ViewModel() {
     fun add(request: WhiskyRequest) {
         viewModelScope.launch {
             repo.createWishlistItem(request).fold(
-                onSuccess = { load() },
+                onSuccess = { _error.value = null; load() },
                 onFailure = { _error.value = it.message },
             )
         }
+    }
+
+    /** Clear the error after it has been shown to the user. */
+    fun clearError() {
+        _error.value = null
     }
 }

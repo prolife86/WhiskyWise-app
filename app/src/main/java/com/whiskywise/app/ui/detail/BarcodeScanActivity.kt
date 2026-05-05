@@ -18,11 +18,13 @@ import com.whiskywise.app.R
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-@OptIn(ExperimentalGetImage::class)
 class BarcodeScanActivity : AppCompatActivity() {
 
     private lateinit var cameraExecutor: ExecutorService
-    private var delivered = false
+
+    // @Volatile ensures the write from the camera executor thread is immediately
+    // visible to the main thread and vice versa, preventing a rare double-delivery.
+    @Volatile private var delivered = false
 
     private val requestCamera =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -40,6 +42,7 @@ class BarcodeScanActivity : AppCompatActivity() {
         else requestCamera.launch(Manifest.permission.CAMERA)
     }
 
+    @OptIn(ExperimentalGetImage::class)
     private fun startCamera() {
         val previewView = findViewById<PreviewView>(R.id.barcodePreviewView)
         val future = ProcessCameraProvider.getInstance(this)
