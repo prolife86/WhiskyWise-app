@@ -108,12 +108,15 @@ data class WhiskyRequest(
     val finish: String? = null,
     @SerializedName("flavor_profile") val flavorProfile: String? = null,
     val score: Double? = null,
-    @SerializedName("radar_woody")     val radarWoody: Int? = null,
-    @SerializedName("radar_smoky")     val radarSmoky: Int? = null,
-    @SerializedName("radar_cereal")    val radarCereal: Int? = null,
-    @SerializedName("radar_floral")    val radarFloral: Int? = null,
-    @SerializedName("radar_fruity")    val radarFruity: Int? = null,
-    @SerializedName("radar_medicinal") val radarMedicinal: Int? = null,
-    @SerializedName("radar_fiery")     val radarFiery: Int? = null,
+    // Non-nullable Int (not Int?) so that 0 is always serialised as 0 in the JSON
+    // payload rather than omitted as null. The server ignores null radar fields and
+    // keeps old values, which means sliders left at 0 would never clear a prior value.
+    @SerializedName("radar_woody")     val radarWoody: Int = 0,
+    @SerializedName("radar_smoky")     val radarSmoky: Int = 0,
+    @SerializedName("radar_cereal")    val radarCereal: Int = 0,
+    @SerializedName("radar_floral")    val radarFloral: Int = 0,
+    @SerializedName("radar_fruity")    val radarFruity: Int = 0,
+    @SerializedName("radar_medicinal") val radarMedicinal: Int = 0,
+    @SerializedName("radar_fiery")     val radarFiery: Int = 0,
     @SerializedName("wishlist_notes")  val wishlistNotes: String? = null,
 )
