@@ -1,17 +1,21 @@
 package com.whiskywise.app.ui.detail
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.*
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentEditWhiskyBinding
 import com.whiskywise.app.model.WhiskyRequest
 import com.whiskywise.app.util.TokenStore
@@ -31,22 +35,31 @@ class EditWhiskyFragment : Fragment() {
     private val uploadQueue = mutableMapOf<String, File>()
     private val deleteQueue = mutableSetOf<String>()
 
-    // ── Photo picker ──────────────────────────────────────────────────────────
-    //
-    // ACTION_PICK with image/* throws ActivityNotFoundException on many Android 13+
-    // devices/emulators with targetSdk 35 — there is no guaranteed gallery app.
-    // GetContent("image/*") routes through the system document picker which is always
-    // present and handles permissions internally on API 33+.
+    // Temp file URI written for camera capture; set before launching camera intent.
+    private var cameraOutputUri: Uri? = null
 
-    private val photoPicker =
+    // ── Gallery picker (GetContent) ───────────────────────────────────────────
+
+    private val galleryPicker =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri ?: return@registerForActivityResult
             val slot = pendingSlot ?: return@registerForActivityResult
             pendingSlot = null
-            val tmp = uriToTempFile(uri, slot) ?: return@registerForActivityResult
-            uploadQueue[slot] = tmp
-            deleteQueue.remove(slot)
-            previewFromUri(slot, uri)
+            handlePickedUri(uri, slot)
+        }
+
+    // ── Camera capture ────────────────────────────────────────────────────────
+    // TakePicture writes the full-resolution image to cameraOutputUri (a FileProvider
+    // content:// URI in cacheDir). On success the file is already written; just queue it.
+
+    private val cameraPicker =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (!success) return@registerForActivityResult
+            val uri  = cameraOutputUri ?: return@registerForActivityResult
+            val slot = pendingSlot      ?: return@registerForActivityResult
+            cameraOutputUri = null
+            pendingSlot     = null
+            handlePickedUri(uri, slot)
         }
 
     // ── Barcode scanner ───────────────────────────────────────────────────────
@@ -76,7 +89,7 @@ class EditWhiskyFragment : Fragment() {
 
         binding.btnScanBarcode.setOnClickListener {
             barcodeLauncher.launch(
-                android.content.Intent(requireContext(), BarcodeScanActivity::class.java)
+                Intent(requireContext(), BarcodeScanActivity::class.java)
             )
         }
 
@@ -165,14 +178,11 @@ class EditWhiskyFragment : Fragment() {
     }
 
     private fun wirePhotoButtons() {
-        fun pick(slot: String) {
-            pendingSlot = slot
-            photoPicker.launch("image/*")
-        }
+        fun pick(slot: String) { showPhotoSourceDialog(slot) }
         fun remove(slot: String, iv: ImageView, btn: MaterialButton) {
             deleteQueue.add(slot)
             uploadQueue.remove(slot)
-            iv.setImageResource(com.whiskywise.app.R.drawable.ic_whisky_placeholder)
+            iv.setImageResource(R.drawable.ic_whisky_placeholder)
             btn.visibility = View.GONE
         }
         binding.btnPickFront.setOnClickListener   { pick("front") }
@@ -181,6 +191,49 @@ class EditWhiskyFragment : Fragment() {
         binding.btnDeleteFront.setOnClickListener { remove("front", binding.ivPhotoFront, binding.btnDeleteFront) }
         binding.btnDeleteBack.setOnClickListener  { remove("back",  binding.ivPhotoBack,  binding.btnDeleteBack) }
         binding.btnDeleteCask.setOnClickListener  { remove("cask",  binding.ivPhotoCask,  binding.btnDeleteCask) }
+    }
+
+    /**
+     * Show a bottom-sheet style dialog letting the user choose between
+     * taking a new photo with the camera or picking one from the gallery.
+     */
+    private fun showPhotoSourceDialog(slot: String) {
+        val options = arrayOf("📷  Take photo", "🖼️  Choose from gallery")
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Add photo")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> launchCamera(slot)
+                    1 -> launchGallery(slot)
+                }
+            }
+            .show()
+    }
+
+    private fun launchCamera(slot: String) {
+        pendingSlot = slot
+        // Create a temp file in cacheDir; FileProvider wraps it as a content:// URI
+        // so the camera app can write without needing WRITE_EXTERNAL_STORAGE.
+        val tmp = File(requireContext().cacheDir, "camera_capture_${slot}_${System.currentTimeMillis()}.jpg")
+        val uri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.fileprovider",
+            tmp
+        )
+        cameraOutputUri = uri
+        cameraPicker.launch(uri)
+    }
+
+    private fun launchGallery(slot: String) {
+        pendingSlot = slot
+        galleryPicker.launch("image/*")
+    }
+
+    private fun handlePickedUri(uri: Uri, slot: String) {
+        val tmp = uriToTempFile(uri, slot) ?: return
+        uploadQueue[slot] = tmp
+        deleteQueue.remove(slot)
+        previewFromUri(slot, uri)
     }
 
     private fun setSlider(seek: SeekBar, label: TextView, value: Int) {
