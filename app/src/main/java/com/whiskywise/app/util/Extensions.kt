@@ -3,6 +3,7 @@ package com.whiskywise.app.util
 import android.content.Context
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.whiskywise.app.R
@@ -12,6 +13,7 @@ fun ImageView.loadWhiskyPhoto(
     photoPath: String?,
     serverUrl: String,
     token: String,
+    skipCache: Boolean = false,
 ) {
     if (photoPath.isNullOrBlank()) {
         setImageResource(R.drawable.ic_whisky_placeholder)
@@ -19,9 +21,6 @@ fun ImageView.loadWhiskyPhoto(
     }
     val base = serverUrl.trimEnd('/')
 
-    // The server may return either a bare filename ("abc.jpg") or a path that
-    // already includes the leading segment ("photos/abc.jpg"). Normalise both
-    // by always routing through /api/photo/ and stripping any duplicate prefix.
     val cleanPath = photoPath.trimStart('/')
         .removePrefix("api/photo/")
         .removePrefix("photos/")
@@ -34,12 +33,23 @@ fun ImageView.loadWhiskyPhoto(
             .addHeader("Authorization", "Bearer $token")
             .build()
     )
-    Glide.with(context)
+
+    val request = Glide.with(context)
         .load(glideUrl)
         .placeholder(R.drawable.ic_whisky_placeholder)
         .error(R.drawable.ic_whisky_placeholder)
         .centerCrop()
-        .into(this)
+
+    // After a server-side rotation the filename is unchanged but the content has
+    // changed. skipCache bypasses both memory and disk cache to force a fresh fetch.
+    if (skipCache) {
+        request
+            .skipMemoryCache(true)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .into(this)
+    } else {
+        request.into(this)
+    }
 }
 
 fun Double?.formatScore(): String = if (this == null) "—" else String.format("%.1f", this)
