@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentCollectionBinding
+import com.whiskywise.app.util.TokenStore
 
 class CollectionFragment : Fragment() {
 
@@ -31,6 +32,11 @@ class CollectionFragment : Fragment() {
                 bundleOf("whiskyId" to whisky.id),
             )
         }
+
+        // Supply credentials once so the adapter never touches TokenStore per bind.
+        val store = TokenStore(requireContext())
+        adapter.setCredentials(store.getServerUrl() ?: "", store.getToken() ?: "")
+
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
         binding.swipeRefresh.setOnRefreshListener { vm.load() }
@@ -46,18 +52,23 @@ class CollectionFragment : Fragment() {
             } else binding.errorBanner.visibility = View.GONE
         }
 
-        // Status filter chips
-        listOf(
-            null          to binding.chipAll,
-            "open"        to binding.chipOpen,
-            "stashed"     to binding.chipStashed,
-            "finished"    to binding.chipFinished,
-        ).forEach { (status, chip) ->
+        // Status filter chips — update checked state to reflect active filter.
+        val chipMap = listOf(
+            null       to binding.chipAll,
+            "open"     to binding.chipOpen,
+            "stashed"  to binding.chipStashed,
+            "finished" to binding.chipFinished,
+        )
+        chipMap.forEach { (status, chip) ->
             chip.setOnClickListener {
                 vm.currentStatus = status
                 vm.load()
+                // Mark the tapped chip checked and clear the rest.
+                chipMap.forEach { (_, c) -> c.isChecked = (c == chip) }
             }
         }
+        // Reflect the current status on initial draw.
+        chipMap.forEach { (status, chip) -> chip.isChecked = (status == vm.currentStatus) }
 
         // Search
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

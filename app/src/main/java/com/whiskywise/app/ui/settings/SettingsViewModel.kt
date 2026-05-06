@@ -35,4 +35,7 @@ class SettingsViewModel : ViewModel() {
             )
         }
     }
+
+    /** Clear the error after it has been shown to the user. */
+    fun clearError() { _error.value = null }
 }

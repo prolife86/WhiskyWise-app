@@ -42,7 +42,10 @@ class SettingsFragment : Fragment() {
 
         vm.tokens.observe(viewLifecycleOwner) { tokens -> tokenAdapter.submitList(tokens) }
         vm.error.observe(viewLifecycleOwner)  { err ->
-            if (err != null) Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
+            if (err != null) {
+                Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
+                vm.clearError()
+            }
         }
 
         binding.btnLogout.setOnClickListener {

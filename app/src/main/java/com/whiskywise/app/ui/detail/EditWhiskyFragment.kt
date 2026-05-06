@@ -14,17 +14,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
-import com.whiskywise.app.api.WhiskyWiseRepository
 import com.whiskywise.app.databinding.FragmentEditWhiskyBinding
 import com.whiskywise.app.model.WhiskyRequest
 import com.whiskywise.app.util.TokenStore
 import com.whiskywise.app.util.loadWhiskyPhoto
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
@@ -33,17 +30,12 @@ class EditWhiskyFragment : Fragment() {
     private var _binding: FragmentEditWhiskyBinding? = null
     private val binding get() = _binding!!
     private val vm: EditWhiskyViewModel by viewModels()
-    private val repo = WhiskyWiseRepository()
 
     private var editingId: Int = -1
     private var existingFlavorProfile: String? = null
     private var pendingSlot: String? = null
     private val uploadQueue = mutableMapOf<String, File>()
     private val deleteQueue = mutableSetOf<String>()
-
-    // Set before calling vm.load() after a rotate so the observer knows to
-    // bypass Glide's disk cache for that slot on the next callback.
-    private var pendingCacheSkipSlot: String? = null
 
     private var cameraOutputUri: Uri? = null
     private var pendingCameraSlot: String? = null
@@ -149,8 +141,12 @@ class EditWhiskyFragment : Fragment() {
                 val store = TokenStore(ctx)
                 val url   = store.getServerUrl() ?: ""
                 val token = store.getToken() ?: ""
-                val skipSlot = pendingCacheSkipSlot
-                pendingCacheSkipSlot = null
+
+                // Consume the pending cache-skip slot (set by rotatePhoto) so
+                // Glide bypasses its disk cache for only the rotated photo.
+                val skipSlot = vm.rotatedSlot.value
+                vm.clearRotatedSlot()
+
                 binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, url, token, skipCache = skipSlot == "front")
                 binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  url, token, skipCache = skipSlot == "back")
                 binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  url, token, skipCache = skipSlot == "cask")
@@ -211,7 +207,9 @@ class EditWhiskyFragment : Fragment() {
 
     private fun wirePhotoButtons() {
         fun pick(slot: String)   { showPhotoSourceDialog(slot) }
-        fun rotate(slot: String) { rotateServerPhoto(slot) }
+        fun rotate(slot: String) {
+            if (editingId > 0) vm.rotatePhoto(editingId, slot)
+        }
         fun remove(slot: String, iv: ImageView, rotateBtn: MaterialButton, deleteBtn: MaterialButton) {
             deleteQueue.add(slot)
             uploadQueue.remove(slot)
@@ -231,32 +229,6 @@ class EditWhiskyFragment : Fragment() {
         binding.btnDeleteFront.setOnClickListener  { remove("front", binding.ivPhotoFront, binding.btnRotateFront, binding.btnDeleteFront) }
         binding.btnDeleteBack.setOnClickListener   { remove("back",  binding.ivPhotoBack,  binding.btnRotateBack,  binding.btnDeleteBack) }
         binding.btnDeleteCask.setOnClickListener   { remove("cask",  binding.ivPhotoCask,  binding.btnRotateCask,  binding.btnDeleteCask) }
-    }
-
-    /**
-     * Rotate a server-side photo 90° clockwise.
-     * On success, reload the whisky from the server — the existing vm.whisky observer
-     * will pick up the updated photo path and reload the ImageView via Glide automatically.
-     * No manual Glide cache-busting needed; the observer handles it.
-     */
-    private fun rotateServerPhoto(slot: String) {
-        if (editingId <= 0) return
-        viewLifecycleOwner.lifecycleScope.launch {
-            binding.progressBar.visibility = View.VISIBLE
-            repo.rotatePhoto(editingId, slot).fold(
-                onSuccess = {
-                    // Flag the slot for disk-cache bypass on the next observer callback.
-                    // The filename is unchanged on the server so Glide would otherwise
-                    // serve the pre-rotation image straight from its disk cache.
-                    pendingCacheSkipSlot = slot
-                    vm.load(editingId)
-                },
-                onFailure = {
-                    Snackbar.make(binding.root, "Rotate failed: ${it.message}", Snackbar.LENGTH_LONG).show()
-                }
-            )
-            binding.progressBar.visibility = View.GONE
-        }
     }
 
     private fun showPhotoSourceDialog(slot: String) {

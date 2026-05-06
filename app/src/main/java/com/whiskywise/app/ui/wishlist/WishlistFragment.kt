@@ -14,6 +14,7 @@ import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentWishlistBinding
 import com.whiskywise.app.model.WhiskyRequest
 import com.whiskywise.app.ui.collection.WhiskyAdapter
+import com.whiskywise.app.util.TokenStore
 
 class WishlistFragment : Fragment() {
 
@@ -35,6 +36,10 @@ class WishlistFragment : Fragment() {
                 bundleOf("whiskyId" to whisky.id),
             )
         }
+
+        // Supply credentials once so the adapter never touches TokenStore per bind.
+        val store = TokenStore(requireContext())
+        adapter.setCredentials(store.getServerUrl() ?: "", store.getToken() ?: "")
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
         binding.swipeRefresh.setOnRefreshListener { vm.load() }

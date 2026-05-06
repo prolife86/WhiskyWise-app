@@ -15,6 +15,17 @@ class WhiskyAdapter(
     private val onClick: (Whisky) -> Unit,
 ) : ListAdapter<Whisky, WhiskyAdapter.VH>(DIFF) {
 
+    // Read credentials once per adapter instance rather than on every bind call.
+    // EncryptedSharedPreferences construction involves Keystore operations and
+    // is too expensive to repeat for every visible list item.
+    private var serverUrl: String = ""
+    private var token: String = ""
+
+    fun setCredentials(serverUrl: String, token: String) {
+        this.serverUrl = serverUrl
+        this.token = token
+    }
+
     inner class VH(private val b: ItemWhiskyBinding) : RecyclerView.ViewHolder(b.root) {
         fun bind(whisky: Whisky) {
             b.tvName.text        = whisky.name
@@ -23,13 +34,7 @@ class WhiskyAdapter(
             b.tvStatus.text      = whisky.status?.replaceFirstChar { it.uppercase() } ?: ""
             b.tvRegion.text      = whisky.region ?: ""
 
-            val ctx = b.root.context
-            // Read TokenStore once per bind rather than constructing it inline multiple
-            // times — EncryptedSharedPreferences creation is non-trivial.
-            val store     = TokenStore(ctx)
-            val serverUrl = store.getServerUrl() ?: ""
-            val token     = store.getToken()     ?: ""
-            b.ivPhoto.loadWhiskyPhoto(ctx, whisky.photoFront, serverUrl, token)
+            b.ivPhoto.loadWhiskyPhoto(b.root.context, whisky.photoFront, serverUrl, token)
 
             b.root.setOnClickListener { onClick(whisky) }
         }
