@@ -22,12 +22,18 @@ Turns out "fully implemented" and "actually works" are two different things.
   `activity_main.xml` and wired it up as the support action bar — now the Edit and
   Delete actions appear in the detail screen as intended, and the back arrow shows up
   automatically when navigating into any sub-screen.
-- **Radar chart showed only a grid** — two issues conspiring: radar fields in
-  `WhiskyRequest` were `Int?` defaulting to `null`, which Gson silently omits from the
-  JSON payload, so the server never received the slider values and stored 0s. Meanwhile,
-  `RadarView` drew all-zero data as a single invisible point at the centre. Fixed both:
-  radar fields are now non-nullable `Int` (0 is always sent), and the chart uses a
-  minimum render ratio so the polygon is visible even when values genuinely are zero.
+- **Radar chart showed only a grid** — three issues conspiring. First, radar fields in
+  `WhiskyRequest` were `Int?` defaulting to `null`, which Gson silently omits, so the
+  server never received the slider values and stored 0s. Second, `RadarView` drew
+  all-zero data as a single invisible point at the centre. Third — and the one that
+  persisted after the first two were fixed — the Android `Whisky` model expected flat
+  `radar_woody` keys but the server returns a nested object: `"radar": {"woody": 3, ...}`.
+  Gson silently ignored it. All three fixed: radar fields are non-nullable `Int`, the
+  chart uses a minimum render ratio, and the model now maps the `"radar"` object via a
+  dedicated `RadarData` class with convenience accessors so nothing else changed.
+- **Edit form shows all sliders at zero** — same root cause as above. The server's
+  stored values were being discarded on deserialisation because the response shape
+  didn't match the model. The edit form now pre-fills from the actual stored values.
 - **Photos not loading** — `loadWhiskyPhoto()` assumed the server always returns a bare
   filename. It doesn't — depending on server version the path may include `photos/` or
   `api/photo/` as a prefix, producing a double-pathed URL that 404s every time. The URL
@@ -37,6 +43,10 @@ Turns out "fully implemented" and "actually works" are two different things.
   without it claiming `?attr/actionBarSize` at the top of the layout, fragments rendered
   flush against the status bar and the scroll view was offset, making the lower half of
   the form appear to be missing fields that were actually just out of frame.
+- **App crashed when tapping "Choose" on a photo slot** — `Intent(ACTION_PICK)` with
+  `image/*` throws `ActivityNotFoundException` on Android 13+ devices with targetSdk 35.
+  Replaced with `ActivityResultContracts.GetContent`, which routes through the system
+  document picker, is always present, and handles storage permissions internally.
 
 ---
 
