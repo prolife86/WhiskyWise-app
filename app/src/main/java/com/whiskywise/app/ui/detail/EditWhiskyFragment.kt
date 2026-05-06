@@ -41,6 +41,10 @@ class EditWhiskyFragment : Fragment() {
     private val uploadQueue = mutableMapOf<String, File>()
     private val deleteQueue = mutableSetOf<String>()
 
+    // Set before calling vm.load() after a rotate so the observer knows to
+    // bypass Glide's disk cache for that slot on the next callback.
+    private var pendingCacheSkipSlot: String? = null
+
     private var cameraOutputUri: Uri? = null
     private var pendingCameraSlot: String? = null
 
@@ -144,9 +148,11 @@ class EditWhiskyFragment : Fragment() {
                 val store = TokenStore(ctx)
                 val url   = store.getServerUrl() ?: ""
                 val token = store.getToken() ?: ""
-                binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, url, token)
-                binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  url, token)
-                binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  url, token)
+                val skipSlot = pendingCacheSkipSlot
+                pendingCacheSkipSlot = null
+                binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, url, token, skipCache = skipSlot == "front")
+                binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  url, token, skipCache = skipSlot == "back")
+                binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  url, token, skipCache = skipSlot == "cask")
 
                 if (!w.photoFront.isNullOrBlank()) {
                     binding.btnRotateFront.visibility = View.VISIBLE
@@ -238,17 +244,10 @@ class EditWhiskyFragment : Fragment() {
             binding.progressBar.visibility = View.VISIBLE
             repo.rotatePhoto(editingId, slot).fold(
                 onSuccess = {
-                    // Clear Glide's memory cache for the affected ImageView so the
-                    // reloaded photo is fetched fresh from the server, not the cache.
-                    val iv = when (slot) {
-                        "front" -> binding.ivPhotoFront
-                        "back"  -> binding.ivPhotoBack
-                        else    -> binding.ivPhotoCask
-                    }
-                    com.bumptech.glide.Glide.with(requireContext()).clear(iv)
-                    // Reload the whisky — the vm.whisky observer will call loadWhiskyPhoto()
-                    // with the same path but Glide's memory cache is now clear so it will
-                    // re-fetch the image from the server, showing the rotated version.
+                    // Flag the slot for disk-cache bypass on the next observer callback.
+                    // The filename is unchanged on the server so Glide would otherwise
+                    // serve the pre-rotation image straight from its disk cache.
+                    pendingCacheSkipSlot = slot
                     vm.load(editingId)
                 },
                 onFailure = {
