@@ -37,6 +37,22 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!--
+            FileProvider required for camera capture.
+            Provides a content:// URI pointing to a temp file in cacheDir so
+            the camera app can write the captured photo without needing
+            WRITE_EXTERNAL_STORAGE (removed in API 30+).
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>
