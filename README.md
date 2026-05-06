@@ -28,7 +28,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 
 - Android 8.0 (API 26) or later
 - Android Studio Meerkat (2024.3) or later
-- A running [WhiskyWise](https://github.com/prolife86/WhiskyWise) server ≥ 1.5.2
+- A running [WhiskyWise](https://github.com/prolife86/WhiskyWise) server ≥ 1.5.4
 
 ---
 
