@@ -12,21 +12,22 @@ See that project's changelog for server-side changes.
 
 ---
 
-# WhiskyWise Android — v0.1.1 · "First Day Patch"
+## [0.1.1] — 2026-05-06 🔄 First Day Patch
 
-v0.1.0 shipped on a Tuesday.
-By Wednesday it needed a patch.
-
-The app crashed on first launch because Google helpfully restored encrypted
-preferences from the previous install — encrypted with a key that no longer exists.
-The app tried to decrypt them, failed cryptographically, and died before showing
-a single pixel. Fixed: detect the corruption, wipe it, start fresh.
-
-The rotate button also didn't rotate anything. The server was doing its job.
-The app was replacing the rotated photo with a placeholder by passing a fake
-filename to Glide. Fixed: pass the actual filename.
-
-Two bugs. Both embarrassing in different ways. Both gone.
+### Fixed
+- **App crashes on first launch** — Google Backup automatically restores encrypted
+  preferences from a previous install during reinstallation. The Keystore key from
+  the old install no longer exists, so `EncryptedSharedPreferences` throws
+  `AEADBadTagException` before the app can even show a screen. `TokenStore` now
+  catches this, wipes the corrupted preferences file and stale Keystore entry, and
+  recreates clean storage. The user is asked to log in again — which is correct
+  behaviour after a reinstall.
+- **Rotate button does nothing** — the server was rotating the photo correctly, but
+  the reload logic immediately overwrote the ImageView with a placeholder by passing
+  a fake cache-busting string to Glide instead of a real photo path. Fixed: Glide's
+  memory cache is cleared for the slot first, then `vm.load()` is called — the
+  existing observer reloads the image with the real path, and Glide fetches the
+  rotated version fresh from the server.
 
 ---
 
