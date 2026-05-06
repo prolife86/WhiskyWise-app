@@ -16,8 +16,8 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | 🥃 Collection | Browse, search, filter by status (open / stashed / retired) |
 | 📝 Tasting notes | Full nose / palate / finish fields |
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
-| 📸 Photos | Add front / back / cask photos via gallery picker |
-| 📋 Wishlist | Browse and add wishlist items |
+| 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
+| 📋 Wishlist | Browse, add, and view wishlist items |
 | ⚙️ Settings | Server info, token list with per-token revoke, app version, logout |
 | 🌐 Self-hosted | Works with HTTP (local network) and HTTPS |
 | 🔖 Barcode | Scan barcodes via camera or enter manually |
@@ -28,7 +28,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 
 - Android 8.0 (API 26) or later
 - Android Studio Meerkat (2024.3) or later
-- A running [WhiskyWise](https://github.com/prolife86/WhiskyWise) server ≥ 1.5.0
+- A running [WhiskyWise](https://github.com/prolife86/WhiskyWise) server ≥ 1.5.2
 
 ---
 
@@ -77,6 +77,7 @@ app/
 **Notable resource folders:**
 - `res/values/` — base theme, colours, strings
 - `res/values-v27/` — theme override for API 27+ (display cutout / notch support)
+- `res/xml/` — network security config and FileProvider path declarations (camera capture)
 - `res/mipmap-anydpi-v26/` — adaptive icon definitions (eliminates white circle on modern launchers)
 
 ---
@@ -91,6 +92,7 @@ app/
 | `GET/POST/PUT/DELETE` | `/api/v1/whisky/{id}` | CRUD for collection entries |
 | `GET/POST/PUT` | `/api/v1/wishlist` | Wishlist management |
 | `POST/DELETE` | `/api/v1/whisky/{id}/photo/{slot}` | Photo upload / delete |
+| `POST` | `/api/photo/{id}/{slot}/rotate` | Rotate a saved photo 90° clockwise |
 | `GET` | `/api/photo/{filename}` | Authenticated photo serving |
 
 ---
