@@ -1,25 +1,30 @@
 package com.whiskywise.app.ui.detail
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.*
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
+import com.whiskywise.app.api.WhiskyWiseRepository
 import com.whiskywise.app.databinding.FragmentEditWhiskyBinding
 import com.whiskywise.app.model.WhiskyRequest
 import com.whiskywise.app.util.TokenStore
 import com.whiskywise.app.util.loadWhiskyPhoto
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
@@ -28,6 +33,7 @@ class EditWhiskyFragment : Fragment() {
     private var _binding: FragmentEditWhiskyBinding? = null
     private val binding get() = _binding!!
     private val vm: EditWhiskyViewModel by viewModels()
+    private val repo = WhiskyWiseRepository()
 
     private var editingId: Int = -1
     private var existingFlavorProfile: String? = null
@@ -35,10 +41,22 @@ class EditWhiskyFragment : Fragment() {
     private val uploadQueue = mutableMapOf<String, File>()
     private val deleteQueue = mutableSetOf<String>()
 
-    // Temp file URI written for camera capture; set before launching camera intent.
     private var cameraOutputUri: Uri? = null
+    private var pendingCameraSlot: String? = null
 
-    // ── Gallery picker (GetContent) ───────────────────────────────────────────
+    // ── Camera permission ─────────────────────────────────────────────────────
+
+    private val cameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                pendingCameraSlot?.let { launchCamera(it) }
+            } else {
+                Snackbar.make(binding.root, "Camera permission is required to take photos", Snackbar.LENGTH_LONG).show()
+            }
+            pendingCameraSlot = null
+        }
+
+    // ── Gallery picker ────────────────────────────────────────────────────────
 
     private val galleryPicker =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -49,8 +67,6 @@ class EditWhiskyFragment : Fragment() {
         }
 
     // ── Camera capture ────────────────────────────────────────────────────────
-    // TakePicture writes the full-resolution image to cameraOutputUri (a FileProvider
-    // content:// URI in cacheDir). On success the file is already written; just queue it.
 
     private val cameraPicker =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -88,9 +104,7 @@ class EditWhiskyFragment : Fragment() {
         wirePhotoButtons()
 
         binding.btnScanBarcode.setOnClickListener {
-            barcodeLauncher.launch(
-                Intent(requireContext(), BarcodeScanActivity::class.java)
-            )
+            barcodeLauncher.launch(Intent(requireContext(), BarcodeScanActivity::class.java))
         }
 
         if (editingId > 0) {
@@ -128,13 +142,26 @@ class EditWhiskyFragment : Fragment() {
 
                 val ctx   = requireContext()
                 val store = TokenStore(ctx)
-                binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, store.getServerUrl() ?: "", store.getToken() ?: "")
-                binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  store.getServerUrl() ?: "", store.getToken() ?: "")
-                binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  store.getServerUrl() ?: "", store.getToken() ?: "")
+                val url   = store.getServerUrl() ?: ""
+                val token = store.getToken() ?: ""
+                binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, url, token)
+                binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  url, token)
+                binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  url, token)
 
-                if (!w.photoFront.isNullOrBlank()) binding.btnDeleteFront.visibility = View.VISIBLE
-                if (!w.photoBack.isNullOrBlank())  binding.btnDeleteBack.visibility  = View.VISIBLE
-                if (!w.photoCask.isNullOrBlank())  binding.btnDeleteCask.visibility  = View.VISIBLE
+                // Show Rotate and Remove only for photos that exist on the server.
+                // Rotate is not available for locally queued (unsaved) uploads.
+                if (!w.photoFront.isNullOrBlank()) {
+                    binding.btnRotateFront.visibility = View.VISIBLE
+                    binding.btnDeleteFront.visibility = View.VISIBLE
+                }
+                if (!w.photoBack.isNullOrBlank()) {
+                    binding.btnRotateBack.visibility = View.VISIBLE
+                    binding.btnDeleteBack.visibility = View.VISIBLE
+                }
+                if (!w.photoCask.isNullOrBlank()) {
+                    binding.btnRotateCask.visibility = View.VISIBLE
+                    binding.btnDeleteCask.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -178,42 +205,91 @@ class EditWhiskyFragment : Fragment() {
     }
 
     private fun wirePhotoButtons() {
-        fun pick(slot: String) { showPhotoSourceDialog(slot) }
-        fun remove(slot: String, iv: ImageView, btn: MaterialButton) {
+        fun pick(slot: String)   { showPhotoSourceDialog(slot) }
+        fun rotate(slot: String) { rotateServerPhoto(slot) }
+        fun remove(slot: String, iv: ImageView, rotateBtn: MaterialButton, deleteBtn: MaterialButton) {
             deleteQueue.add(slot)
             uploadQueue.remove(slot)
             iv.setImageResource(R.drawable.ic_whisky_placeholder)
-            btn.visibility = View.GONE
+            rotateBtn.visibility = View.GONE
+            deleteBtn.visibility = View.GONE
         }
-        binding.btnPickFront.setOnClickListener   { pick("front") }
-        binding.btnPickBack.setOnClickListener    { pick("back") }
-        binding.btnPickCask.setOnClickListener    { pick("cask") }
-        binding.btnDeleteFront.setOnClickListener { remove("front", binding.ivPhotoFront, binding.btnDeleteFront) }
-        binding.btnDeleteBack.setOnClickListener  { remove("back",  binding.ivPhotoBack,  binding.btnDeleteBack) }
-        binding.btnDeleteCask.setOnClickListener  { remove("cask",  binding.ivPhotoCask,  binding.btnDeleteCask) }
+
+        binding.btnPickFront.setOnClickListener    { pick("front") }
+        binding.btnPickBack.setOnClickListener     { pick("back") }
+        binding.btnPickCask.setOnClickListener     { pick("cask") }
+
+        binding.btnRotateFront.setOnClickListener  { rotate("front") }
+        binding.btnRotateBack.setOnClickListener   { rotate("back") }
+        binding.btnRotateCask.setOnClickListener   { rotate("cask") }
+
+        binding.btnDeleteFront.setOnClickListener  { remove("front", binding.ivPhotoFront, binding.btnRotateFront, binding.btnDeleteFront) }
+        binding.btnDeleteBack.setOnClickListener   { remove("back",  binding.ivPhotoBack,  binding.btnRotateBack,  binding.btnDeleteBack) }
+        binding.btnDeleteCask.setOnClickListener   { remove("cask",  binding.ivPhotoCask,  binding.btnRotateCask,  binding.btnDeleteCask) }
     }
 
     /**
-     * Show a bottom-sheet style dialog letting the user choose between
-     * taking a new photo with the camera or picking one from the gallery.
+     * Rotate a server-side photo 90° clockwise.
+     * Only available for photos already saved on the server (editingId > 0).
+     * Reloads the image via Glide after success by invalidating Glide's cache for the URL.
      */
+    private fun rotateServerPhoto(slot: String) {
+        if (editingId <= 0) return
+        viewLifecycleOwner.lifecycleScope.launch {
+            binding.progressBar.visibility = View.VISIBLE
+            repo.rotatePhoto(editingId, slot).fold(
+                onSuccess = {
+                    // Reload the photo — append a timestamp to bust Glide's disk cache.
+                    val ctx   = requireContext()
+                    val store = TokenStore(ctx)
+                    val url   = store.getServerUrl() ?: ""
+                    val token = store.getToken() ?: ""
+                    val iv = when (slot) {
+                        "front" -> binding.ivPhotoFront
+                        "back"  -> binding.ivPhotoBack
+                        else    -> binding.ivPhotoCask
+                    }
+                    // Re-fetch whisky to get the updated photo path, then reload thumbnail.
+                    vm.load(editingId)
+                    // Immediately clear and reload Glide with a cache-busting param so the
+                    // rotated image shows without waiting for a full Glide cache expiry.
+                    com.bumptech.glide.Glide.with(ctx).clear(iv)
+                    iv.loadWhiskyPhoto(ctx, "${slot}_rotated_${System.currentTimeMillis()}", url, token)
+                },
+                onFailure = {
+                    Snackbar.make(binding.root, "Rotate failed: ${it.message}", Snackbar.LENGTH_LONG).show()
+                }
+            )
+            binding.progressBar.visibility = View.GONE
+        }
+    }
+
     private fun showPhotoSourceDialog(slot: String) {
         val options = arrayOf("📷  Take photo", "🖼️  Choose from gallery")
         android.app.AlertDialog.Builder(requireContext())
             .setTitle("Add photo")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> launchCamera(slot)
+                    0 -> requestCameraAndLaunch(slot)
                     1 -> launchGallery(slot)
                 }
             }
             .show()
     }
 
+    private fun requestCameraAndLaunch(slot: String) {
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED -> launchCamera(slot)
+            else -> {
+                pendingCameraSlot = slot
+                cameraPermission.launch(Manifest.permission.CAMERA)
+            }
+        }
+    }
+
     private fun launchCamera(slot: String) {
         pendingSlot = slot
-        // Create a temp file in cacheDir; FileProvider wraps it as a content:// URI
-        // so the camera app can write without needing WRITE_EXTERNAL_STORAGE.
         val tmp = File(requireContext().cacheDir, "camera_capture_${slot}_${System.currentTimeMillis()}.jpg")
         val uri = FileProvider.getUriForFile(
             requireContext(),
@@ -234,6 +310,12 @@ class EditWhiskyFragment : Fragment() {
         uploadQueue[slot] = tmp
         deleteQueue.remove(slot)
         previewFromUri(slot, uri)
+        // Show Remove for local picks; Rotate only applies to server-saved photos.
+        when (slot) {
+            "front" -> binding.btnDeleteFront.visibility = View.VISIBLE
+            "back"  -> binding.btnDeleteBack.visibility  = View.VISIBLE
+            "cask"  -> binding.btnDeleteCask.visibility  = View.VISIBLE
+        }
     }
 
     private fun setSlider(seek: SeekBar, label: TextView, value: Int) {
@@ -242,14 +324,13 @@ class EditWhiskyFragment : Fragment() {
     }
 
     private fun previewFromUri(slot: String, uri: Uri) {
-        val (iv, btn) = when (slot) {
-            "front" -> Pair(binding.ivPhotoFront, binding.btnDeleteFront)
-            "back"  -> Pair(binding.ivPhotoBack,  binding.btnDeleteBack)
-            "cask"  -> Pair(binding.ivPhotoCask,  binding.btnDeleteCask)
+        val iv = when (slot) {
+            "front" -> binding.ivPhotoFront
+            "back"  -> binding.ivPhotoBack
+            "cask"  -> binding.ivPhotoCask
             else    -> return
         }
         iv.setImageURI(uri)
-        btn.visibility = View.VISIBLE
     }
 
     private fun uriToTempFile(uri: Uri, slot: String): File? = try {

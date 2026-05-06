@@ -76,6 +76,9 @@ class WhiskyWiseRepository {
     suspend fun deletePhoto(whiskyId: Int, slot: String): Result<Unit> =
         safeCall { api.deletePhoto(whiskyId, slot) }.map { }
 
+    suspend fun rotatePhoto(whiskyId: Int, slot: String): Result<Unit> =
+        safeCall { api.rotatePhoto(whiskyId, slot) }.map { }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private suspend fun <T> safeCall(block: suspend () -> Response<T>): Result<T> = try {
