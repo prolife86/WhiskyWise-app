@@ -12,7 +12,7 @@ See that project's changelog for server-side changes.
 
 ---
 
-## [0.0.6] — 2026-05-05 🔍 Visible Progress
+## [0.0.6] — 2026-05-06 🔍 Visible Progress
  
 Turns out "fully implemented" and "actually works" are two different things.
  
