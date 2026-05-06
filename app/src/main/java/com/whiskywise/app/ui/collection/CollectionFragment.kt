@@ -51,7 +51,7 @@ class CollectionFragment : Fragment() {
             null          to binding.chipAll,
             "open"        to binding.chipOpen,
             "stashed"     to binding.chipStashed,
-            "retired"     to binding.chipRetired,
+            "finished"    to binding.chipFinished,
         ).forEach { (status, chip) ->
             chip.setOnClickListener {
                 vm.currentStatus = status

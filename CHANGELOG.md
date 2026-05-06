@@ -12,6 +12,25 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.3] — 2026-05-06 📦 Status: Corrected
+
+### Fixed
+- **Wrong status values** — the app used `stashed / open / retired` for the status
+  spinner, but the server uses `stashed / open / finished`. Any whisky saved with
+  status "Retired" was being stored as an unrecognised string. Status values now
+  match the server exactly.
+- **Retired flag missing from edit form** — `retired` is a separate boolean field on
+  the server (distinct from `status`), used to mark a whisky that is no longer in
+  production or available in shops. It was never exposed in the app. A **Retired**
+  checkbox is now present in the edit form, with a description label, and pre-fills
+  correctly when editing an existing entry.
+- **Retired badge missing from detail screen** — a small amber RETIRED badge now
+  appears below the status field on the detail screen when `retired = true`.
+- **"Finished" filter chip missing from collection** — the filter chip previously
+  labelled "Retired" now correctly filters by `finished` status.
+
+---
+
 ## [0.1.2] — 2026-05-06 🔄 The Rotation Was There All Along
 
 ### Fixed

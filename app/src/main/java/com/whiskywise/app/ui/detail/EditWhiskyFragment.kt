@@ -131,10 +131,11 @@ class EditWhiskyFragment : Fragment() {
                 binding.etFinish.setText(w.finish)
                 binding.etNotes.setText(w.notes)
 
-                val statuses = listOf("stashed", "open", "retired")
+                val statuses = listOf("stashed", "open", "finished")
                 binding.spinnerStatus.setSelection(
                     statuses.indexOf(w.status ?: "stashed").coerceAtLeast(0)
                 )
+                binding.checkRetired.isChecked = w.retired
 
                 setSlider(binding.seekWoody,     binding.tvWoody,     w.radarWoody)
                 setSlider(binding.seekSmoky,     binding.tvSmoky,     w.radarSmoky)
@@ -340,7 +341,7 @@ class EditWhiskyFragment : Fragment() {
         val name = binding.etName.text.toString().trim()
         if (name.isBlank()) { binding.etName.error = "Required"; return }
 
-        val statuses = listOf("stashed", "open", "retired")
+        val statuses = listOf("stashed", "open", "finished")
         val req = WhiskyRequest(
             name           = name,
             distillery     = binding.etDistillery.text.toString().trim().ifBlank { null },
@@ -356,6 +357,7 @@ class EditWhiskyFragment : Fragment() {
             finish         = binding.etFinish.text.toString().trim().ifBlank { null },
             notes          = binding.etNotes.text.toString().trim().ifBlank { null },
             status         = statuses[binding.spinnerStatus.selectedItemPosition],
+            retired        = binding.checkRetired.isChecked,
             flavorProfile  = existingFlavorProfile,
             radarWoody     = binding.seekWoody.progress,
             radarSmoky     = binding.seekSmoky.progress,

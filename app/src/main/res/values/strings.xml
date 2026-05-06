@@ -8,6 +8,6 @@
     <string-array name="status_options">
         <item>stashed</item>
         <item>open</item>
-        <item>retired</item>
+        <item>finished</item>
     </string-array>
 </resources>

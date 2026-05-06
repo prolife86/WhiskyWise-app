@@ -99,6 +99,11 @@
                         android:text="STATUS" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
                     <TextView android:id="@+id/tvStatus" android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
+                    <TextView android:id="@+id/tvRetiredBadge"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="RETIRED" android:textSize="10sp"
+                        android:textColor="@color/amber" android:textStyle="bold"
+                        android:visibility="gone"/>
                 </LinearLayout>
             </LinearLayout>
 

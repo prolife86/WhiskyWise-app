@@ -62,6 +62,7 @@ class DetailFragment : Fragment() {
             binding.tvAbv.text        = w.abv.formatAbv()
             binding.tvScore.text      = w.score.formatScore()
             binding.tvStatus.text     = w.status?.replaceFirstChar { it.uppercase() } ?: "—"
+            binding.tvRetiredBadge.visibility = if (w.retired) View.VISIBLE else View.GONE
             binding.tvPrice.text      = w.price.formatPrice()
             binding.tvStore.text      = w.store ?: "—"
             binding.tvNose.text       = w.nose?.ifBlank { "—" } ?: "—"
