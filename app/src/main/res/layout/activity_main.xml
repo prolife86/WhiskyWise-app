@@ -7,14 +7,22 @@
     android:background="@color/background"
     android:fitsSystemWindows="true">
 
-    <!-- Toolbar required for MenuProvider (edit/delete actions in DetailFragment).
-         NoActionBar theme means we must supply our own; without it, menu items
-         never inflate and the edit button is invisible. -->
+    <!--
+        android:theme - ThemeOverlay.AppCompat.Dark.ActionBar makes ?attr/colorControlNormal
+        resolve to WHITE inside this Toolbar's context. Without it, the edit icon's
+        tint= "?attr/colorControlNormal" inherits from the activity's DayNight theme and
+        resolves to a dark colour on this dark (#2A2320) toolbar background — invisible.
+
+        app:popupTheme - required for the overflow menu (Delete item) to render with
+        readable text on a light popup background.
+    -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/surface"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="@color/on_surface"
         app:navigationIconTint="@color/on_surface" />
 
