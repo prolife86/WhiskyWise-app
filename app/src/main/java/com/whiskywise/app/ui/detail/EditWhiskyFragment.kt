@@ -148,8 +148,6 @@ class EditWhiskyFragment : Fragment() {
                 binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  url, token)
                 binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  url, token)
 
-                // Show Rotate and Remove only for photos that exist on the server.
-                // Rotate is not available for locally queued (unsaved) uploads.
                 if (!w.photoFront.isNullOrBlank()) {
                     binding.btnRotateFront.visibility = View.VISIBLE
                     binding.btnDeleteFront.visibility = View.VISIBLE
@@ -230,8 +228,9 @@ class EditWhiskyFragment : Fragment() {
 
     /**
      * Rotate a server-side photo 90° clockwise.
-     * Only available for photos already saved on the server (editingId > 0).
-     * Reloads the image via Glide after success by invalidating Glide's cache for the URL.
+     * On success, reload the whisky from the server — the existing vm.whisky observer
+     * will pick up the updated photo path and reload the ImageView via Glide automatically.
+     * No manual Glide cache-busting needed; the observer handles it.
      */
     private fun rotateServerPhoto(slot: String) {
         if (editingId <= 0) return
@@ -239,22 +238,18 @@ class EditWhiskyFragment : Fragment() {
             binding.progressBar.visibility = View.VISIBLE
             repo.rotatePhoto(editingId, slot).fold(
                 onSuccess = {
-                    // Reload the photo — append a timestamp to bust Glide's disk cache.
-                    val ctx   = requireContext()
-                    val store = TokenStore(ctx)
-                    val url   = store.getServerUrl() ?: ""
-                    val token = store.getToken() ?: ""
+                    // Clear Glide's memory cache for the affected ImageView so the
+                    // reloaded photo is fetched fresh from the server, not the cache.
                     val iv = when (slot) {
                         "front" -> binding.ivPhotoFront
                         "back"  -> binding.ivPhotoBack
                         else    -> binding.ivPhotoCask
                     }
-                    // Re-fetch whisky to get the updated photo path, then reload thumbnail.
+                    com.bumptech.glide.Glide.with(requireContext()).clear(iv)
+                    // Reload the whisky — the vm.whisky observer will call loadWhiskyPhoto()
+                    // with the same path but Glide's memory cache is now clear so it will
+                    // re-fetch the image from the server, showing the rotated version.
                     vm.load(editingId)
-                    // Immediately clear and reload Glide with a cache-busting param so the
-                    // rotated image shows without waiting for a full Glide cache expiry.
-                    com.bumptech.glide.Glide.with(ctx).clear(iv)
-                    iv.loadWhiskyPhoto(ctx, "${slot}_rotated_${System.currentTimeMillis()}", url, token)
                 },
                 onFailure = {
                     Snackbar.make(binding.root, "Rotate failed: ${it.message}", Snackbar.LENGTH_LONG).show()
@@ -310,7 +305,6 @@ class EditWhiskyFragment : Fragment() {
         uploadQueue[slot] = tmp
         deleteQueue.remove(slot)
         previewFromUri(slot, uri)
-        // Show Remove for local picks; Rotate only applies to server-saved photos.
         when (slot) {
             "front" -> binding.btnDeleteFront.visibility = View.VISIBLE
             "back"  -> binding.btnDeleteBack.visibility  = View.VISIBLE
