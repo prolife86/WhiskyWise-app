@@ -12,6 +12,24 @@ See that project's changelog for server-side changes.
 
 ---
 
+# WhiskyWise Android — v0.1.1 · "First Day Patch"
+
+v0.1.0 shipped on a Tuesday.
+By Wednesday it needed a patch.
+
+The app crashed on first launch because Google helpfully restored encrypted
+preferences from the previous install — encrypted with a key that no longer exists.
+The app tried to decrypt them, failed cryptographically, and died before showing
+a single pixel. Fixed: detect the corruption, wipe it, start fresh.
+
+The rotate button also didn't rotate anything. The server was doing its job.
+The app was replacing the rotated photo with a placeholder by passing a fake
+filename to Glide. Fixed: pass the actual filename.
+
+Two bugs. Both embarrassing in different ways. Both gone.
+
+---
+
 ## [0.1.0] — 2026-05-06 🎉 First Public Release
 
 ### Fixed
