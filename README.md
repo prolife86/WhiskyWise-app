@@ -23,9 +23,47 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 
 ## Requirements
 
+For running the app (APK install or release build)
 - Android 8.0 (API 26) or later
+- A running [WhiskyWise](https://github.com/prolife86/WhiskyWise) server ≥ v1.5.4
+
+For development (Android Studio)
 - Android Studio Meerkat (2024.3) or later
-- A running [WhiskyWise](https://github.com/prolife86/WhiskyWise) server ≥ 1.5.4
+
+---
+
+## Installing the APK (without Android Studio)
+
+You can install the app directly using a prebuilt APK without Android Studio.
+
+### 1. Download the APK
+Download the latest APK from: [GitHub Releases](https://github.com/prolife86/WhiskyWise-app/releases)
+
+### 2. Allow installation from unknown sources
+
+Android blocks APK installs from outside the Play Store by default. You must enable permission for the app used to open the APK (usually your file manager or browser).
+
+Option A — File Manager (recommended)
+1. Open your Files / File Manager app
+2. Tap the downloaded .apk file
+3. When prompted, enable “Install unknown apps” for your file manager
+4. Return and confirm installation
+
+Option B — System Settings
+1. Go to Settings → Security / Privacy → Install unknown apps
+2. Select your browser or file manager
+3. Enable Allow from this source
+
+### 3. Install the APK
+1. Open the downloaded .apk file
+2.  Tap Install
+3.  Wait for installation to complete
+4.  Open the app from your launcher
+
+### ⚠️ Notes
+- Android may show a warning about installing unknown apps—this is expected behavior.
+- You may need to re-enable permissions after updates on some devices (e.g. Samsung, Xiaomi).
+- No Android Studio is required to install or use the app.
 
 ---
 
