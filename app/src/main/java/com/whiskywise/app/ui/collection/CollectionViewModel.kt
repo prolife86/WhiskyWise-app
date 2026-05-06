@@ -43,12 +43,4 @@ class CollectionViewModel : ViewModel() {
             _isLoading.value = false
         }
     }
-
-    fun delete(id: Int, onDone: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val ok = repo.deleteWhisky(id).isSuccess
-            if (ok) load()
-            onDone(ok)
-        }
-    }
 }
