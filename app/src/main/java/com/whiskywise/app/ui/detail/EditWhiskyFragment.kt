@@ -1,14 +1,16 @@
 package com.whiskywise.app.ui.detail
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.*
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -35,10 +37,28 @@ class EditWhiskyFragment : Fragment() {
     private val uploadQueue = mutableMapOf<String, File>()
     private val deleteQueue = mutableSetOf<String>()
 
-    // Temp file URI written for camera capture; set before launching camera intent.
+    // Temp file URI for camera capture; set before launching TakePicture.
     private var cameraOutputUri: Uri? = null
 
-    // ── Gallery picker (GetContent) ───────────────────────────────────────────
+    // Slot waiting for camera permission grant before the camera is launched.
+    private var pendingCameraSlot: String? = null
+
+    // ── Camera permission request ─────────────────────────────────────────────
+    // Requested here because TakePicture does not ask for CAMERA permission itself.
+    // BarcodeScanActivity handles its own permission; this is only for photo capture.
+
+    private val cameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                // Permission just granted — proceed with the slot that triggered the request.
+                pendingCameraSlot?.let { launchCamera(it) }
+            } else {
+                Snackbar.make(binding.root, "Camera permission is required to take photos", Snackbar.LENGTH_LONG).show()
+            }
+            pendingCameraSlot = null
+        }
+
+    // ── Gallery picker ────────────────────────────────────────────────────────
 
     private val galleryPicker =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -49,8 +69,6 @@ class EditWhiskyFragment : Fragment() {
         }
 
     // ── Camera capture ────────────────────────────────────────────────────────
-    // TakePicture writes the full-resolution image to cameraOutputUri (a FileProvider
-    // content:// URI in cacheDir). On success the file is already written; just queue it.
 
     private val cameraPicker =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -193,27 +211,42 @@ class EditWhiskyFragment : Fragment() {
         binding.btnDeleteCask.setOnClickListener  { remove("cask",  binding.ivPhotoCask,  binding.btnDeleteCask) }
     }
 
-    /**
-     * Show a bottom-sheet style dialog letting the user choose between
-     * taking a new photo with the camera or picking one from the gallery.
-     */
     private fun showPhotoSourceDialog(slot: String) {
         val options = arrayOf("📷  Take photo", "🖼️  Choose from gallery")
         android.app.AlertDialog.Builder(requireContext())
             .setTitle("Add photo")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> launchCamera(slot)
+                    0 -> requestCameraAndLaunch(slot)
                     1 -> launchGallery(slot)
                 }
             }
             .show()
     }
 
+    /**
+     * Check CAMERA permission before launching the camera.
+     * TakePicture does not request the permission itself — if the user hasn't
+     * previously granted it (e.g. via the barcode scanner), the capture silently
+     * fails or crashes. We request it here, then proceed in the permission callback.
+     */
+    private fun requestCameraAndLaunch(slot: String) {
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED -> {
+                // Already granted — launch immediately.
+                launchCamera(slot)
+            }
+            else -> {
+                // Store the slot so the permission callback knows what to launch.
+                pendingCameraSlot = slot
+                cameraPermission.launch(Manifest.permission.CAMERA)
+            }
+        }
+    }
+
     private fun launchCamera(slot: String) {
         pendingSlot = slot
-        // Create a temp file in cacheDir; FileProvider wraps it as a content:// URI
-        // so the camera app can write without needing WRITE_EXTERNAL_STORAGE.
         val tmp = File(requireContext().cacheDir, "camera_capture_${slot}_${System.currentTimeMillis()}.jpg")
         val uri = FileProvider.getUriForFile(
             requireContext(),
