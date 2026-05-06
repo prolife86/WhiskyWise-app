@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+        Explicitly set windowActionBar=false and windowNoTitle=true in addition to the
+        NoActionBar parent. AppCompat 1.7+ / AGP 9+ can still attempt to install a
+        system action bar during window feature setup if only the parent theme carries
+        these flags — causing setSupportActionBar() to throw:
+        "This Activity already has an action bar supplied by the window decor."
+        Declaring them explicitly here prevents that.
+    -->
     <style name="Theme.WhiskyWise" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/amber</item>
         <item name="colorPrimaryVariant">@color/amber_dark</item>
@@ -7,5 +15,7 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@color/surface</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 </resources>
