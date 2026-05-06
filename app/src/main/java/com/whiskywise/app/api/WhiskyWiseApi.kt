@@ -84,4 +84,10 @@ interface WhiskyWiseApi {
         @Path("id")   id: Int,
         @Path("slot") slot: String,
     ): Response<PhotoResponse>
+
+    @POST("api/photo/{id}/{slot}/rotate")
+    suspend fun rotatePhoto(
+        @Path("id")   id: Int,
+        @Path("slot") slot: String,
+    ): Response<PhotoResponse>
 }
