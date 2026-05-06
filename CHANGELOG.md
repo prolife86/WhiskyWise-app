@@ -12,6 +12,19 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.2] — 2026-05-06 🔄 The Rotation Was There All Along
+
+### Fixed
+- **Rotate button updates the server but not the screen** — Glide caches images by
+  URL. The server rotate endpoint changes the image content but not the filename, so
+  the URL stays the same. Glide found the pre-rotation image in its disk cache,
+  served it immediately, and never asked the server for the updated version. Fixed:
+  `loadWhiskyPhoto()` gains a `skipCache` flag; when a rotate completes, the affected
+  slot is reloaded with `DiskCacheStrategy.NONE` so Glide fetches the rotated image
+  fresh from the server. All other loads continue to use the cache normally.
+
+  ---
+
 ## [0.1.1] — 2026-05-06 🔄 First Day Patch
 
 ### Fixed
