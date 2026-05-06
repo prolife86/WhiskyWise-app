@@ -12,6 +12,32 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.0.7] — 2026-05-06 📸 The Camera Was There All Along
+
+### Fixed
+- **Photos not loading for existing whiskies** — the server's `GET /api/photo/<filename>`
+  endpoint was decorated with `@login_required` (browser session cookies only). The app
+  sends `Authorization: Bearer <token>`, which Flask-Login silently ignored — returning
+  a redirect to `/login` instead of the image. Glide received an HTML page, showed the
+  placeholder, and said nothing. Fixed server-side in v1.5.2 by switching to
+  `@api_login_required`. No app code changed for this fix; requires server ≥ 1.5.2.
+- **No camera option when adding photos** — tapping a photo button launched the system
+  document picker, which only shows existing files. There was no way to take a new photo.
+  Tapping a photo button now shows a dialog: **Take photo** or **Choose from gallery**.
+  Camera capture uses `TakePicture` with a `FileProvider` URI so no external storage
+  permission is required on Android 10+.
+
+### Added
+- `FileProvider` declaration in `AndroidManifest.xml` — required to pass a
+  `content://` URI to the camera app for full-resolution capture.
+- `res/xml/file_paths.xml` — declares `cacheDir` as the shared path for camera
+  temp files.
+
+### Notes
+- Photo loading requires WhiskyWise server ≥ 1.5.2.
+
+---
+
 ## [0.0.6] — 2026-05-06 🔍 Visible Progress
  
 Turns out "fully implemented" and "actually works" are two different things.
