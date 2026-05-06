@@ -8,7 +8,47 @@ See that project's changelog for server-side changes.
 
 ---
 
-## [Unreleased]
+## [0.1.4] — 2026-05-06 🔧 The Plumbing Update
+
+### Fixed
+
+- **FAB actually floats now** — in both the Collection and Wishlist screens the
+  Floating Action Button was a child of a vertical `LinearLayout`, where
+  `layout_gravity="bottom|end"` has no effect. It rendered below the list
+  instead of floating over it. Both layouts now wrap the `SwipeRefreshLayout`
+  and FAB in a `FrameLayout` so gravity works as intended.
+
+- **Filter chips reflect the active selection** — tapping a status chip (All /
+  Open / Stashed / Finished) applied the filter but never visually checked the
+  chip. The selected chip now shows as checked; the others are cleared.
+
+- **`TokenStore` no longer created on every list-item bind** — constructing
+  `EncryptedSharedPreferences` involves Keystore I/O and is expensive enough to
+  cause scroll jank. `WhiskyAdapter` now exposes `setCredentials()` and stores
+  the server URL and token once at setup time; `bind()` uses the cached values.
+
+- **Photo rotate error no longer leaks a stuck spinner** — `rotatePhoto` was
+  called directly in `EditWhiskyFragment` against its own `Repository` instance.
+  If the screen rotated mid-request, the fragment was destroyed and the progress
+  bar visibility was never reset. The call is now inside `EditWhiskyViewModel`
+  alongside all other loading state, so rotation is safe.
+
+- **Photo upload / delete errors are now visible before navigating away** —
+  `processPhotos` previously called `onDone()` (which pops the back stack)
+  unconditionally, meaning any upload error was posted to a LiveData that the
+  about-to-be-destroyed fragment would never observe. Errors now show in a
+  Snackbar before the screen pops; on full success navigation happens immediately.
+
+- **`SettingsViewModel` error re-shown on screen rotation** — the error
+  `LiveData` was never cleared after display, so rotating the screen re-delivered
+  the same Snackbar. `SettingsViewModel` now has a `clearError()` method, called
+  by `SettingsFragment` immediately after showing the message.
+
+### Changed
+
+- **`CollectionViewModel.delete()` removed** — the method was dead code; deletion
+  is handled exclusively through `DetailViewModel`. Removing it avoids confusion
+  about which ViewModel owns the delete operation.
 
 ---
 
