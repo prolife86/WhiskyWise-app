@@ -2,6 +2,7 @@ package com.whiskywise.app.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -19,6 +20,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Explicitly suppress the system-provided title/action bar before AppCompat's
+        // delegate runs. Without this, AppCompat 1.7+ can install a window decor action
+        // bar during feature setup even with a NoActionBar parent theme, causing
+        // setSupportActionBar() to throw "This Activity already has an action bar".
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
