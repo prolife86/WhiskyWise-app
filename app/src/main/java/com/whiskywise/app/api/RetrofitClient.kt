@@ -1,5 +1,6 @@
 package com.whiskywise.app.api
 
+import com.google.gson.GsonBuilder
 import com.whiskywise.app.BuildConfig
 import com.whiskywise.app.util.TokenStore
 import okhttp3.OkHttpClient
@@ -53,10 +54,17 @@ object RetrofitClient {
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
 
+        // serializeNulls() ensures fields explicitly set to null in WhiskyRequest are
+        // included in the JSON body (as JSON null) rather than being omitted entirely.
+        // This is required for the server's partial-update logic to clear a field:
+        // the server only clears a field when the key is present with a null value —
+        // an absent key means "leave this field unchanged".
+        val gson = GsonBuilder().serializeNulls().create()
+
         _api = Retrofit.Builder()
             .baseUrl(url)
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(WhiskyWiseApi::class.java)
     }
