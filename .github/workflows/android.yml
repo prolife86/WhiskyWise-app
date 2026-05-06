@@ -182,7 +182,7 @@ jobs:
           mv "$AAB" release/whiskywise-v${{ needs.extract-version.outputs.version }}.aab
 
       - name: Attach APK & AAB to GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           files: |
             release/whiskywise-v${{ needs.extract-version.outputs.version }}.apk
