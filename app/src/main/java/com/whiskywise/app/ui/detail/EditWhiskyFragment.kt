@@ -1,7 +1,5 @@
 package com.whiskywise.app.ui.detail
 
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -28,32 +26,23 @@ class EditWhiskyFragment : Fragment() {
     private val vm: EditWhiskyViewModel by viewModels()
 
     private var editingId: Int = -1
-
-    // Server-computed flavor_profile — preserved when updating an existing entry so
-    // the server can re-derive it from the new radar values without us sending a stale
-    // value. We store whatever the server returned and pass it back verbatim.
     private var existingFlavorProfile: String? = null
-
-    // Which photo slot is awaiting the picker result
     private var pendingSlot: String? = null
-
-    // Files queued for upload after save (slot -> temp File)
     private val uploadQueue = mutableMapOf<String, File>()
-
-    // Slots queued for deletion on the server after save
-    // Note: photo_barcode is stored on the server model but has no upload UI in this
-    // app — it will never appear in either queue and is therefore preserved on the server.
     private val deleteQueue = mutableSetOf<String>()
 
-    // ── Photo gallery picker ──────────────────────────────────────────────────
+    // ── Photo picker ──────────────────────────────────────────────────────────
+    //
+    // ACTION_PICK with image/* throws ActivityNotFoundException on many Android 13+
+    // devices/emulators with targetSdk 35 — there is no guaranteed gallery app.
+    // GetContent("image/*") routes through the system document picker which is always
+    // present and handles permissions internally on API 33+.
 
     private val photoPicker =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode != Activity.RESULT_OK) return@registerForActivityResult
-            val uri = result.data?.data ?: return@registerForActivityResult
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri ?: return@registerForActivityResult
             val slot = pendingSlot ?: return@registerForActivityResult
             pendingSlot = null
-
             val tmp = uriToTempFile(uri, slot) ?: return@registerForActivityResult
             uploadQueue[slot] = tmp
             deleteQueue.remove(slot)
@@ -64,8 +53,10 @@ class EditWhiskyFragment : Fragment() {
 
     private val barcodeLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val value = result.data?.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE) ?: return@registerForActivityResult
+            if (result.resultCode == android.app.Activity.RESULT_OK) {
+                val value = result.data
+                    ?.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE)
+                    ?: return@registerForActivityResult
                 binding.etBarcode.setText(value)
             }
         }
@@ -84,16 +75,15 @@ class EditWhiskyFragment : Fragment() {
         wirePhotoButtons()
 
         binding.btnScanBarcode.setOnClickListener {
-            barcodeLauncher.launch(Intent(requireContext(), BarcodeScanActivity::class.java))
+            barcodeLauncher.launch(
+                android.content.Intent(requireContext(), BarcodeScanActivity::class.java)
+            )
         }
 
-        // Pre-fill fields when editing an existing entry
         if (editingId > 0) {
             vm.load(editingId)
             vm.whisky.observe(viewLifecycleOwner) { w ->
                 if (w == null) return@observe
-                // Stash server-computed flavor_profile so we can send it back on save,
-                // allowing the server to re-derive it from the updated radar values.
                 existingFlavorProfile = w.flavorProfile
 
                 binding.etName.setText(w.name)
@@ -115,7 +105,6 @@ class EditWhiskyFragment : Fragment() {
                     statuses.indexOf(w.status ?: "stashed").coerceAtLeast(0)
                 )
 
-                // Radar sliders
                 setSlider(binding.seekWoody,     binding.tvWoody,     w.radarWoody)
                 setSlider(binding.seekSmoky,     binding.tvSmoky,     w.radarSmoky)
                 setSlider(binding.seekCereal,    binding.tvCereal,    w.radarCereal)
@@ -124,14 +113,11 @@ class EditWhiskyFragment : Fragment() {
                 setSlider(binding.seekMedicinal, binding.tvMedicinal, w.radarMedicinal)
                 setSlider(binding.seekFiery,     binding.tvFiery,     w.radarFiery)
 
-                // Existing photos
                 val ctx   = requireContext()
                 val store = TokenStore(ctx)
-                val url   = store.getServerUrl() ?: ""
-                val tok   = store.getToken() ?: ""
-                binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, url, tok)
-                binding.ivPhotoBack.loadWhiskyPhoto(ctx, w.photoBack,  url, tok)
-                binding.ivPhotoCask.loadWhiskyPhoto(ctx, w.photoCask,  url, tok)
+                binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, store.getServerUrl() ?: "", store.getToken() ?: "")
+                binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  store.getServerUrl() ?: "", store.getToken() ?: "")
+                binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  store.getServerUrl() ?: "", store.getToken() ?: "")
 
                 if (!w.photoFront.isNullOrBlank()) binding.btnDeleteFront.visibility = View.VISIBLE
                 if (!w.photoBack.isNullOrBlank())  binding.btnDeleteBack.visibility  = View.VISIBLE
@@ -150,10 +136,7 @@ class EditWhiskyFragment : Fragment() {
         }
         vm.savedId.observe(viewLifecycleOwner) { savedId ->
             if (savedId == null) return@observe
-            // Consume immediately to prevent re-delivery on rotation, which would
-            // otherwise re-run photo uploads and double-pop the back stack.
             vm.clearSavedId()
-            // Upload / delete photos, then navigate back
             vm.processPhotos(savedId, uploadQueue.toMap(), deleteQueue.toSet()) {
                 findNavController().popBackStack()
             }
@@ -184,7 +167,7 @@ class EditWhiskyFragment : Fragment() {
     private fun wirePhotoButtons() {
         fun pick(slot: String) {
             pendingSlot = slot
-            photoPicker.launch(Intent(Intent.ACTION_PICK).apply { type = "image/*" })
+            photoPicker.launch("image/*")
         }
         fun remove(slot: String, iv: ImageView, btn: MaterialButton) {
             deleteQueue.add(slot)
@@ -192,7 +175,6 @@ class EditWhiskyFragment : Fragment() {
             iv.setImageResource(com.whiskywise.app.R.drawable.ic_whisky_placeholder)
             btn.visibility = View.GONE
         }
-
         binding.btnPickFront.setOnClickListener   { pick("front") }
         binding.btnPickBack.setOnClickListener    { pick("back") }
         binding.btnPickCask.setOnClickListener    { pick("cask") }
@@ -247,8 +229,6 @@ class EditWhiskyFragment : Fragment() {
             finish         = binding.etFinish.text.toString().trim().ifBlank { null },
             notes          = binding.etNotes.text.toString().trim().ifBlank { null },
             status         = statuses[binding.spinnerStatus.selectedItemPosition],
-            // Pass back the server's flavor_profile so it is preserved in the payload;
-            // the server recomputes it from the radar values after saving.
             flavorProfile  = existingFlavorProfile,
             radarWoody     = binding.seekWoody.progress,
             radarSmoky     = binding.seekSmoky.progress,
