@@ -1,9 +1,6 @@
 # WhiskyWise Mobile App
 
 A native Android companion app for the [WhiskyWise](https://github.com/prolife86/WhiskyWise) self-hosted spirits tracker.
-
-### Android (pre-production)
-
 > This app is in active development. See [CHANGELOG.md](CHANGELOG.md) for the full history.
 
 ---
