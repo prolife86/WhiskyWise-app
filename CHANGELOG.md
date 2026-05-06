@@ -12,6 +12,39 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.0] — 2026-05-06 🎉 First Non-Embarrassing Release
+
+### Fixed
+- **App crashes when taking a photo** — `TakePicture` does not request `CAMERA`
+  permission on its own. If the user hadn't previously opened the barcode scanner
+  (which does ask), the app crashed silently on launch of the camera. Permission is
+  now requested explicitly before the camera is opened, with a graceful Snackbar if
+  denied.
+- **Photos not loading for existing whiskies** — requires server ≥ 1.5.2. The server's
+  `GET /api/photo/<filename>` endpoint was using `@login_required` (browser session
+  only) instead of `@api_login_required` (Bearer token + session). Every photo
+  request from the app received a redirect to `/login`. Fixed server-side; no app
+  code changed.
+
+### Added
+- **Camera capture** — tapping a photo button now offers a choice: **Take photo**
+  (camera) or **Choose from gallery**. Previously only the gallery was available.
+  Uses `TakePicture` with a `FileProvider` URI so no external storage permission is
+  required on Android 10+.
+- **Rotate photo** — a **↻** button appears next to each saved photo in the edit
+  screen. Tapping it rotates the image 90° clockwise on the server and reloads the
+  thumbnail. Only available for photos already saved to the server; not shown for
+  locally queued uploads.
+- `FileProvider` declaration and `res/xml/file_paths.xml` — required for camera
+  capture URI on Android 10+.
+- `POST /api/photo/{id}/{slot}/rotate` wired in `WhiskyWiseApi` and
+  `WhiskyWiseRepository`.
+
+### Notes
+- Photo loading and rotation require WhiskyWise server ≥ 1.5.2.
+
+---
+
 ## [0.0.7] — 2026-05-06 📸 The Camera Was There All Along
 
 ### Fixed
