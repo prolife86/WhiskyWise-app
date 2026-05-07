@@ -37,6 +37,11 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".ui.detail.PhotoFullscreenActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WhiskyWise" />
+
         <!--
             FileProvider required for camera capture.
             Provides a content:// URI pointing to a temp file in cacheDir so
