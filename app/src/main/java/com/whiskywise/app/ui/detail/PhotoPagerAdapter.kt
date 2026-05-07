@@ -1,6 +1,7 @@
 package com.whiskywise.app.ui.detail
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -10,8 +11,8 @@ import com.whiskywise.app.util.loadWhiskyPhoto
 
 /**
  * Drives the photo ViewPager2 on the detail screen.
- * Only slots with a non-blank photo path are included — empty slots are
- * skipped entirely so the pager never shows a blank page.
+ * Only slots with a non-blank photo path are included.
+ * Tapping a photo opens [PhotoFullscreenActivity].
  */
 class PhotoPagerAdapter(
     private val context: Context,
@@ -19,7 +20,7 @@ class PhotoPagerAdapter(
     private val token: String,
 ) : RecyclerView.Adapter<PhotoPagerAdapter.VH>() {
 
-    private val photos = mutableListOf<String>()   // non-blank paths only
+    private val photos = mutableListOf<String>()
 
     fun submitPhotos(front: String?, back: String?, cask: String?) {
         photos.clear()
@@ -42,7 +43,17 @@ class PhotoPagerAdapter(
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.iv.loadWhiskyPhoto(context, photos[position], serverUrl, token)
+        val path = photos[position]
+        holder.iv.loadWhiskyPhoto(context, path, serverUrl, token)
+        holder.iv.setOnClickListener {
+            context.startActivity(
+                Intent(context, PhotoFullscreenActivity::class.java).apply {
+                    putExtra(PhotoFullscreenActivity.EXTRA_PHOTO_PATH, path)
+                    putExtra(PhotoFullscreenActivity.EXTRA_SERVER_URL, serverUrl)
+                    putExtra(PhotoFullscreenActivity.EXTRA_TOKEN, token)
+                }
+            )
+        }
     }
 
     override fun getItemCount() = photos.size
