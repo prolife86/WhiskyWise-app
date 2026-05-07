@@ -296,7 +296,9 @@
                     <com.google.android.material.button.MaterialButton android:id="@+id/btnDeleteFront"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Remove" android:visibility="gone"/>
+                        android:text="Remove" android:visibility="gone"
+                        android:textColor="@android:color/white"
+                        app:strokeColor="@android:color/white"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -329,7 +331,9 @@
                     <com.google.android.material.button.MaterialButton android:id="@+id/btnDeleteBack"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Remove" android:visibility="gone"/>
+                        android:text="Remove" android:visibility="gone"
+                        android:textColor="@android:color/white"
+                        app:strokeColor="@android:color/white"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -362,7 +366,9 @@
                     <com.google.android.material.button.MaterialButton android:id="@+id/btnDeleteCask"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Remove" android:visibility="gone"/>
+                        android:text="Remove" android:visibility="gone"
+                        android:textColor="@android:color/white"
+                        app:strokeColor="@android:color/white"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

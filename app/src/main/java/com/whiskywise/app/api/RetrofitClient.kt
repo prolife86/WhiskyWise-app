@@ -3,6 +3,7 @@ package com.whiskywise.app.api
 import com.google.gson.GsonBuilder
 import com.whiskywise.app.BuildConfig
 import com.whiskywise.app.util.TokenStore
+import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -52,13 +53,19 @@ object RetrofitClient {
             .addInterceptor(logging)
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            // Retry once automatically on connection failure (e.g. mid-request
+            // network switch from WiFi to 5G). OkHttp only retries idempotent
+            // requests (GET, HEAD) by default, so POST/PUT are safe.
+            .retryOnConnectionFailure(true)
+            // Keep connections alive for at most 30 s with a pool of 5.
+            // A short keepalive prevents stale sockets from surviving a network
+            // switch, which is the root cause of the WiFi → 5G hang.
+            .connectionPool(ConnectionPool(5, 30, TimeUnit.SECONDS))
             .build()
 
-        // serializeNulls() ensures fields explicitly set to null in WhiskyRequest are
-        // included in the JSON body (as JSON null) rather than being omitted entirely.
-        // This is required for the server's partial-update logic to clear a field:
-        // the server only clears a field when the key is present with a null value —
-        // an absent key means "leave this field unchanged".
+        // serializeNulls() ensures fields explicitly set to null in WhiskyRequest
+        // are included in the JSON body so the server can clear them.
         val gson = GsonBuilder().serializeNulls().create()
 
         _api = Retrofit.Builder()
