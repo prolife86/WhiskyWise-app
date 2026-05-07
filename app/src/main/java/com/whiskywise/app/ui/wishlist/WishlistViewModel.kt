@@ -22,6 +22,14 @@ class WishlistViewModel : ViewModel() {
     private val _error     = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    /** Holds the single wishlist item being edited in EditWishlistFragment. */
+    private val _editItem  = MutableLiveData<Whisky?>()
+    val editItem: LiveData<Whisky?> = _editItem
+
+    /** Fires true when an update save completes successfully. */
+    private val _editSaved = MutableLiveData(false)
+    val editSaved: LiveData<Boolean> = _editSaved
+
     fun load() {
         _isLoading.value = true
         viewModelScope.launch {
@@ -42,8 +50,40 @@ class WishlistViewModel : ViewModel() {
         }
     }
 
-    /** Clear the error after it has been shown to the user. */
-    fun clearError() {
-        _error.value = null
+    /** Load a single wishlist item for the edit screen. */
+    fun loadItem(id: Int) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            repo.getWhisky(id).fold(
+                onSuccess = { _editItem.value = it },
+                onFailure = { _error.value = it.message },
+            )
+            _isLoading.value = false
+        }
     }
+
+    /** Save edits to an existing wishlist item. */
+    fun update(id: Int, request: WhiskyRequest) {
+        _isLoading.value = true
+        viewModelScope.launch {
+            repo.updateWishlistItem(id, request).fold(
+                onSuccess = { _editSaved.value = true },
+                onFailure = { _error.value = it.message },
+            )
+            _isLoading.value = false
+        }
+    }
+
+    fun clearEditSaved() { _editSaved.value = false }
+
+    /** Delete a wishlist item. Calls [onDone] with true on success, false on failure. */
+    fun delete(id: Int, onDone: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val ok = repo.deleteWhisky(id).isSuccess
+            onDone(ok)
+        }
+    }
+
+    /** Clear the error after it has been shown to the user. */
+    fun clearError() { _error.value = null }
 }
