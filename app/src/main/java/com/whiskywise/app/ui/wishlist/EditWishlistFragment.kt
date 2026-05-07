@@ -1,5 +1,6 @@
 package com.whiskywise.app.ui.wishlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.MenuHost
@@ -13,6 +14,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentEditWishlistBinding
 import com.whiskywise.app.model.WhiskyRequest
+import com.whiskywise.app.ui.detail.BarcodeScanActivity
+import androidx.activity.result.contract.ActivityResultContracts
 
 /**
  * Edit screen for wishlist items.
@@ -26,6 +29,20 @@ class EditWishlistFragment : Fragment() {
     private var _binding: FragmentEditWishlistBinding? = null
     private val binding get() = _binding!!
     private val vm: WishlistViewModel by viewModels()
+
+    // ── Barcode scanner ───────────────────────────────────────────────────────
+    // BarcodeScanActivity handles its own camera permission request internally,
+    // so no additional permission code is needed here — identical pattern to
+    // EditWhiskyFragment.
+    private val barcodeLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == android.app.Activity.RESULT_OK) {
+                val value = result.data
+                    ?.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE)
+                    ?: return@registerForActivityResult
+                binding.etBarcode.setText(value)
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -84,6 +101,9 @@ class EditWishlistFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener { save(id) }
+        binding.btnScanBarcode.setOnClickListener {
+            barcodeLauncher.launch(Intent(requireContext(), BarcodeScanActivity::class.java))
+        }
     }
 
     private fun save(id: Int) {
