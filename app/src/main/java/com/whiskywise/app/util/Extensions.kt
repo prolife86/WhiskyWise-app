@@ -8,12 +8,29 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.whiskywise.app.R
 
+/**
+ * Load a whisky photo from the server into this ImageView.
+ *
+ * The server rotates photos in-place — the filename never changes after a
+ * rotation, so Glide's default cache key (the URL) would serve the stale
+ * pre-rotation image indefinitely.
+ *
+ * Fix: append the whisky's [updatedAt] timestamp as a `?t=` query parameter.
+ * When the server rotates a photo it also bumps `updated_at`, so the URL
+ * changes → Glide sees a new cache key → fetches the updated image.
+ * If [updatedAt] is null (older API responses) the param is omitted and
+ * behaviour is identical to before.
+ *
+ * [skipCache] is kept for the rare case where an immediate force-reload is
+ * needed before the next whisky reload has returned a fresh [updatedAt].
+ */
 fun ImageView.loadWhiskyPhoto(
     context: Context,
     photoPath: String?,
     serverUrl: String,
     token: String,
     skipCache: Boolean = false,
+    updatedAt: String? = null,
 ) {
     if (photoPath.isNullOrBlank()) {
         setImageResource(R.drawable.ic_whisky_placeholder)
@@ -25,7 +42,10 @@ fun ImageView.loadWhiskyPhoto(
         .removePrefix("api/photo/")
         .removePrefix("photos/")
 
-    val url = "$base/api/photo/$cleanPath"
+    // Append updatedAt as a cache-busting query param so Glide's cache key
+    // changes whenever the server modifies the photo (e.g. after rotation).
+    val cacheBuster = updatedAt?.let { "?t=${it.replace(":", "").replace("-", "").replace("+", "")}" } ?: ""
+    val url = "$base/api/photo/$cleanPath$cacheBuster"
 
     val glideUrl = GlideUrl(
         url,
@@ -40,8 +60,6 @@ fun ImageView.loadWhiskyPhoto(
         .error(R.drawable.ic_whisky_placeholder)
         .centerCrop()
 
-    // After a server-side rotation the filename is unchanged but the content has
-    // changed. skipCache bypasses both memory and disk cache to force a fresh fetch.
     if (skipCache) {
         request
             .skipMemoryCache(true)
