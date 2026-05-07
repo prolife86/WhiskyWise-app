@@ -24,6 +24,12 @@ See that project's changelog for server-side changes.
   toolbar alongside the edit button (`showAsAction="always"`). The confirmation
   dialog still fires before anything is deleted. The 3-dot menu is gone entirely.
 
+- **Barcode scanner on wishlist add and edit** — the barcode field in both the
+  add dialog and the edit screen now has a Scan button, launching the same
+  `BarcodeScanActivity` (CameraX + MLKit) used by the collection form. Camera
+  permission is requested by the activity itself on launch — identical behaviour
+  to the collection scanner.
+
 ### Fixed
 
 - **Wishlist add form now matches the server** — the add dialog previously showed
