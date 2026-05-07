@@ -41,6 +41,11 @@
             app:argType="integer"
             android:defaultValue="-1" />
 
+        <argument
+            android:name="isWishlist"
+            app:argType="boolean"
+            android:defaultValue="false" />
+
         <action
             android:id="@+id/action_detail_to_edit"
             app:destination="@id/editWhiskyFragment"
@@ -48,14 +53,35 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_detail_to_edit_wishlist"
+            app:destination="@id/editWishlistFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
-    <!-- Edit / Create -->
+    <!-- Edit / Create (collection) -->
     <fragment
         android:id="@+id/editWhiskyFragment"
         android:name="com.whiskywise.app.ui.detail.EditWhiskyFragment"
         android:label="Edit Whisky"
         tools:layout="@layout/fragment_edit_whisky">
+
+        <argument
+            android:name="whiskyId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+
+    <!-- Edit (wishlist only) -->
+    <fragment
+        android:id="@+id/editWishlistFragment"
+        android:name="com.whiskywise.app.ui.wishlist.EditWishlistFragment"
+        android:label="Edit Wishlist Item"
+        tools:layout="@layout/fragment_edit_wishlist">
 
         <argument
             android:name="whiskyId"
