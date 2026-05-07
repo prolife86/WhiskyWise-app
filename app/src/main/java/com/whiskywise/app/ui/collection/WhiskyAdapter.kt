@@ -34,7 +34,7 @@ class WhiskyAdapter(
             b.tvStatus.text      = whisky.status?.replaceFirstChar { it.uppercase() } ?: ""
             b.tvRegion.text      = whisky.region ?: ""
 
-            b.ivPhoto.loadWhiskyPhoto(b.root.context, whisky.photoFront, serverUrl, token)
+            b.ivPhoto.loadWhiskyPhoto(b.root.context, whisky.photoFront, serverUrl, token, updatedAt = whisky.updatedAt)
 
             b.root.setOnClickListener { onClick(whisky) }
         }
