@@ -17,13 +17,29 @@
             android:layout_margin="16dp"
             android:visibility="gone" />
 
-        <!-- Hero photo (front) -->
-        <ImageView
-            android:id="@+id/ivFront"
+        <!-- Photo pager: hidden when whisky has no photos -->
+        <FrameLayout
+            android:id="@+id/photoContainer"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="Whisky bottle front" />
+            android:layout_height="240dp"
+            android:visibility="gone">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerPhotos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- Dot indicators — overlaid at the bottom of the pager -->
+            <LinearLayout
+                android:id="@+id/dotsContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
