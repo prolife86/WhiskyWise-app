@@ -33,7 +33,7 @@ class WishlistFragment : Fragment() {
         adapter = WhiskyAdapter { whisky ->
             findNavController().navigate(
                 R.id.action_wishlist_to_detail,
-                bundleOf("whiskyId" to whisky.id),
+                bundleOf("whiskyId" to whisky.id, "isWishlist" to true),
             )
         }
 
@@ -72,8 +72,13 @@ class WishlistFragment : Fragment() {
 
     private fun showAddDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_wishlist, null)
-        val etName  = dialogView.findViewById<TextInputEditText>(R.id.etName)
-        val etNotes = dialogView.findViewById<TextInputEditText>(R.id.etNotes)
+        val etName       = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etName)
+        val etDistillery = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etDistillery)
+        val etRegion     = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etRegion)
+        val etPrice      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etPrice)
+        val etStore      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etStore)
+        val etBarcode    = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etBarcode)
+        val etNotes      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNotes)
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Add to wishlist")
@@ -86,6 +91,11 @@ class WishlistFragment : Fragment() {
                 }
                 vm.add(WhiskyRequest(
                     name          = name,
+                    distillery    = etDistillery.text.toString().trim().ifBlank { null },
+                    region        = etRegion.text.toString().trim().ifBlank { null },
+                    price         = etPrice.text.toString().toDoubleOrNull(),
+                    store         = etStore.text.toString().trim().ifBlank { null },
+                    barcode       = etBarcode.text.toString().trim().ifBlank { null },
                     wishlistNotes = etNotes.text.toString().trim().ifBlank { null },
                 ))
             }

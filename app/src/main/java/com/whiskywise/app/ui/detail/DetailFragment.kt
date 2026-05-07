@@ -2,6 +2,9 @@ package com.whiskywise.app.ui.detail
 
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -9,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
@@ -17,13 +21,13 @@ import com.whiskywise.app.util.TokenStore
 import com.whiskywise.app.util.formatAbv
 import com.whiskywise.app.util.formatPrice
 import com.whiskywise.app.util.formatScore
-import com.whiskywise.app.util.loadWhiskyPhoto
 
 class DetailFragment : Fragment() {
 
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
     private val vm: DetailViewModel by viewModels()
+    private lateinit var photoPagerAdapter: PhotoPagerAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
@@ -32,7 +36,21 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val id = arguments?.getInt("whiskyId") ?: return
+        val isWishlist = arguments?.getBoolean("isWishlist", false) ?: false
 
+        val store     = TokenStore(requireContext())
+        val serverUrl = store.getServerUrl() ?: ""
+        val token     = store.getToken() ?: ""
+
+        photoPagerAdapter = PhotoPagerAdapter(requireContext(), serverUrl, token)
+        binding.viewPagerPhotos.adapter = photoPagerAdapter
+
+        // Update dot indicators whenever the page changes.
+        binding.viewPagerPhotos.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) = updateDots(position)
+        })
+
+        // Inflate toolbar icons and wire each one directly — no overflow menu needed.
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -41,10 +59,17 @@ class DetailFragment : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.action_edit -> {
-                        findNavController().navigate(
-                            R.id.action_detail_to_edit,
-                            bundleOf("whiskyId" to id),
-                        )
+                        if (isWishlist) {
+                            findNavController().navigate(
+                                R.id.action_detail_to_edit_wishlist,
+                                bundleOf("whiskyId" to id),
+                            )
+                        } else {
+                            findNavController().navigate(
+                                R.id.action_detail_to_edit,
+                                bundleOf("whiskyId" to id),
+                            )
+                        }
                         true
                     }
                     R.id.action_delete -> { confirmDelete(); true }
@@ -55,6 +80,7 @@ class DetailFragment : Fragment() {
 
         vm.whisky.observe(viewLifecycleOwner) { w ->
             if (w == null) return@observe
+
             binding.tvName.text       = w.name
             binding.tvDistillery.text = w.distillery ?: "—"
             binding.tvRegion.text     = w.region ?: "—"
@@ -71,7 +97,6 @@ class DetailFragment : Fragment() {
             binding.tvNotes.text      = w.notes?.ifBlank { "—" } ?: "—"
             binding.tvFlavor.text     = w.flavorProfile?.replaceFirstChar { it.uppercase() } ?: "—"
 
-            // Barcode — show row only when a value exists
             if (!w.barcode.isNullOrBlank()) {
                 binding.layoutBarcode.visibility = View.VISIBLE
                 binding.tvBarcode.text = w.barcode
@@ -79,11 +104,12 @@ class DetailFragment : Fragment() {
                 binding.layoutBarcode.visibility = View.GONE
             }
 
-            val ctx       = requireContext()
-            val store     = TokenStore(ctx)
-            val serverUrl = store.getServerUrl() ?: ""
-            val token     = store.getToken() ?: ""
-            binding.ivFront.loadWhiskyPhoto(ctx, w.photoFront, serverUrl, token)
+            // Load photos into pager; hide the container entirely if none exist.
+            photoPagerAdapter.submitPhotos(w.photoFront, w.photoBack, w.photoCask)
+            val photoCount = photoPagerAdapter.count()
+            binding.photoContainer.visibility = if (photoCount > 0) View.VISIBLE else View.GONE
+            buildDots(photoCount)
+            updateDots(0)
 
             binding.radarView.setValues(
                 woody     = w.radarWoody,
@@ -105,6 +131,41 @@ class DetailFragment : Fragment() {
 
         vm.load(id)
     }
+
+    // ── Dot indicators ────────────────────────────────────────────────────────
+
+    private fun buildDots(count: Int) {
+        binding.dotsContainer.removeAllViews()
+        if (count <= 1) return          // no dots needed for 0 or 1 photo
+        repeat(count) {
+            val dot = ImageView(requireContext()).apply {
+                setImageDrawable(
+                    ContextCompat.getDrawable(requireContext(), R.drawable.dot_indicator_inactive)
+                )
+            }
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            ).apply { setMargins(6, 0, 6, 0) }
+            binding.dotsContainer.addView(dot, params)
+        }
+    }
+
+    private fun updateDots(activeIndex: Int) {
+        val dots = binding.dotsContainer
+        for (i in 0 until dots.childCount) {
+            val dot = dots.getChildAt(i) as? ImageView ?: continue
+            dot.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    if (i == activeIndex) R.drawable.dot_indicator_active
+                    else R.drawable.dot_indicator_inactive,
+                )
+            )
+        }
+    }
+
+    // ── Delete ────────────────────────────────────────────────────────────────
 
     private fun confirmDelete() {
         val id = arguments?.getInt("whiskyId") ?: return

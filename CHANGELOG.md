@@ -8,6 +8,43 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.6] — 2026-05-07 📸 The Photo & Wishlist Update
+
+### Added
+
+- **Swipeable photo gallery on the detail screen** — the single front-photo hero
+  image is replaced with a full-width `ViewPager2` pager. Front, back, and cask
+  photos (whichever exist) can be swiped through left/right. Amber dot indicators
+  overlay the bottom of the pager and track the current page; dots are hidden
+  when a whisky has only one photo. The entire photo area collapses when no
+  photos exist, keeping the layout clean for photo-free entries.
+
+- **Delete button in the toolbar** — the delete action was buried in the 3-dot
+  overflow menu, requiring two taps to reach. It is now a trash icon in the
+  toolbar alongside the edit button (`showAsAction="always"`). The confirmation
+  dialog still fires before anything is deleted. The 3-dot menu is gone entirely.
+
+### Fixed
+
+- **Wishlist add form now matches the server** — the add dialog previously showed
+  only Name and Notes. It now exposes all fields from the server's
+  `wishlist_form.html`: Name, Distillery, Region, Expected Price, Store / Where
+  to Buy, Barcode, and Wishlist Notes.
+
+- **Editing a wishlist item no longer shows tasting notes** — tapping Edit on a
+  wishlist item previously opened the full collection edit form, complete with
+  Nose, Palate, Finish, score sliders, radar chart, status and photos — none of
+  which make sense for a bottle you haven't opened. Wishlist items now open a
+  dedicated `EditWishlistFragment` with only the seven wishlist-appropriate
+  fields, matching the server form exactly.
+
+- **Wishlist edit screen has a delete button** — the only way to delete a
+  wishlist item was to navigate back to the detail screen. A trash icon now
+  appears in the toolbar of the wishlist edit screen, with the same confirmation
+  dialog as everywhere else.
+
+---
+
 ## [0.1.5] — 2026-05-07 🌐 The Network Update
 
 ### Fixed
