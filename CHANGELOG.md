@@ -8,6 +8,37 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.5] — 2026-05-07 🌐 The Network Update
+
+### Fixed
+
+- **Clearing a field now actually saves** — Gson omits `null` fields from the
+  request body by default, so wiping distillery, region, notes, score, or any
+  other optional field had no effect — the old value quietly survived on the
+  server. `RetrofitClient` now builds Gson with `serializeNulls()`, so `null`
+  fields are included in the body and the server clears them correctly. Requires
+  server ≥ 1.5.4.
+
+- **App no longer hangs when switching from WiFi to 5G** — OkHttp's default
+  connection pool keeps sockets alive for 5 minutes. When the network changed,
+  those sockets became dead but were still handed out for new requests, which
+  then blocked until the full 30-second read timeout expired. The connection pool
+  is now configured with a 30-second keepalive, so stale sockets are evicted
+  promptly after a network switch. `retryOnConnectionFailure(true)` is also
+  enabled so the rare mid-flight request during a switch retries transparently.
+
+- **Delete (Remove) button text on the edit screen is now readable** — the
+  Remove buttons on photo slots used `OutlinedButton` style, which inherits a
+  dark text colour from the theme. Against the button's background tint the text
+  was near-invisible. Text and stroke colour are now explicitly white.
+
+- **CI: `close-issues-on-release` workflow updated to Node 24** — the
+  `gcampbell-msft/fixed-pending-release` action was pinned to a Node 20 commit
+  with no Node 24 update available. Replaced with a native `actions/github-script@v7`
+  implementation that does the same job and needs no runtime updates.
+
+---
+
 ## [0.1.4] — 2026-05-06 🔧 The Plumbing Update
 
 ### Fixed
