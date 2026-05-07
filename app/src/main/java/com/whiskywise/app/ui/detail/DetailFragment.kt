@@ -105,7 +105,7 @@ class DetailFragment : Fragment() {
             }
 
             // Load photos into pager; hide the container entirely if none exist.
-            photoPagerAdapter.submitPhotos(w.photoFront, w.photoBack, w.photoCask)
+            photoPagerAdapter.submitPhotos(w.photoFront, w.photoBack, w.photoCask, w.updatedAt)
             val photoCount = photoPagerAdapter.count()
             binding.photoContainer.visibility = if (photoCount > 0) View.VISIBLE else View.GONE
             buildDots(photoCount)
