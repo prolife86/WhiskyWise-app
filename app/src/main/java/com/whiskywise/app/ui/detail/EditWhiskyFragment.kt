@@ -147,9 +147,9 @@ class EditWhiskyFragment : Fragment() {
                 val skipSlot = vm.rotatedSlot.value
                 vm.clearRotatedSlot()
 
-                binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, url, token, skipCache = skipSlot == "front")
-                binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  url, token, skipCache = skipSlot == "back")
-                binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  url, token, skipCache = skipSlot == "cask")
+                binding.ivPhotoFront.loadWhiskyPhoto(ctx, w.photoFront, url, token, skipCache = skipSlot == "front", updatedAt = w.updatedAt)
+                binding.ivPhotoBack.loadWhiskyPhoto(ctx,  w.photoBack,  url, token, skipCache = skipSlot == "back",  updatedAt = w.updatedAt)
+                binding.ivPhotoCask.loadWhiskyPhoto(ctx,  w.photoCask,  url, token, skipCache = skipSlot == "cask",  updatedAt = w.updatedAt)
 
                 if (!w.photoFront.isNullOrBlank()) {
                     binding.btnRotateFront.visibility = View.VISIBLE
