@@ -1,7 +1,9 @@
 package com.whiskywise.app.ui.wishlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,6 +16,7 @@ import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentWishlistBinding
 import com.whiskywise.app.model.WhiskyRequest
 import com.whiskywise.app.ui.collection.WhiskyAdapter
+import com.whiskywise.app.ui.detail.BarcodeScanActivity
 import com.whiskywise.app.util.TokenStore
 
 class WishlistFragment : Fragment() {
@@ -22,6 +25,22 @@ class WishlistFragment : Fragment() {
     private val binding get() = _binding!!
     private val vm: WishlistViewModel by viewModels()
     private lateinit var adapter: WhiskyAdapter
+
+    // Holds a reference to the dialog's barcode field so the launcher can fill it.
+    // Must be a fragment-level field because registerForActivityResult must be
+    // called before onStart — it cannot be registered inside the dialog builder.
+    private var dialogBarcodeField: TextInputEditText? = null
+
+    // BarcodeScanActivity handles its own camera permission internally.
+    private val barcodeLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == android.app.Activity.RESULT_OK) {
+                val value = result.data
+                    ?.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE)
+                    ?: return@registerForActivityResult
+                dialogBarcodeField?.setText(value)
+            }
+        }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentWishlistBinding.inflate(inflater, container, false)
@@ -78,6 +97,13 @@ class WishlistFragment : Fragment() {
         val etPrice      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etPrice)
         val etStore      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etStore)
         val etBarcode    = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etBarcode)
+        val btnScan      = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnScanBarcode)
+
+        // Store ref so the fragment-level barcodeLauncher can write back into it.
+        dialogBarcodeField = etBarcode
+        btnScan.setOnClickListener {
+            barcodeLauncher.launch(Intent(requireContext(), BarcodeScanActivity::class.java))
+        }
         val etNotes      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNotes)
 
         MaterialAlertDialogBuilder(requireContext())
@@ -100,6 +126,7 @@ class WishlistFragment : Fragment() {
                 ))
             }
             .setNegativeButton("Cancel", null)
+            .setOnDismissListener { dialogBarcodeField = null }
             .show()
     }
 
