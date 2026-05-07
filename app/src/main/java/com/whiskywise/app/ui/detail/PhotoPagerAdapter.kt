@@ -12,6 +12,8 @@ import com.whiskywise.app.util.loadWhiskyPhoto
 /**
  * Drives the photo ViewPager2 on the detail screen.
  * Only slots with a non-blank photo path are included.
+ * Passes [updatedAt] to [loadWhiskyPhoto] so Glide's cache key changes
+ * whenever the server rotates a photo — no stale images after rotation.
  * Tapping a photo opens [PhotoFullscreenActivity].
  */
 class PhotoPagerAdapter(
@@ -20,14 +22,19 @@ class PhotoPagerAdapter(
     private val token: String,
 ) : RecyclerView.Adapter<PhotoPagerAdapter.VH>() {
 
-    private val photos = mutableListOf<String>()
+    private data class PhotoEntry(val path: String, val updatedAt: String?)
 
-    fun submitPhotos(front: String?, back: String?, cask: String?) {
+    private val photos = mutableListOf<PhotoEntry>()
+
+    fun submitPhotos(
+        front: String?, back: String?, cask: String?,
+        updatedAt: String?,
+    ) {
         photos.clear()
         listOfNotNull(
-            front?.takeIf { it.isNotBlank() },
-            back?.takeIf  { it.isNotBlank() },
-            cask?.takeIf  { it.isNotBlank() },
+            front?.takeIf { it.isNotBlank() }?.let { PhotoEntry(it, updatedAt) },
+            back?.takeIf  { it.isNotBlank() }?.let { PhotoEntry(it, updatedAt) },
+            cask?.takeIf  { it.isNotBlank() }?.let { PhotoEntry(it, updatedAt) },
         ).forEach { photos.add(it) }
         notifyDataSetChanged()
     }
@@ -43,14 +50,18 @@ class PhotoPagerAdapter(
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val path = photos[position]
-        holder.iv.loadWhiskyPhoto(context, path, serverUrl, token)
+        val entry = photos[position]
+        holder.iv.loadWhiskyPhoto(
+            context, entry.path, serverUrl, token,
+            updatedAt = entry.updatedAt,
+        )
         holder.iv.setOnClickListener {
             context.startActivity(
                 Intent(context, PhotoFullscreenActivity::class.java).apply {
-                    putExtra(PhotoFullscreenActivity.EXTRA_PHOTO_PATH, path)
+                    putExtra(PhotoFullscreenActivity.EXTRA_PHOTO_PATH, entry.path)
                     putExtra(PhotoFullscreenActivity.EXTRA_SERVER_URL, serverUrl)
                     putExtra(PhotoFullscreenActivity.EXTRA_TOKEN, token)
+                    putExtra(PhotoFullscreenActivity.EXTRA_UPDATED_AT, entry.updatedAt)
                 }
             )
         }
