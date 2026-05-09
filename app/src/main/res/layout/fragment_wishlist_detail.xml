@@ -41,7 +41,7 @@
                 android:textColor="@color/amber"
                 android:layout_marginTop="4dp" />
 
-            <!-- Region / Age -->
+            <!-- Region -->
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:orientation="horizontal" android:layout_marginTop="16dp">
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
@@ -51,26 +51,7 @@
                     <TextView android:id="@+id/tvRegion" android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
                 </LinearLayout>
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="AGE" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
-                    <TextView android:id="@+id/tvAge" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- ABV -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginTop="8dp">
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="ABV" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
-                    <TextView android:id="@+id/tvAbv" android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
-                </LinearLayout>
-                <!-- Empty second column to keep consistent spacing -->
+                <!-- Empty second column for consistent spacing -->
                 <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                     android:layout_weight="1" android:orientation="vertical"/>
             </LinearLayout>
