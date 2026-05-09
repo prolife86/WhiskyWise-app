@@ -16,9 +16,10 @@ See that project's changelog for server-side changes.
   previously opened the collection detail screen, which displays tasting notes
   (Nose, Palate, Finish), Score, Status, Radar chart, and Photos — none of which
   exist for a bottle you haven't bought yet. Wishlist items now navigate to a
-  purpose-built `WishlistDetailFragment` showing only the fields that actually
-  apply: Name, Distillery, Region, Age, ABV, Price, Store, Barcode, and Wishlist
-  Notes. The edit (pencil) and delete (trash) toolbar actions work as before.
+  purpose-built `WishlistDetailFragment` showing only the seven fields that mirror
+  the server's `wishlist_form.html`: Name, Distillery, Region, Price, Store,
+  Barcode, and Wishlist Notes. The edit (pencil) and delete (trash) toolbar
+  actions work as before.
 
 ---
 
