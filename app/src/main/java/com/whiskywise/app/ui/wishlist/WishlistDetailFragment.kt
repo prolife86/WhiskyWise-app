@@ -13,7 +13,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentWishlistDetailBinding
-import com.whiskywise.app.util.formatAbv
 import com.whiskywise.app.util.formatPrice
 
 /**
@@ -68,8 +67,6 @@ class WishlistDetailFragment : Fragment() {
             binding.tvName.text       = w.name
             binding.tvDistillery.text = w.distillery ?: "—"
             binding.tvRegion.text     = w.region ?: "—"
-            binding.tvAge.text        = w.age ?: "—"
-            binding.tvAbv.text        = w.abv.formatAbv()
             binding.tvPrice.text      = w.price.formatPrice()
             binding.tvStore.text      = w.store ?: "—"
 
