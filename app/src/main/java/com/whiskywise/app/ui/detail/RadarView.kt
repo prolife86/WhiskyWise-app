@@ -40,8 +40,9 @@ class RadarView @JvmOverloads constructor(
     }
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color    = Color.parseColor("#c8a96e")
-        textSize = 28f
         textAlign = Paint.Align.CENTER
+        // textSize is set dynamically in onDraw based on the view radius
+        // so it scales correctly on all screen sizes and densities.
     }
 
     fun setValues(woody: Int, smoky: Int, cereal: Int, floral: Int, fruity: Int, medicinal: Int, fiery: Int) {
@@ -54,8 +55,13 @@ class RadarView @JvmOverloads constructor(
         super.onDraw(canvas)
         val cx = width / 2f
         val cy = height / 2f
-        val r  = min(cx, cy) * 0.65f
+        val r  = min(cx, cy) * 0.55f
         val n  = labels.size
+
+        // Scale text size and label offset proportionally to the chart radius
+        // so labels never clip on large screens (tablets) or small ones (phones).
+        labelPaint.textSize = r * 0.18f
+        val labelOffset = r * 0.28f
 
         fun point(idx: Int, radius: Float): Pair<Float, Float> {
             val angle = (idx.toDouble() / n * 2 * Math.PI) - (Math.PI / 2)
@@ -97,7 +103,7 @@ class RadarView @JvmOverloads constructor(
 
         // Draw labels
         for (i in 0 until n) {
-            val (x, y) = point(i, r + 42f)
+            val (x, y) = point(i, r + labelOffset)
             canvas.drawText(labels[i], x, y + labelPaint.textSize / 3, labelPaint)
         }
     }
