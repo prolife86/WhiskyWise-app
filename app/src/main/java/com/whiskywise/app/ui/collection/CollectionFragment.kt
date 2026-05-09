@@ -1,7 +1,9 @@
 package com.whiskywise.app.ui.collection
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentCollectionBinding
+import com.whiskywise.app.ui.detail.BarcodeScanActivity
 import com.whiskywise.app.util.TokenStore
 
 class CollectionFragment : Fragment() {
@@ -19,6 +22,18 @@ class CollectionFragment : Fragment() {
     private val binding get() = _binding!!
     private val vm: CollectionViewModel by viewModels()
     private lateinit var adapter: WhiskyAdapter
+
+    // BarcodeScanActivity handles camera permission itself — same as edit screen.
+    private val barcodeLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == android.app.Activity.RESULT_OK) {
+                val barcode = result.data
+                    ?.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE)
+                    ?: return@registerForActivityResult
+                // Fill the search bar and trigger a search.
+                binding.searchView.setQuery(barcode, true)
+            }
+        }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCollectionBinding.inflate(inflater, container, false)
@@ -75,6 +90,10 @@ class CollectionFragment : Fragment() {
             override fun onQueryTextSubmit(q: String?): Boolean { vm.currentQuery = q; vm.load(); return true }
             override fun onQueryTextChange(q: String?): Boolean { if (q.isNullOrBlank()) { vm.currentQuery = null; vm.load() }; return true }
         })
+
+        binding.btnBarcodeSearch.setOnClickListener {
+            barcodeLauncher.launch(Intent(requireContext(), BarcodeScanActivity::class.java))
+        }
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_collection_to_edit, bundleOf("whiskyId" to -1))
