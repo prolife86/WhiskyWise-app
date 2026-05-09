@@ -89,6 +89,27 @@
             android:defaultValue="-1" />
     </fragment>
 
+    <!-- Wishlist Detail (read-only, wishlist fields only) -->
+    <fragment
+        android:id="@+id/wishlistDetailFragment"
+        android:name="com.whiskywise.app.ui.wishlist.WishlistDetailFragment"
+        android:label="Wishlist Item"
+        tools:layout="@layout/fragment_wishlist_detail">
+
+        <argument
+            android:name="whiskyId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+
+        <action
+            android:id="@+id/action_wishlist_detail_to_edit_wishlist"
+            app:destination="@id/editWishlistFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
     <!-- Wishlist tab -->
     <fragment
         android:id="@+id/wishlistFragment"
@@ -98,7 +119,7 @@
 
         <action
             android:id="@+id/action_wishlist_to_detail"
-            app:destination="@id/detailFragment"
+            app:destination="@id/wishlistDetailFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
