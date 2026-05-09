@@ -8,6 +8,54 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.7] — 2026-05-09 🍷 The Flavour Update
+
+### Fixed
+
+- **Dominant flavour is now editable** — the field existed on the server and was
+  displayed on the detail screen, but the edit form silently passed back whatever
+  value was already stored. There was no way to set or change it from the app.
+  A spinner now appears below the Status field with all 16 options from the
+  server's `DOMINANT_FLAVOURS` list (Floral, Fresh, Fruity, Malty, Medicinal,
+  Oily, Peaty, Smoky, Spicy, Sweet, Vanilla, Vegetative, Woody, Mixed,
+  Undefinable, Complicated). Selecting "— Select dominant flavour —" clears the
+  field on the server.
+
+---
+
+## [0.1.7] — 2026-05-07 🍷 The Flavour Update
+
+### Added
+
+- **Barcode search on the collection screen** — a barcode icon next to the
+  search bar opens the scanner. Scan a bottle and the barcode drops straight
+  into the search field. Same camera activity, same permission flow as
+  everywhere else in the app.
+
+### Fixed
+
+- **Dominant flavour is now editable** — the field existed on the server and was
+  displayed on the detail screen, but the edit form silently passed back whatever
+  value was already stored. There was no way to set or change it from the app.
+  A spinner now appears below the Status field with all 16 options from the
+  server's `DOMINANT_FLAVOURS` list (Floral, Fresh, Fruity, Malty, Medicinal,
+  Oily, Peaty, Smoky, Spicy, Sweet, Vanilla, Vegetative, Woody, Mixed,
+  Undefinable, Complicated). Selecting "— Select dominant flavour —" clears the
+  field on the server.
+
+- **Rotated photos now show correctly in the app** — the server rotates photos
+  in-place, so the filename and URL never change after rotation. Glide's cache
+  key is the URL, meaning it served the stale pre-rotation image indefinitely.
+  Photo URLs now include the whisky's `updated_at` timestamp as a `?t=` query
+  parameter. The server already bumps `updated_at` on every rotation, so the
+  cache key changes automatically — no manual cache-skip needed.
+
+- **CI: `softprops/action-gh-release` bumped to v3** — v2 ran on Node 20 which
+  is being removed from GitHub Actions runners on September 16th 2026. v3 targets
+  Node 24 and silences the deprecation warning.
+
+---
+
 ## [0.1.6] — 2026-05-07 📸 The Photo & Wishlist Update
 
 ### Added

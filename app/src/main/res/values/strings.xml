@@ -10,4 +10,25 @@
         <item>open</item>
         <item>finished</item>
     </string-array>
+
+    <!-- Matches server DOMINANT_FLAVOURS exactly. Index 0 = "none selected" sentinel. -->
+    <string-array name="flavor_options">
+        <item>— Select dominant flavour —</item>
+        <item>floral</item>
+        <item>fresh</item>
+        <item>fruity</item>
+        <item>malty</item>
+        <item>medicinal</item>
+        <item>oily</item>
+        <item>peaty</item>
+        <item>smoky</item>
+        <item>spicy</item>
+        <item>sweet</item>
+        <item>vanilla</item>
+        <item>vegetative</item>
+        <item>woody</item>
+        <item>mixed</item>
+        <item>undefinable</item>
+        <item>complicated</item>
+    </string-array>
 </resources>

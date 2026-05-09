@@ -32,7 +32,6 @@ class EditWhiskyFragment : Fragment() {
     private val vm: EditWhiskyViewModel by viewModels()
 
     private var editingId: Int = -1
-    private var existingFlavorProfile: String? = null
     private var pendingSlot: String? = null
     private val uploadQueue = mutableMapOf<String, File>()
     private val deleteQueue = mutableSetOf<String>()
@@ -107,7 +106,6 @@ class EditWhiskyFragment : Fragment() {
             vm.load(editingId)
             vm.whisky.observe(viewLifecycleOwner) { w ->
                 if (w == null) return@observe
-                existingFlavorProfile = w.flavorProfile
 
                 binding.etName.setText(w.name)
                 binding.etDistillery.setText(w.distillery)
@@ -128,6 +126,11 @@ class EditWhiskyFragment : Fragment() {
                     statuses.indexOf(w.status ?: "stashed").coerceAtLeast(0)
                 )
                 binding.checkRetired.isChecked = w.retired
+
+                // Index 0 = "— Select —" sentinel; actual flavours start at index 1.
+                val flavors = resources.getStringArray(com.whiskywise.app.R.array.flavor_options)
+                val flavorIdx = flavors.indexOfFirst { it.equals(w.flavorProfile, ignoreCase = true) }
+                binding.spinnerFlavor.setSelection(if (flavorIdx >= 0) flavorIdx else 0)
 
                 setSlider(binding.seekWoody,     binding.tvWoody,     w.radarWoody)
                 setSlider(binding.seekSmoky,     binding.tvSmoky,     w.radarSmoky)
@@ -330,7 +333,9 @@ class EditWhiskyFragment : Fragment() {
             notes          = binding.etNotes.text.toString().trim().ifBlank { null },
             status         = statuses[binding.spinnerStatus.selectedItemPosition],
             retired        = binding.checkRetired.isChecked,
-            flavorProfile  = existingFlavorProfile,
+            flavorProfile  = binding.spinnerFlavor.selectedItem
+                                 .toString()
+                                 .takeUnless { it.startsWith("—") },
             radarWoody     = binding.seekWoody.progress,
             radarSmoky     = binding.seekSmoky.progress,
             radarCereal    = binding.seekCereal.progress,
