@@ -8,6 +8,20 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.8] — 2026-05-09 🗂️ The Wishlist Detail Update
+
+### Fixed
+
+- **Wishlist items now open a dedicated detail screen** — tapping a wishlist entry
+  previously opened the collection detail screen, which displays tasting notes
+  (Nose, Palate, Finish), Score, Status, Radar chart, and Photos — none of which
+  exist for a bottle you haven't bought yet. Wishlist items now navigate to a
+  purpose-built `WishlistDetailFragment` showing only the fields that actually
+  apply: Name, Distillery, Region, Age, ABV, Price, Store, Barcode, and Wishlist
+  Notes. The edit (pencil) and delete (trash) toolbar actions work as before.
+
+---
+
 ## [0.1.7] — 2026-05-09 🍷 The Flavour Update
 
 ### Added
