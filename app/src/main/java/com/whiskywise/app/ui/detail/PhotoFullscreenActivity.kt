@@ -1,8 +1,13 @@
 package com.whiskywise.app.ui.detail
 
+import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.whiskywise.app.databinding.ActivityPhotoFullscreenBinding
 import com.whiskywise.app.util.loadWhiskyPhoto
 
@@ -17,10 +22,17 @@ class PhotoFullscreenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-        )
+
+        // Hide system bars using the modern WindowInsetsController API.
+        // FLAG_FULLSCREEN was deprecated in API 30; WindowInsetsControllerCompat
+        // works correctly from API 26 (our minSdk) upwards.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            hide(WindowInsetsCompat.Type.systemBars())
+            systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+
         val binding = ActivityPhotoFullscreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
