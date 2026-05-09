@@ -40,6 +40,13 @@ See that project's changelog for server-side changes.
   `WindowCompat.setDecorFitsSystemWindows()`, which works correctly from our
   minSdk (26) upward with no version branching.
 
+- **Radar chart labels no longer clip on tablets** — label text size and
+  placement offset were fixed pixel values (`28px` and `42px`), which looked
+  fine on phones but caused "Medicinal" to render as "dicinal" and "Cereal" as
+  "Cere" on an 11" tablet. Both values are now derived from the chart radius
+  (`r × 0.18` and `r × 0.28`), scaling correctly at any screen size. The chart
+  itself is slightly smaller (`0.55r` vs `0.65r`) to give labels room to breathe.  
+
 - **CI: `softprops/action-gh-release` bumped to v3** — v2 ran on Node 20 which
   is being removed from GitHub Actions runners on September 16th 2026. v3 targets
   Node 24 and silences the deprecation warning.
