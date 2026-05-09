@@ -47,6 +47,13 @@ See that project's changelog for server-side changes.
   (`r × 0.18` and `r × 0.28`), scaling correctly at any screen size. The chart
   itself is slightly smaller (`0.55r` vs `0.65r`) to give labels room to breathe.  
 
+- **Launcher icon no longer clips the red cap** — the wax cap was sitting
+  outside the adaptive icon safe zone (centre 66% of the 108dp canvas), causing
+  every launcher with a circular or squircle mask to cut it off. The icons are
+  now rendered directly from the vector SVG source at each density, with the
+  artwork scaled to 62% of the canvas and centred with a small downward nudge.
+  Sharp at every size, full bottle visible on all launchers.
+
 - **CI: `softprops/action-gh-release` bumped to v3** — v2 ran on Node 20 which
   is being removed from GitHub Actions runners on September 16th 2026. v3 targets
   Node 24 and silences the deprecation warning.
