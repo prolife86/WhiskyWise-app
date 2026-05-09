@@ -1,134 +1,126 @@
-package com.whiskywise.app.ui.wishlist
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
 
-import android.content.Intent
-import android.os.Bundle
-import android.view.*
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputEditText
-import com.whiskywise.app.R
-import com.whiskywise.app.databinding.FragmentWishlistBinding
-import com.whiskywise.app.model.WhiskyRequest
-import com.whiskywise.app.ui.collection.WhiskyAdapter
-import com.whiskywise.app.ui.detail.BarcodeScanActivity
-import com.whiskywise.app.util.TokenStore
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-class WishlistFragment : Fragment() {
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="16dp"
+            android:visibility="gone" />
 
-    private var _binding: FragmentWishlistBinding? = null
-    private val binding get() = _binding!!
-    private val vm: WishlistViewModel by viewModels()
-    private lateinit var adapter: WhiskyAdapter
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    // Holds a reference to the dialog's barcode field so the launcher can fill it.
-    // Must be a fragment-level field because registerForActivityResult must be
-    // called before onStart — it cannot be registered inside the dialog builder.
-    private var dialogBarcodeField: TextInputEditText? = null
+            <!-- Name -->
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_surface" />
 
-    // BarcodeScanActivity handles its own camera permission internally.
-    private val barcodeLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == android.app.Activity.RESULT_OK) {
-                val value = result.data
-                    ?.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE)
-                    ?: return@registerForActivityResult
-                dialogBarcodeField?.setText(value)
-            }
-        }
+            <!-- Distillery -->
+            <TextView
+                android:id="@+id/tvDistillery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@color/amber"
+                android:layout_marginTop="4dp" />
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentWishlistBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+            <!-- Region / Age -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginTop="16dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="REGION" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
+                    <TextView android:id="@+id/tvRegion" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="AGE" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
+                    <TextView android:id="@+id/tvAge" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
+                </LinearLayout>
+            </LinearLayout>
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // Tap a wishlist item to open the detail view (same as the collection tab)
-        adapter = WhiskyAdapter { whisky ->
-            findNavController().navigate(
-                R.id.action_wishlist_to_detail,
-                bundleOf("whiskyId" to whisky.id, "isWishlist" to true),
-            )
-        }
+            <!-- ABV -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginTop="8dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="ABV" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
+                    <TextView android:id="@+id/tvAbv" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
+                </LinearLayout>
+                <!-- Empty second column to keep consistent spacing -->
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical"/>
+            </LinearLayout>
 
-        // Supply credentials once so the adapter never touches TokenStore per bind.
-        val store = TokenStore(requireContext())
-        adapter.setCredentials(store.getServerUrl() ?: "", store.getToken() ?: "")
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.adapter = adapter
-        binding.swipeRefresh.setOnRefreshListener { vm.load() }
+            <!-- Price / Store -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:layout_marginTop="8dp">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="PRICE" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
+                    <TextView android:id="@+id/tvPrice" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="STORE" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
+                    <TextView android:id="@+id/tvStore" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:textColor="@color/on_surface"/>
+                </LinearLayout>
+            </LinearLayout>
 
-        vm.items.observe(viewLifecycleOwner) { list ->
-            adapter.submitList(list)
-            binding.emptyState.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
-        }
-        vm.isLoading.observe(viewLifecycleOwner) { binding.swipeRefresh.isRefreshing = it }
-        vm.error.observe(viewLifecycleOwner) { err ->
-            if (err != null) {
-                Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
-                vm.clearError()
-            }
-        }
+            <!-- Barcode (hidden when blank) -->
+            <LinearLayout
+                android:id="@+id/layoutBarcode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="BARCODE" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
+                <TextView android:id="@+id/tvBarcode" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:textColor="@color/on_surface"
+                    android:fontFamily="monospace"/>
+            </LinearLayout>
 
-        binding.fab.setOnClickListener { showAddDialog() }
+            <!-- Divider -->
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/divider" android:layout_marginVertical="16dp"/>
 
-        vm.load()
-    }
+            <!-- Wishlist Notes -->
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="NOTES" android:textSize="11sp" android:textStyle="bold"
+                android:textColor="@color/amber"/>
+            <TextView android:id="@+id/tvWishlistNotes" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="@color/on_surface"
+                android:layout_marginBottom="24dp"/>
 
-    /**
-     * Reload on resume so that changes made in the detail/edit screen
-     * (e.g. moving a wishlist item to the collection) are reflected immediately.
-     */
-    override fun onResume() {
-        super.onResume()
-        vm.load()
-    }
-
-    private fun showAddDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_add_wishlist, null)
-        val etName       = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etName)
-        val etDistillery = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etDistillery)
-        val etRegion     = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etRegion)
-        val etPrice      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etPrice)
-        val etStore      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etStore)
-        val etBarcode    = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etBarcode)
-        val btnScan      = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnScanBarcode)
-
-        // Store ref so the fragment-level barcodeLauncher can write back into it.
-        dialogBarcodeField = etBarcode
-        btnScan.setOnClickListener {
-            barcodeLauncher.launch(Intent(requireContext(), BarcodeScanActivity::class.java))
-        }
-        val etNotes      = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etNotes)
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Add to wishlist")
-            .setView(dialogView)
-            .setPositiveButton("Add") { _, _ ->
-                val name = etName.text.toString().trim()
-                if (name.isBlank()) {
-                    Snackbar.make(binding.root, "Name is required", Snackbar.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                vm.add(WhiskyRequest(
-                    name          = name,
-                    distillery    = etDistillery.text.toString().trim().ifBlank { null },
-                    region        = etRegion.text.toString().trim().ifBlank { null },
-                    price         = etPrice.text.toString().toDoubleOrNull(),
-                    store         = etStore.text.toString().trim().ifBlank { null },
-                    barcode       = etBarcode.text.toString().trim().ifBlank { null },
-                    wishlistNotes = etNotes.text.toString().trim().ifBlank { null },
-                ))
-            }
-            .setNegativeButton("Cancel", null)
-            .setOnDismissListener { dialogBarcodeField = null }
-            .show()
-    }
-
-    override fun onDestroyView() { super.onDestroyView(); _binding = null }
-}
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
