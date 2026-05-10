@@ -8,6 +8,49 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.9] — 2026-05-10 👁 The Watchful Pour
+
+### Added
+
+- **`X-Client-Version` header on every request** — the app now sends its version
+  string (e.g. `0.1.9`) as `X-Client-Version` with every API call. The server
+  (≥ v1.5.5) reads this header and stores it against the token, so admins and
+  users can see exactly which app version is behind each active API token without
+  any extra calls.
+
+- **Browser session list in Settings** — a new *Browser Sessions* section
+  appears above the existing API Tokens panel. It shows all active web-browser
+  logins for your account: IP address, server version, User-Agent, login time,
+  and last-seen time. Any session you don't recognise can be revoked with one
+  tap.
+
+- **Richer token metadata** — the API Tokens list now shows the origin IP and
+  client version alongside the existing created / last-used timestamps.
+
+### Changed
+
+- `SettingsFragment` now loads both tokens and sessions on open (`loadAll()`).
+- `SettingsViewModel` exposes a `sessions` `LiveData` and matching
+  `loadSessions()` / `revokeSession()` methods.
+
+### Technical
+
+- New `ApiSession` model + `SessionListResponse` wrapper in `Models.kt`.
+- `WhiskyWiseApi` gains `listSessions()` (`GET /api/auth/sessions`) and
+  `revokeSession()` (`DELETE /api/auth/session/{id}`).
+- `WhiskyWiseRepository` exposes the two new calls via the same `safeCall`
+  wrapper used by the rest of the API.
+- New `SessionAdapter` RecyclerView adapter; current session row is labelled
+  *"This session"* and its Revoke button is disabled so you can't boot yourself.
+- `item_session.xml` row layout added; `fragment_settings.xml` gains the
+  Browser Sessions header and `rvSessions` RecyclerView.
+- `TokenListItem` extended with `originIp` and `clientVersion` fields.
+
+> **Server requirement:** session listing and the `X-Client-Version` header
+> require WhiskyWise server ≥ v1.5.5.
+
+---
+
 ## [0.1.8] — 2026-05-09 🗂️ The Wishlist Detail Update
 
 ### Fixed
