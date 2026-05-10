@@ -15,7 +15,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
 | 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
 | 📋 Wishlist | Browse, add, view and edit wishlist items |
-| ⚙️ Settings | Server info, token list with per-token revoke, app version, logout |
+| ⚙️ Settings | Server info, browser sessions + API tokens with per-entry revoke, app version, logout |
 | 🌐 Self-hosted | Works with HTTP (local network) and HTTPS |
 | 🔖 Barcode | Scan barcodes via camera or enter manually |
 
@@ -122,6 +122,10 @@ app/
 | Method | Path | Purpose |
 |---|---|---|
 | `POST` | `/api/auth/token` | Exchange credentials for Bearer token |
+| `GET` | `/api/auth/tokens` | List API tokens (with IP + version metadata) |
+| `DELETE` | `/api/auth/token/{id}` | Revoke an API token |
+| `GET` | `/api/auth/sessions` | List active browser sessions *(requires server ≥ v1.5.5)* |
+| `DELETE` | `/api/auth/session/{id}` | Revoke a browser session *(requires server ≥ v1.5.5)* |
 | `GET` | `/api/v1/stats` | Dashboard summary |
 | `GET` | `/api/v1/collection` | Paginated collection with filters |
 | `GET/POST/PUT/DELETE` | `/api/v1/whisky/{id}` | CRUD for collection entries |
@@ -137,7 +141,8 @@ app/
 - The Bearer token is stored in Android `EncryptedSharedPreferences` (AES256-GCM).
 - Your password is sent only once at login and is never persisted.
 - HTTP is permitted to support local network / Home Assistant setups. Use HTTPS in production.
-- Tokens can be revoked individually from Settings → API Tokens → Revoke, or all at once via Log out.
+- The app sends `X-Client-Version` on every request so the server can track which app version is behind each token.
+- Tokens and browser sessions can be revoked individually from Settings, or all at once via Log out.
 
 ---
 
