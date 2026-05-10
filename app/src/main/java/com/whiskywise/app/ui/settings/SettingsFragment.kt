@@ -18,6 +18,7 @@ class SettingsFragment : Fragment() {
     private val vm: SettingsViewModel by viewModels()
 
     private lateinit var tokenAdapter: TokenAdapter
+    private lateinit var sessionAdapter: SessionAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
@@ -29,6 +30,7 @@ class SettingsFragment : Fragment() {
         binding.tvServerUrl.text  = store.getServerUrl() ?: "—"
         binding.tvAppVersion.text = "v${com.whiskywise.app.BuildConfig.VERSION_NAME} (${com.whiskywise.app.BuildConfig.VERSION_CODE})"
 
+        // ── API Tokens ────────────────────────────────────────────────────────
         tokenAdapter = TokenAdapter { token ->
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Revoke token?")
@@ -40,8 +42,22 @@ class SettingsFragment : Fragment() {
         binding.rvTokens.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTokens.adapter = tokenAdapter
 
-        vm.tokens.observe(viewLifecycleOwner) { tokens -> tokenAdapter.submitList(tokens) }
-        vm.error.observe(viewLifecycleOwner)  { err ->
+        // ── Browser Sessions ──────────────────────────────────────────────────
+        sessionAdapter = SessionAdapter { session ->
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Revoke session?")
+                .setMessage("This will sign out the browser session from ${session.originIp ?: "unknown IP"}.")
+                .setPositiveButton("Revoke") { _, _ -> vm.revokeSession(session.id) }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+        binding.rvSessions.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvSessions.adapter = sessionAdapter
+
+        // ── Observe ───────────────────────────────────────────────────────────
+        vm.tokens.observe(viewLifecycleOwner)   { tokens   -> tokenAdapter.submitList(tokens) }
+        vm.sessions.observe(viewLifecycleOwner) { sessions -> sessionAdapter.submitList(sessions) }
+        vm.error.observe(viewLifecycleOwner)    { err ->
             if (err != null) {
                 Snackbar.make(binding.root, err, Snackbar.LENGTH_LONG).show()
                 vm.clearError()
@@ -57,7 +73,7 @@ class SettingsFragment : Fragment() {
                 .show()
         }
 
-        vm.loadTokens()
+        vm.loadAll()
     }
 
     override fun onDestroyView() { super.onDestroyView(); _binding = null }

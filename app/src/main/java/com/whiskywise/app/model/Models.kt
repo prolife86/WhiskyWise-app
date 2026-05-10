@@ -97,8 +97,22 @@ data class TokenListItem(
     val id: Int,
     val name: String,
     val created: String,
-    @SerializedName("last_used") val lastUsed: String?,
+    @SerializedName("last_used")      val lastUsed: String?,
+    @SerializedName("origin_ip")      val originIp: String?,
+    @SerializedName("client_version") val clientVersion: String?,
 )
+
+data class ApiSession(
+    val id: Int,
+    val created: String,
+    @SerializedName("last_seen")      val lastSeen: String?,
+    @SerializedName("origin_ip")      val originIp: String?,
+    @SerializedName("client_version") val clientVersion: String?,
+    @SerializedName("user_agent")     val userAgent: String?,
+    val current: Boolean,
+)
+
+data class SessionListResponse(val data: List<ApiSession>)
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 

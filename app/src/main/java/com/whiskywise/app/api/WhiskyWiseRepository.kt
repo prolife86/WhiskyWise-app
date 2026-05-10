@@ -22,6 +22,12 @@ class WhiskyWiseRepository {
     suspend fun revokeToken(id: Int): Result<Unit> =
         safeCall { api.revokeToken(id) }.map { }
 
+    suspend fun listSessions(): Result<List<ApiSession>> =
+        safeCall { api.listSessions() }.map { it.data }
+
+    suspend fun revokeSession(id: Int): Result<Unit> =
+        safeCall { api.revokeSession(id) }.map { }
+
     // ── Stats ─────────────────────────────────────────────────────────────────
 
     suspend fun getStats(): Result<Stats> =

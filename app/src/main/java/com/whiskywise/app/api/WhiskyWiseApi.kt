@@ -18,6 +18,12 @@ interface WhiskyWiseApi {
     @DELETE("api/auth/token/{tid}")
     suspend fun revokeToken(@Path("tid") tid: Int): Response<DeleteResponse>
 
+    @GET("api/auth/sessions")
+    suspend fun listSessions(): Response<SessionListResponse>
+
+    @DELETE("api/auth/session/{sid}")
+    suspend fun revokeSession(@Path("sid") sid: Int): Response<DeleteResponse>
+
     // ── Stats ─────────────────────────────────────────────────────────────────
 
     @GET("api/v1/stats")
