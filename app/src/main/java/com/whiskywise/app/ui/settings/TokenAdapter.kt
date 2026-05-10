@@ -15,7 +15,9 @@ class TokenAdapter(private val onRevoke: (TokenListItem) -> Unit) :
         fun bind(item: TokenListItem) {
             b.tvTokenName.text = item.name
             val last = if (item.lastUsed != null) "Last used: ${item.lastUsed}" else "Never used"
-            b.tvTokenMeta.text = "Created: ${item.created}  ·  $last"
+            val ip  = item.originIp?.let { "  ·  IP: $it" } ?: ""
+            val ver = item.clientVersion?.let { "  ·  v$it" } ?: ""
+            b.tvTokenMeta.text = "Created: ${item.created}  ·  $last$ip$ver"
             b.btnRevokeToken.setOnClickListener { onRevoke(item) }
         }
     }
