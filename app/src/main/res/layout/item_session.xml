@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="10dp">
+
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_weight="1" android:orientation="vertical">
+
+        <!-- IP · version · user agent -->
+        <TextView android:id="@+id/tvSessionMeta"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textColor="@color/on_surface" android:textStyle="bold"
+            android:ellipsize="end" android:maxLines="2"/>
+
+        <!-- Logged in / last seen timestamps -->
+        <TextView android:id="@+id/tvSessionLastSeen"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textColor="@color/on_surface_dim" android:textSize="12sp"/>
+
+        <!-- "This session" badge — hidden unless current -->
+        <TextView android:id="@+id/tvSessionCurrent"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="This session"
+            android:textColor="@color/amber" android:textSize="11sp"
+            android:textStyle="italic"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton android:id="@+id/btnRevokeSession"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Revoke" android:layout_marginStart="8dp"/>
+
+</LinearLayout>
