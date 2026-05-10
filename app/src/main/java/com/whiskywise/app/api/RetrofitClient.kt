@@ -41,14 +41,14 @@ object RetrofitClient {
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val token = tokenStore.getToken()
-                val request = if (token != null) {
-                    chain.request().newBuilder()
-                        .addHeader("Authorization", "Bearer $token")
-                        .build()
-                } else {
-                    chain.request()
+                val builder = chain.request().newBuilder()
+                    // Always send the app version so the server can track which
+                    // client version is associated with each API token.
+                    .addHeader("X-Client-Version", BuildConfig.VERSION_NAME)
+                if (token != null) {
+                    builder.addHeader("Authorization", "Bearer $token")
                 }
-                chain.proceed(request)
+                chain.proceed(builder.build())
             }
             .addInterceptor(logging)
             .connectTimeout(15, TimeUnit.SECONDS)
