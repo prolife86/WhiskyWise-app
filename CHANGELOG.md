@@ -8,6 +8,18 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.1.10] — 2026-05-11 🗂 Sort Yourself Out
+
+### Added
+
+- **Sort spinner on Collection and Wishlist** — a dropdown at the top of both
+  views lets you order bottles by Distillery, Name, Price, or Score, each
+  available ascending (↑) or descending (↓). Collection defaults to Score ↓;
+  Wishlist defaults to Distillery ↑. Selection survives swipe-to-refresh and
+  resume. Requires server ≥ v1.5.7.
+
+---
+
 ## [0.1.9] — 2026-05-10 👁 The Watchful Pour
 
 ### Added

@@ -6,6 +6,19 @@
     android:orientation="vertical"
     android:background="@color/background">
 
+    <!-- Sort spinner -->
+    <Spinner
+        android:id="@+id/spinnerSort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:entries="@array/sort_labels"
+        android:dropDownWidth="match_parent" />
+
     <!-- FrameLayout lets the FAB float over the list at bottom-end -->
     <FrameLayout
         android:layout_width="match_parent"

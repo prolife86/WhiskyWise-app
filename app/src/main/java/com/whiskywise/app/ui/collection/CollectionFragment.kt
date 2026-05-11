@@ -3,6 +3,8 @@ package com.whiskywise.app.ui.collection
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
@@ -10,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.chip.Chip
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentCollectionBinding
 import com.whiskywise.app.ui.detail.BarcodeScanActivity
@@ -23,14 +24,24 @@ class CollectionFragment : Fragment() {
     private val vm: CollectionViewModel by viewModels()
     private lateinit var adapter: WhiskyAdapter
 
-    // BarcodeScanActivity handles camera permission itself — same as edit screen.
+    // Parallel arrays — index maps label → (sort, order) pair.
+    private val sortKeys = listOf(
+        "distillery" to "asc",
+        "distillery" to "desc",
+        "name"       to "asc",
+        "name"       to "desc",
+        "price"      to "asc",
+        "price"      to "desc",
+        "score"      to "asc",
+        "score"      to "desc",
+    )
+
     private val barcodeLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == android.app.Activity.RESULT_OK) {
                 val barcode = result.data
                     ?.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE)
                     ?: return@registerForActivityResult
-                // Fill the search bar and trigger a search.
                 binding.searchView.setQuery(barcode, true)
             }
         }
@@ -48,7 +59,6 @@ class CollectionFragment : Fragment() {
             )
         }
 
-        // Supply credentials once so the adapter never touches TokenStore per bind.
         val store = TokenStore(requireContext())
         adapter.setCredentials(store.getServerUrl() ?: "", store.getToken() ?: "")
 
@@ -67,7 +77,7 @@ class CollectionFragment : Fragment() {
             } else binding.errorBanner.visibility = View.GONE
         }
 
-        // Status filter chips — update checked state to reflect active filter.
+        // Status filter chips
         val chipMap = listOf(
             null       to binding.chipAll,
             "open"     to binding.chipOpen,
@@ -78,12 +88,32 @@ class CollectionFragment : Fragment() {
             chip.setOnClickListener {
                 vm.currentStatus = status
                 vm.load()
-                // Mark the tapped chip checked and clear the rest.
                 chipMap.forEach { (_, c) -> c.isChecked = (c == chip) }
             }
         }
-        // Reflect the current status on initial draw.
         chipMap.forEach { (status, chip) -> chip.isChecked = (status == vm.currentStatus) }
+
+        // Sort spinner
+        val sortLabels = resources.getStringArray(R.array.sort_labels)
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortLabels)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerSort.adapter = spinnerAdapter
+
+        // Restore selection to match current VM state (default: score ↓ = index 7)
+        val defaultIndex = sortKeys.indexOfFirst { it.first == vm.currentSort && it.second == vm.currentOrder }
+        binding.spinnerSort.setSelection(if (defaultIndex >= 0) defaultIndex else 7, false)
+
+        binding.spinnerSort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                val (sort, order) = sortKeys[pos]
+                if (sort != vm.currentSort || order != vm.currentOrder) {
+                    vm.currentSort = sort
+                    vm.currentOrder = order
+                    vm.load()
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
 
         // Search
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -102,11 +132,6 @@ class CollectionFragment : Fragment() {
         vm.load()
     }
 
-    /**
-     * Reload the collection every time the fragment becomes visible again.
-     * This ensures the list is up-to-date after returning from the Edit/Create
-     * screen without requiring a manual swipe-to-refresh.
-     */
     override fun onResume() {
         super.onResume()
         vm.load()

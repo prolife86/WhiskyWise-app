@@ -24,6 +24,7 @@ class CollectionViewModel : ViewModel() {
     var currentQuery: String? = null
     var currentStatus: String? = null
     var currentSort: String = "score"
+    var currentOrder: String = "desc"
 
     fun load() {
         _isLoading.value = true
@@ -32,7 +33,7 @@ class CollectionViewModel : ViewModel() {
                 query  = currentQuery,
                 status = currentStatus,
                 sort   = currentSort,
-                order  = "desc",
+                order  = currentOrder,
             ).fold(
                 onSuccess = { resp ->
                     _whiskies.value = resp.data

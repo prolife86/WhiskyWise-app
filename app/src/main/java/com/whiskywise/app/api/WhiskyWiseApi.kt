@@ -64,7 +64,10 @@ interface WhiskyWiseApi {
     // ── Wishlist ──────────────────────────────────────────────────────────────
 
     @GET("api/v1/wishlist")
-    suspend fun getWishlist(): Response<WhiskyListResponse>
+    suspend fun getWishlist(
+        @Query("sort")  sort: String?  = null,
+        @Query("order") order: String? = null,
+    ): Response<WhiskyListResponse>
 
     @POST("api/v1/wishlist")
     suspend fun createWishlistItem(@Body body: WhiskyRequest): Response<WhiskyResponse>

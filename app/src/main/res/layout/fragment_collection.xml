@@ -76,6 +76,19 @@
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
+    <!-- Sort spinner -->
+    <Spinner
+        android:id="@+id/spinnerSort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:entries="@array/sort_labels"
+        android:dropDownWidth="match_parent" />
+
     <TextView
         android:id="@+id/errorBanner"
         android:layout_width="match_parent"
