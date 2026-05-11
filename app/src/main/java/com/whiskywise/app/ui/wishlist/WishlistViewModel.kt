@@ -30,10 +30,13 @@ class WishlistViewModel : ViewModel() {
     private val _editSaved = MutableLiveData(false)
     val editSaved: LiveData<Boolean> = _editSaved
 
+    var currentSort: String = "distillery"
+    var currentOrder: String = "asc"
+
     fun load() {
         _isLoading.value = true
         viewModelScope.launch {
-            repo.getWishlist().fold(
+            repo.getWishlist(sort = currentSort, order = currentOrder).fold(
                 onSuccess = { _items.value = it; _error.value = null },
                 onFailure = { _error.value = it.message },
             )
