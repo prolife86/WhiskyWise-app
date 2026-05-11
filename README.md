@@ -10,7 +10,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | Feature | Details |
 |---|---|
 | 🔐 Secure login | Bearer token stored in EncryptedSharedPreferences (AES256-GCM) |
-| 🥃 Collection | Browse, search, filter by status (open / stashed / retired) |
+| 🥃 Collection | Browse, search, filter by status (open / stashed / retired), sort by distillery / name / price / score *(New in v0.1.10)* |
 | 📝 Tasting notes | Full nose / palate / finish fields |
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
 | 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
