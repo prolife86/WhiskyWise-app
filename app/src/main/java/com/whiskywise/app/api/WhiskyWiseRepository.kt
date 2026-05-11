@@ -62,8 +62,11 @@ class WhiskyWiseRepository {
 
     // ── Wishlist ──────────────────────────────────────────────────────────────
 
-    suspend fun getWishlist(): Result<List<Whisky>> =
-        safeCall { api.getWishlist() }.map { it.data }
+    suspend fun getWishlist(
+        sort: String? = null,
+        order: String? = null,
+    ): Result<List<Whisky>> =
+        safeCall { api.getWishlist(sort, order) }.map { it.data }
 
     suspend fun createWishlistItem(body: WhiskyRequest): Result<Whisky> =
         safeCall { api.createWishlistItem(body) }.map { it.data }
