@@ -31,4 +31,16 @@
         <item>undefinable</item>
         <item>complicated</item>
     </string-array>
+
+    <!-- Sort options — display labels (matches sort_values order exactly) -->
+    <string-array name="sort_labels">
+        <item>Distillery ↑</item>
+        <item>Distillery ↓</item>
+        <item>Name ↑</item>
+        <item>Name ↓</item>
+        <item>Price ↑</item>
+        <item>Price ↓</item>
+        <item>Score ↑</item>
+        <item>Score ↓</item>
+    </string-array>
 </resources>
