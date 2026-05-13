@@ -12,7 +12,7 @@ import java.util.Locale
 // Locale used for all decimal display throughout the app.
 // Using a fixed locale (Dutch) ensures decimal commas are always shown,
 // regardless of the device's system locale setting.
-private val DISPLAY_LOCALE = Locale("nl", "NL")
+internal val DISPLAY_LOCALE = Locale("nl", "NL")
 
 /**
  * Load a whisky photo from the server into this ImageView.
