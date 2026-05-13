@@ -34,60 +34,87 @@
 
     </LinearLayout>
 
-    <!-- Status filter chips -->
-    <HorizontalScrollView
+    <!-- Filter row: status chips | sort spinner | retired checkbox -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:background="@color/surface">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/surface"
+        android:paddingStart="4dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
 
-        <com.google.android.material.chip.ChipGroup
+        <!-- Status chips (scrollable, takes available space) -->
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All"
+                    style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipOpen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Open"
+                    style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipStashed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Stashed"
+                    style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFinished"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Finished"
+                    style="@style/Widget.MaterialComponents.Chip.Filter" />
+
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <!-- Sort spinner (fixed width) -->
+        <Spinner
+            android:id="@+id/spinnerSort"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:background="@color/surface"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:entries="@array/sort_labels"
+            android:dropDownWidth="160dp" />
+
+        <!-- Retired checkbox -->
+        <CheckBox
+            android:id="@+id/checkRetired"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:text="Retired"
+            android:textSize="12sp"
+            android:textColor="@color/on_surface_dim"
+            android:paddingStart="4dp"
+            android:button="@null"
+            android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
+            android:drawablePadding="4dp" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipAll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="All"
-                style="@style/Widget.MaterialComponents.Chip.Filter" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipOpen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Open"
-                style="@style/Widget.MaterialComponents.Chip.Filter" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipStashed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stashed"
-                style="@style/Widget.MaterialComponents.Chip.Filter" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipFinished"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Finished"
-                style="@style/Widget.MaterialComponents.Chip.Filter" />
-        </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
-
-    <!-- Sort spinner -->
-    <Spinner
-        android:id="@+id/spinnerSort"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/surface"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:entries="@array/sort_labels"
-        android:dropDownWidth="match_parent" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/errorBanner"
