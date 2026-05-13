@@ -1,3 +1,5 @@
+<img src="Icons/Icon 1.png" alt="WhiskyWise" width="80" align="left" style="margin-right:16px"/>
+
 # WhiskyWise Mobile App
 
 A native Android companion app for the [WhiskyWise](https://github.com/prolife86/WhiskyWise) self-hosted spirits tracker.
