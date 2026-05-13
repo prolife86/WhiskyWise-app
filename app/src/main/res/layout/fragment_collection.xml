@@ -89,7 +89,7 @@
             android:id="@+id/checkRetired"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Retired"
+            android:text="Inc. retired"
             android:textSize="12sp"
             android:textColor="@color/on_surface_dim" />
 
