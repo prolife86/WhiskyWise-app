@@ -5,6 +5,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 The app connects to a self-hosted [WhiskyWise](https://github.com/prolife86/WhiskyWise) server.  
 See that project's changelog for server-side changes.
+
 ---
 
 ## [0.2.1] — 2026-05-13 📅 Date Detectives
