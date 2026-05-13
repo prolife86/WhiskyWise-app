@@ -8,6 +8,44 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.2.0] — 2026-05-13 🔢 Comma Sense
+
+### Added
+
+- **Retired filter** — a checkbox in the filter bar lets you include or exclude
+  retired bottles. Unchecked by default (retired bottles hidden); tick it to
+  show the full collection including retired entries. Passes `retired=no` or
+  omits the parameter to the server accordingly. Requires server ≥ v1.5.8.
+
+- **"Updated" sort option** — two new entries at the bottom of the sort spinner:
+  *Updated ↑* (oldest change first) and *Updated ↓* (most recently changed
+  first). Requires server ≥ v1.5.8.
+
+### Changed
+
+- **Sort order: Name now listed before Distillery** in the sort spinner. Name
+  is the more common sort anchor; Distillery is immediately below it.
+
+- **Filter bar redesigned** — the status chips, sort spinner, and new retired
+  checkbox now share a single compact horizontal row instead of stacking
+  vertically. The chips scroll horizontally if needed; the spinner and checkbox
+  are fixed on the right.
+
+- **Decimal commas guaranteed on all devices** — ABV, Price, and Score are now
+  formatted with an explicit Dutch locale (`nl_NL`) instead of relying on the
+  device's system locale. Users on a phone set to English no longer see `8.5`
+  while users on Dutch see `8,5` — it's always `8,5`. The database and API
+  continue to use dot-decimal; this is a display-only change.
+
+### Notes
+
+- No model or API changes beyond the new `retired` query parameter.
+- Requires server ≥ v1.5.8 for the retired filter and updated sort to work;
+  the app degrades gracefully against older servers (retired checkbox has no
+  effect; updated sort falls back to server default).
+
+---
+
 ## [0.1.10] — 2026-05-11 🗂 Sort Yourself Out
 
 ### Added

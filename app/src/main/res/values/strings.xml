@@ -34,13 +34,15 @@
 
     <!-- Sort options — display labels (matches sort_values order exactly) -->
     <string-array name="sort_labels">
-        <item>Distillery ↑</item>
-        <item>Distillery ↓</item>
         <item>Name ↑</item>
         <item>Name ↓</item>
+        <item>Distillery ↑</item>
+        <item>Distillery ↓</item>
         <item>Price ↑</item>
         <item>Price ↓</item>
         <item>Score ↑</item>
         <item>Score ↓</item>
+        <item>Updated ↑</item>
+        <item>Updated ↓</item>
     </string-array>
 </resources>

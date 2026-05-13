@@ -25,15 +25,18 @@ class CollectionViewModel : ViewModel() {
     var currentStatus: String? = null
     var currentSort: String = "score"
     var currentOrder: String = "desc"
+    /** When false, retired bottles are excluded from the list. */
+    var showRetired: Boolean = false
 
     fun load() {
         _isLoading.value = true
         viewModelScope.launch {
             repo.getCollection(
-                query  = currentQuery,
-                status = currentStatus,
-                sort   = currentSort,
-                order  = currentOrder,
+                query   = currentQuery,
+                status  = currentStatus,
+                sort    = currentSort,
+                order   = currentOrder,
+                retired = if (showRetired) null else "no",
             ).fold(
                 onSuccess = { resp ->
                     _whiskies.value = resp.data
