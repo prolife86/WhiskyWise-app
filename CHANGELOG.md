@@ -8,6 +8,21 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.2.2] — 2026-05-13 🚩 Retired and Proud
+
+### Changed
+
+- **Retired badge moved to the top of the detail page** — the "Retired" label
+  now appears as a red pill between the whisky name and the score, making it
+  immediately visible without having to scroll. Previously it was a small amber
+  text below the Status field. The Store field is no longer displaced.
+
+### Notes
+
+- No server changes required.
+
+---
+
 ## [0.2.1] — 2026-05-13 📅 Date Detectives
 
 ### Added
