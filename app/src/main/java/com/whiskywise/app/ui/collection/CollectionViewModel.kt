@@ -36,7 +36,7 @@ class CollectionViewModel : ViewModel() {
                 status  = currentStatus,
                 sort    = currentSort,
                 order   = currentOrder,
-                retired = if (showRetired) "yes" else null,
+                retired = if (showRetired) null else "no",
             ).fold(
                 onSuccess = { resp ->
                     _whiskies.value = resp.data
