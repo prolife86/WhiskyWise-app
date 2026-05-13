@@ -32,6 +32,14 @@
         <item>complicated</item>
     </string-array>
 
+    <!-- Status filter labels for spinner (index 0 = All = null filter) -->
+    <string-array name="status_labels">
+        <item>All</item>
+        <item>Open</item>
+        <item>Stashed</item>
+        <item>Finished</item>
+    </string-array>
+
     <!-- Sort options — display labels (matches sort_values order exactly) -->
     <string-array name="sort_labels">
         <item>Name ↑</item>
