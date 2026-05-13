@@ -12,7 +12,7 @@ import java.util.Locale
 // Locale used for all decimal display throughout the app.
 // Using a fixed locale (Dutch) ensures decimal commas are always shown,
 // regardless of the device's system locale setting.
-private val DISPLAY_LOCALE = Locale("nl", "NL")
+internal val DISPLAY_LOCALE = Locale("nl", "NL")
 
 /**
  * Load a whisky photo from the server into this ImageView.
@@ -79,3 +79,19 @@ fun ImageView.loadWhiskyPhoto(
 fun Double?.formatScore(): String = if (this == null) "—" else String.format(DISPLAY_LOCALE, "%.1f", this)
 fun Double?.formatAbv(): String   = if (this == null) "—" else String.format(DISPLAY_LOCALE, "%.1f%%", this)
 fun Double?.formatPrice(): String = if (this == null) "—" else String.format(DISPLAY_LOCALE, "€%.2f", this)
+
+/**
+ * Format an ISO 8601 date-time string (e.g. "2026-05-07T14:32:11+00:00")
+ * to a human-readable date (e.g. "07 May 2026").
+ * Returns "—" if the input is null or unparseable.
+ */
+fun String?.formatDate(): String {
+    if (this.isNullOrBlank()) return "—"
+    return try {
+        val input  = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+        val output = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
+        output.format(input.parse(this.take(10))!!)
+    } catch (e: Exception) {
+        "—"
+    }
+}

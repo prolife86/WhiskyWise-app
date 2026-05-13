@@ -8,6 +8,32 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.2.1] — 2026-05-13 📅 Date Detectives
+
+### Added
+
+- **Added and Updated dates on the detail page** — the bottom of every whisky
+  detail screen now shows two date fields side by side: *Added* (when the entry
+  was first created) and *Updated* (when it was last changed). Dates are
+  formatted as `07 May 2026`. Both values were already returned by the API;
+  they just weren't displayed.
+
+### Fixed
+
+- **ABV, Price, and Score input fields now accept decimal commas** — fields were
+  using `inputType="numberDecimal"` which on many devices only allows a dot.
+  All three are now `inputType="text"` restricted to digits and `.,` so both
+  `8,5` and `8.5` are accepted. Pre-filled values when editing now show with a
+  comma, consistent with the detail and collection views.
+
+### Notes
+
+- No server changes required. Works with any server version that returns
+  `created_at` and `updated_at` in the whisky detail response (all versions
+  since v1.5.0).
+
+---
+
 ## [0.2.0] — 2026-05-13 🔢 Comma Sense
 
 ### Added
