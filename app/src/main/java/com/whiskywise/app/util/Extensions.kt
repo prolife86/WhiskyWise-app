@@ -7,6 +7,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.whiskywise.app.R
+import java.util.Locale
+
+// Locale used for all decimal display throughout the app.
+// Using a fixed locale (Dutch) ensures decimal commas are always shown,
+// regardless of the device's system locale setting.
+private val DISPLAY_LOCALE = Locale("nl", "NL")
 
 /**
  * Load a whisky photo from the server into this ImageView.
@@ -70,6 +76,6 @@ fun ImageView.loadWhiskyPhoto(
     }
 }
 
-fun Double?.formatScore(): String = if (this == null) "—" else String.format("%.1f", this)
-fun Double?.formatAbv(): String   = if (this == null) "—" else String.format("%.1f%%", this)
-fun Double?.formatPrice(): String = if (this == null) "—" else "€%.2f".format(this)
+fun Double?.formatScore(): String = if (this == null) "—" else String.format(DISPLAY_LOCALE, "%.1f", this)
+fun Double?.formatAbv(): String   = if (this == null) "—" else String.format(DISPLAY_LOCALE, "%.1f%%", this)
+fun Double?.formatPrice(): String = if (this == null) "—" else String.format(DISPLAY_LOCALE, "€%.2f", this)
