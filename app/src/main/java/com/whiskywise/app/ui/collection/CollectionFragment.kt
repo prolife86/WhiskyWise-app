@@ -24,6 +24,9 @@ class CollectionFragment : Fragment() {
     private val vm: CollectionViewModel by viewModels()
     private lateinit var adapter: WhiskyAdapter
 
+    // Index 0 = All (null), 1 = open, 2 = stashed, 3 = finished
+    private val statusKeys = listOf(null, "open", "stashed", "finished")
+
     // Parallel arrays — index maps label → (sort, order) pair.
     private val sortKeys = listOf(
         "name"       to "asc",
@@ -79,21 +82,25 @@ class CollectionFragment : Fragment() {
             } else binding.errorBanner.visibility = View.GONE
         }
 
-        // Status filter chips
-        val chipMap = listOf(
-            null       to binding.chipAll,
-            "open"     to binding.chipOpen,
-            "stashed"  to binding.chipStashed,
-            "finished" to binding.chipFinished,
-        )
-        chipMap.forEach { (status, chip) ->
-            chip.setOnClickListener {
-                vm.currentStatus = status
-                vm.load()
-                chipMap.forEach { (_, c) -> c.isChecked = (c == chip) }
+        // Status spinner
+        val statusLabels = resources.getStringArray(R.array.status_labels)
+        val statusAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, statusLabels)
+        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerStatus.adapter = statusAdapter
+
+        val defaultStatusIndex = statusKeys.indexOf(vm.currentStatus).coerceAtLeast(0)
+        binding.spinnerStatus.setSelection(defaultStatusIndex, false)
+
+        binding.spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                val status = statusKeys[pos]
+                if (status != vm.currentStatus) {
+                    vm.currentStatus = status
+                    vm.load()
+                }
             }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-        chipMap.forEach { (status, chip) -> chip.isChecked = (status == vm.currentStatus) }
 
         // Retired checkbox
         binding.checkRetired.isChecked = vm.showRetired
@@ -108,7 +115,6 @@ class CollectionFragment : Fragment() {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerSort.adapter = spinnerAdapter
 
-        // Restore selection to match current VM state (default: score ↓ = index 7)
         val defaultIndex = sortKeys.indexOfFirst { it.first == vm.currentSort && it.second == vm.currentOrder }
         binding.spinnerSort.setSelection(if (defaultIndex >= 0) defaultIndex else 7, false)
 
