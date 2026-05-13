@@ -41,10 +41,11 @@ class WhiskyWiseRepository {
         status: String? = null,
         sort: String? = null,
         order: String? = null,
+        retired: String? = null,
         limit: Int = 200,
         offset: Int = 0,
     ): Result<CollectionResponse> =
-        safeCall { api.getCollection(query, flavor, null, null, status, sort, order, limit, offset) }
+        safeCall { api.getCollection(query, flavor, null, null, status, sort, order, limit, offset, retired) }
 
     // ── Whisky CRUD ───────────────────────────────────────────────────────────
 
