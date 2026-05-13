@@ -111,9 +111,9 @@ class EditWhiskyFragment : Fragment() {
                 binding.etDistillery.setText(w.distillery)
                 binding.etRegion.setText(w.region)
                 binding.etAge.setText(w.age)
-                binding.etAbv.setText(w.abv?.toString())
-                binding.etScore.setText(w.score?.toString())
-                binding.etPrice.setText(w.price?.toString())
+                binding.etAbv.setText(w.abv?.let { String.format(com.whiskywise.app.util.DISPLAY_LOCALE, "%.1f", it) })
+                binding.etScore.setText(w.score?.let { String.format(com.whiskywise.app.util.DISPLAY_LOCALE, "%.1f", it) })
+                binding.etPrice.setText(w.price?.let { String.format(com.whiskywise.app.util.DISPLAY_LOCALE, "%.2f", it) })
                 binding.etStore.setText(w.store)
                 binding.etBarcode.setText(w.barcode)
                 binding.etNose.setText(w.nose)
@@ -322,9 +322,9 @@ class EditWhiskyFragment : Fragment() {
             distillery     = binding.etDistillery.text.toString().trim().ifBlank { null },
             region         = binding.etRegion.text.toString().trim().ifBlank { null },
             age            = binding.etAge.text.toString().trim().ifBlank { null },
-            abv            = binding.etAbv.text.toString().toDoubleOrNull(),
-            score          = binding.etScore.text.toString().toDoubleOrNull(),
-            price          = binding.etPrice.text.toString().toDoubleOrNull(),
+            abv            = binding.etAbv.text.toString().replace(',', '.').toDoubleOrNull(),
+            score          = binding.etScore.text.toString().replace(',', '.').toDoubleOrNull(),
+            price          = binding.etPrice.text.toString().replace(',', '.').toDoubleOrNull(),
             store          = binding.etStore.text.toString().trim().ifBlank { null },
             barcode        = binding.etBarcode.text.toString().trim().ifBlank { null },
             nose           = binding.etNose.text.toString().trim().ifBlank { null },
