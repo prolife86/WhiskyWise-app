@@ -5,7 +5,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 The app connects to a self-hosted [WhiskyWise](https://github.com/prolife86/WhiskyWise) server.  
 See that project's changelog for server-side changes.
-
 ---
 
 ## [0.2.1] — 2026-05-13 📅 Date Detectives
@@ -17,6 +16,14 @@ See that project's changelog for server-side changes.
   was first created) and *Updated* (when it was last changed). Dates are
   formatted as `07 May 2026`. Both values were already returned by the API;
   they just weren't displayed.
+
+### Fixed
+
+- **ABV, Price, and Score input fields now accept decimal commas** — fields were
+  using `inputType="numberDecimal"` which on many devices only allows a dot.
+  All three are now `inputType="text"` restricted to digits and `.,` so both
+  `8,5` and `8.5` are accepted. Pre-filled values when editing now show with a
+  comma, consistent with the detail and collection views.
 
 ### Notes
 
