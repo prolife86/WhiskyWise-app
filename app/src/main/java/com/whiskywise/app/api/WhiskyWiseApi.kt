@@ -42,6 +42,7 @@ interface WhiskyWiseApi {
         @Query("order")     order: String?  = null,
         @Query("limit")     limit: Int      = 200,
         @Query("offset")    offset: Int     = 0,
+        @Query("retired")   retired: String? = null,
     ): Response<CollectionResponse>
 
     // ── Whisky CRUD ───────────────────────────────────────────────────────────
