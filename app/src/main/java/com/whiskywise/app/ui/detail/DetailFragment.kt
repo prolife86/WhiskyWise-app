@@ -19,6 +19,7 @@ import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentDetailBinding
 import com.whiskywise.app.util.TokenStore
 import com.whiskywise.app.util.formatAbv
+import com.whiskywise.app.util.formatDate
 import com.whiskywise.app.util.formatPrice
 import com.whiskywise.app.util.formatScore
 
@@ -96,6 +97,8 @@ class DetailFragment : Fragment() {
             binding.tvFinish.text     = w.finish?.ifBlank { "—" } ?: "—"
             binding.tvNotes.text      = w.notes?.ifBlank { "—" } ?: "—"
             binding.tvFlavor.text     = w.flavorProfile?.replaceFirstChar { it.uppercase() } ?: "—"
+            binding.tvCreatedAt.text  = w.createdAt.formatDate()
+            binding.tvUpdatedAt.text  = w.updatedAt.formatDate()
 
             if (!w.barcode.isNullOrBlank()) {
                 binding.layoutBarcode.visibility = View.VISIBLE
