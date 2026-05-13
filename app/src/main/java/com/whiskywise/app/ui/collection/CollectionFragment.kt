@@ -26,14 +26,16 @@ class CollectionFragment : Fragment() {
 
     // Parallel arrays — index maps label → (sort, order) pair.
     private val sortKeys = listOf(
-        "distillery" to "asc",
-        "distillery" to "desc",
         "name"       to "asc",
         "name"       to "desc",
+        "distillery" to "asc",
+        "distillery" to "desc",
         "price"      to "asc",
         "price"      to "desc",
         "score"      to "asc",
         "score"      to "desc",
+        "updated"    to "asc",
+        "updated"    to "desc",
     )
 
     private val barcodeLauncher =
@@ -92,6 +94,13 @@ class CollectionFragment : Fragment() {
             }
         }
         chipMap.forEach { (status, chip) -> chip.isChecked = (status == vm.currentStatus) }
+
+        // Retired checkbox
+        binding.checkRetired.isChecked = vm.showRetired
+        binding.checkRetired.setOnCheckedChangeListener { _, checked ->
+            vm.showRetired = checked
+            vm.load()
+        }
 
         // Sort spinner
         val sortLabels = resources.getStringArray(R.array.sort_labels)
