@@ -18,8 +18,8 @@ See that project's changelog for server-side changes.
 ### Notes
  
 - No server changes required.
+  
 ---
-
 
 ## [0.2.2] — 2026-05-13 🚩 Retired and Proud
 
