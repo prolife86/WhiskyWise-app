@@ -26,7 +26,7 @@ class CollectionViewModel : ViewModel() {
     var currentSort: String = "score"
     var currentOrder: String = "desc"
     /** When false, retired bottles are excluded from the list. */
-    var showRetired: Boolean = false
+    var showRetired: Boolean = true
 
     fun load() {
         _isLoading.value = true
