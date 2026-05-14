@@ -7,6 +7,19 @@ The app connects to a self-hosted [WhiskyWise](https://github.com/prolife86/Whis
 See that project's changelog for server-side changes.
 
 ---
+ 
+## [0.2.3] — 2026-05-14 ☑️ Retired by Default
+ 
+### Changed
+ 
+- **"Inc. retired" checkbox is now checked by default** — all bottles including
+  retired ones are shown when opening the app. Uncheck to hide retired bottles.
+  Previously the checkbox opened unchecked, hiding retired bottles on first load.
+### Notes
+ 
+- No server changes required.
+---
+
 
 ## [0.2.2] — 2026-05-13 🚩 Retired and Proud
 
