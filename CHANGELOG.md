@@ -24,20 +24,39 @@ See that project's changelog for server-side changes.
   notes, barcode, and everything else. Previously there was no way to promote a wishlist
   item from the app; you had to add the bottle manually as a new collection entry.
 
+- **Age and ABV in the wishlist quick-add dialog** — the Add to Wishlist dialog now
+  includes Age and ABV fields alongside the existing Name, Distillery, Region, Price,
+  Store, Barcode, and Notes fields. Previously Age and ABV were only available through
+  the full edit screen after creating the entry, matching the server's wishlist form.
+
+### Fixed
+
+- **Build error: `wishlist` field missing from `WhiskyRequest`** — the `promoteToCollection`
+  function referenced `wishlist = false` on `WhiskyRequest`, which did not have that field.
+  Added `val wishlist: Boolean? = null` to `WhiskyRequest`; existing callers are unaffected.
+- **Build error: coroutine `launch` unresolved in `CollectionFragment`** — `kotlinx.coroutines.launch`
+  was not imported alongside `lifecycleScope`. Import added; `viewLifecycleOwner.` prefix
+  removed from the call site (redundant inside a Fragment).
+
 ### Technical
 
 - `WhiskyWiseApi`: added `barcodeLookup(@Query code)` mapping to `GET api/barcode-lookup`.
-- `Models.kt`: added `BarcodeLookupResponse(found, id?, name?)`.
+- `Models.kt`: added `BarcodeLookupResponse(found, id?, name?)`; added `val wishlist: Boolean? = null`
+  to `WhiskyRequest`.
 - `WhiskyWiseRepository`: added `barcodeLookup()` and `promoteToCollection()`. The promote
   call fetches the current item first to preserve all fields, then PUTs with `wishlist=false`
   and the chosen status.
 - `WishlistViewModel`: added `promote(id, status, onDone)`.
 - `CollectionFragment`: barcode result now calls `handleScannedBarcode()` which runs a
   lookup coroutine before deciding whether to navigate, prompt, or fall back to search.
+  Fixed `lifecycleScope` import.
 - `EditWhiskyFragment`: reads optional `prefillBarcode` argument and populates `etBarcode`
   on new-entry screens.
 - `WishlistDetailFragment`: inflates new `menu_wishlist_detail` (Move to Collection + Edit
   + Delete); wires `showPromoteDialog()` with a single-choice status selector.
+- `WishlistFragment`: `showAddDialog()` now reads `etAge` and `etAbv` and passes them to
+  `WhiskyRequest`.
+- `dialog_add_wishlist.xml`: added Age and ABV as a side-by-side row between Region and Price.
 - New `menu_wishlist_detail.xml` menu resource — keeps the promote action off collection
   detail pages, which continue to use the shared `menu_detail.xml`.
 
