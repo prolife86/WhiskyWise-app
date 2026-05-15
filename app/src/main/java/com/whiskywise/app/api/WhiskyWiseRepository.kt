@@ -38,14 +38,16 @@ class WhiskyWiseRepository {
 
     /** Promote a wishlist item to the collection by flipping wishlist=false and setting status. */
     suspend fun promoteToCollection(id: Int, status: String): Result<Whisky> {
-        // Fetch the current item first so we preserve name and all other fields
+        // GET works on both collection and wishlist entries (no wishlist filter).
+        // PUT /api/v1/whisky/{id} filters wishlist=False and returns 404 for
+        // wishlist items, so we must use PUT /api/v1/wishlist/{id} instead.
         val current = getWhisky(id).getOrElse { return Result.failure(it) }
         val req = WhiskyRequest(
-            name    = current.name,
+            name     = current.name,
             wishlist = false,
-            status  = status,
+            status   = status,
         )
-        return safeCall { api.updateWhisky(id, req) }.map { it.data }
+        return safeCall { api.updateWishlistItem(id, req) }.map { it.data }
     }
 
     // ── Collection ────────────────────────────────────────────────────────────
