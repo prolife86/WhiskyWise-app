@@ -33,16 +33,18 @@ class CollectionFragment : Fragment() {
     private val statusKeys = listOf(null, "open", "stashed", "finished")
 
     private val sortKeys = listOf(
-        "name"       to "asc",
-        "name"       to "desc",
-        "distillery" to "asc",
-        "distillery" to "desc",
-        "price"      to "asc",
-        "price"      to "desc",
-        "score"      to "asc",
-        "score"      to "desc",
-        "updated"    to "asc",
-        "updated"    to "desc",
+        "name"        to "asc",
+        "name"        to "desc",
+        "distillery"  to "asc",
+        "distillery"  to "desc",
+        "price"       to "asc",
+        "price"       to "desc",
+        "score"       to "asc",
+        "score"       to "desc",
+        "updated"     to "asc",
+        "updated"     to "desc",
+        "last_tasted" to "asc",
+        "last_tasted" to "desc",
     )
 
     // Index 0 = All (null), then matches flavor_filter_labels exactly
