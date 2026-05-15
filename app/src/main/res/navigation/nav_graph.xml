@@ -74,6 +74,11 @@
             android:name="whiskyId"
             app:argType="integer"
             android:defaultValue="-1" />
+
+        <argument
+            android:name="prefillBarcode"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 
     <!-- Edit (wishlist only) -->
