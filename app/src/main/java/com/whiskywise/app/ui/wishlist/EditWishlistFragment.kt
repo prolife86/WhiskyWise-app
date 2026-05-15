@@ -77,6 +77,8 @@ class EditWishlistFragment : Fragment() {
                 binding.etName.setText(w.name)
                 binding.etDistillery.setText(w.distillery)
                 binding.etRegion.setText(w.region)
+                binding.etAge.setText(w.age)
+                binding.etAbv.setText(w.abv?.let { String.format("%.1f", it).replace('.', ',') })
                 binding.etPrice.setText(w.price?.toString())
                 binding.etStore.setText(w.store)
                 binding.etBarcode.setText(w.barcode)
@@ -114,6 +116,8 @@ class EditWishlistFragment : Fragment() {
             name          = name,
             distillery    = binding.etDistillery.text.toString().trim().ifBlank { null },
             region        = binding.etRegion.text.toString().trim().ifBlank { null },
+            age           = binding.etAge.text.toString().trim().ifBlank { null },
+            abv           = binding.etAbv.text.toString().replace(',', '.').toDoubleOrNull(),
             price         = binding.etPrice.text.toString().toDoubleOrNull(),
             store         = binding.etStore.text.toString().trim().ifBlank { null },
             barcode       = binding.etBarcode.text.toString().trim().ifBlank { null },
