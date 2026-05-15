@@ -52,6 +52,8 @@
         <item>Score ↓</item>
         <item>Updated ↑</item>
         <item>Updated ↓</item>
+        <item>Last Tasted ↑</item>
+        <item>Last Tasted ↓</item>
     </string-array>
 
     <!-- Wishlist sort options (no Updated column on wishlist) -->
