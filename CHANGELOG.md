@@ -8,6 +8,46 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.2.4] — 2026-05-15 🛒 Scan, Know, Decide
+
+### Added
+
+- **Barcode scan "not found" prompt** — scanning a barcode on the Collection screen
+  that isn't in your collection now offers two choices: navigate to Add Whisky with
+  the barcode pre-filled, or fall back to a regular text search. Previously the scanner
+  just submitted a text search silently with no feedback. Matches the web UI behaviour
+  introduced in server v1.5.9.
+
+- **Move to Collection from Wishlist Detail** — a new 🛒 toolbar icon on the Wishlist
+  Detail screen opens a status picker (Stashed / Open / Finished). Confirming promotes
+  the item to your collection, preserving all existing fields — name, distillery, price,
+  notes, barcode, and everything else. Previously there was no way to promote a wishlist
+  item from the app; you had to add the bottle manually as a new collection entry.
+
+### Technical
+
+- `WhiskyWiseApi`: added `barcodeLookup(@Query code)` mapping to `GET api/barcode-lookup`.
+- `Models.kt`: added `BarcodeLookupResponse(found, id?, name?)`.
+- `WhiskyWiseRepository`: added `barcodeLookup()` and `promoteToCollection()`. The promote
+  call fetches the current item first to preserve all fields, then PUTs with `wishlist=false`
+  and the chosen status.
+- `WishlistViewModel`: added `promote(id, status, onDone)`.
+- `CollectionFragment`: barcode result now calls `handleScannedBarcode()` which runs a
+  lookup coroutine before deciding whether to navigate, prompt, or fall back to search.
+- `EditWhiskyFragment`: reads optional `prefillBarcode` argument and populates `etBarcode`
+  on new-entry screens.
+- `WishlistDetailFragment`: inflates new `menu_wishlist_detail` (Move to Collection + Edit
+  + Delete); wires `showPromoteDialog()` with a single-choice status selector.
+- New `menu_wishlist_detail.xml` menu resource — keeps the promote action off collection
+  detail pages, which continue to use the shared `menu_detail.xml`.
+
+### Notes
+
+- No server changes required. Works with server v1.5.9+.
+- No database changes.
+
+---
+
 ## [0.2.3] — 2026-05-15 🔍 Filter Everything (and Lock the Backdoor)
 
 ### Security
