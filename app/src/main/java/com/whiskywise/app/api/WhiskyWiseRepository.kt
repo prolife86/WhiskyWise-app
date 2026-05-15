@@ -38,14 +38,38 @@ class WhiskyWiseRepository {
 
     /** Promote a wishlist item to the collection by flipping wishlist=false and setting status. */
     suspend fun promoteToCollection(id: Int, status: String): Result<Whisky> {
-        // GET works on both collection and wishlist entries (no wishlist filter).
-        // PUT /api/v1/whisky/{id} filters wishlist=False and returns 404 for
-        // wishlist items, so we must use PUT /api/v1/wishlist/{id} instead.
+        // Fetch the full item so we can re-send all existing fields.
+        // serializeNulls() is active on the Gson instance, so any null field
+        // in the request body will overwrite the stored value on the server.
+        // By mapping every existing field into the request we preserve them all.
         val current = getWhisky(id).getOrElse { return Result.failure(it) }
         val req = WhiskyRequest(
-            name     = current.name,
-            wishlist = false,
-            status   = status,
+            name           = current.name,
+            distillery     = current.distillery,
+            region         = current.region,
+            age            = current.age,
+            abv            = current.abv,
+            barcode        = current.barcode,
+            status         = status,
+            retired        = current.retired,
+            price          = current.price,
+            store          = current.store,
+            notes          = current.notes,
+            nose           = current.nose,
+            palate         = current.palate,
+            finish         = current.finish,
+            flavorProfile  = current.flavorProfile,
+            score          = current.score,
+            radarWoody     = current.radarWoody,
+            radarSmoky     = current.radarSmoky,
+            radarCereal    = current.radarCereal,
+            radarFloral    = current.radarFloral,
+            radarFruity    = current.radarFruity,
+            radarMedicinal = current.radarMedicinal,
+            radarFiery     = current.radarFiery,
+            wishlistNotes  = current.wishlistNotes,
+            lastTasted     = current.lastTasted,
+            wishlist       = false,
         )
         return safeCall { api.updateWishlistItem(id, req) }.map { it.data }
     }
