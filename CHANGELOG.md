@@ -7,18 +7,75 @@ The app connects to a self-hosted [WhiskyWise](https://github.com/prolife86/Whis
 See that project's changelog for server-side changes.
 
 ---
- 
-## [0.2.3] — 2026-05-14 ☑️ Retired by Default
- 
+
+## [0.2.3] — 2026-05-15 🔍 Filter Everything (and Lock the Backdoor)
+
+### Security
+
+- **`android:allowBackup` disabled** — the manifest previously set `allowBackup="true"`,
+  which permitted Android and Google Backup to copy the app's data partition (including
+  `EncryptedSharedPreferences`) to a cloud or device backup. Although the preferences are
+  encrypted, the Keystore key does not transfer — which is exactly the AEADBadTagException
+  bug patched in v0.1.1. Disabling backup means the server URL and Bearer token are never
+  included in any backup. Users switching phones will be asked to log in again, which is
+  the correct behaviour for a credential store.
+
+### Added
+
+- **Infinite scroll on the Collection screen** — the list now loads in pages of 50 as you
+  scroll down. When you reach within 8 items of the bottom, the next page is fetched
+  automatically and appended. A thin amber progress bar appears at the bottom of the screen
+  while a page is loading. Swipe-to-refresh always reloads from the first page. Any filter
+  or sort change also resets to page 1. Previously the collection was capped at a hardcoded
+  limit of 200 entries with no way to see the rest.
+
+- **Flavour filter** — a second filter row on the Collection screen now includes a Dominant
+  Flavour spinner (All / Floral / Smoky / Peaty / …). Previously wired in the API layer
+  but absent from the UI.
+
+- **Min Score and Max Price filters** — the same second filter row adds two text inputs:
+  Min Score and Max €. Both were already supported by the API; this surfaces them in the
+  app for the first time.
+
+- **Last Tasted date field** — a date picker (calendar dialog) is now available on the
+  Add / Edit Whisky form. The selected date is shown on the Whisky Detail page and on the
+  Wishlist Detail page if previously set on the web. Requires server v1.5.9.
+
 ### Changed
- 
-- **"Inc. retired" checkbox is now checked by default** — all bottles including
-  retired ones are shown when opening the app. Uncheck to hide retired bottles.
-  Previously the checkbox opened unchecked, hiding retired bottles on first load.
+
+- **"Inc. retired" checkbox is now checked by default** — all bottles including retired
+  ones are shown when opening the app. Uncheck to hide retired bottles. Previously the
+  checkbox opened unchecked, hiding retired bottles on first load. Now matches the web UI
+  default.
+
+- **Wishlist sort spinner now uses the correct label set** — the sort spinner on the
+  Wishlist tab previously used the collection's 10-item sort list (which includes Updated
+  ↑/↓). The wishlist API has no "updated" sort, so selecting those items would silently
+  send an unrecognised parameter. The wishlist now has its own 8-item list.
+
+### Technical
+
+- `CollectionViewModel`: replaced single `load()` with `load()` (reset + first page) and
+  `loadMore()` (append next page). Added `_isLoadingMore` LiveData, `pageSize = 50`,
+  `currentOffset`, and `allLoaded` guard. Added `currentFlavor`, `currentMinScore`,
+  `currentMaxPrice`; `showRetired` default changed to `true`.
+- `CollectionFragment`: added `RecyclerView.OnScrollListener` triggering `vm.loadMore()`
+  when within 8 items of the bottom. Removed Snackbar truncation warning. Wired flavour
+  spinner, min score and max price inputs.
+- `WhiskyWiseRepository.getCollection()`: `minScore` and `maxPrice` now pass through from
+  the ViewModel instead of being hardcoded to `null`.
+- `Models.kt`: `last_tasted` added to `Whisky` and `WhiskyRequest`; `finished` field added
+  to `Stats` (default 0 for backwards compatibility with servers older than v1.5.9).
+- `strings.xml`: added `flavor_filter_labels` and `wishlist_sort_labels` arrays.
+- `fragment_collection.xml`: added `loadingMoreBar` (`ProgressBar`, indeterminate, amber
+  tint) anchored above the FAB.
+
 ### Notes
- 
-- No server changes required.
-  
+
+- Requires server v1.5.9 or later for Last Tasted to persist. All other changes work with
+  any server version.
+- No breaking changes.
+
 ---
 
 ## [0.2.2] — 2026-05-13 🚩 Retired and Proud
