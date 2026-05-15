@@ -90,6 +90,21 @@
                     android:fontFamily="monospace"/>
             </LinearLayout>
 
+            <!-- Last Tasted (hidden when null) -->
+            <LinearLayout
+                android:id="@+id/layoutLastTasted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="LAST TASTED" android:textSize="11sp" android:textColor="@color/on_surface_dim"/>
+                <TextView android:id="@+id/tvLastTasted" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:textColor="@color/on_surface"
+                    android:textSize="13sp"/>
+            </LinearLayout>
+
             <!-- Divider -->
             <View android:layout_width="match_parent" android:layout_height="1dp"
                 android:background="@color/divider" android:layout_marginVertical="16dp"/>
