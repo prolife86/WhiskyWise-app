@@ -8,6 +8,30 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.2.6] — 2026-05-15 🥃 Wishlist Knows More Now
+
+### Added
+
+- **Age and ABV on the Wishlist Detail screen** — previously only visible after tapping
+  Edit, Age and ABV are now displayed on the read-only detail view alongside Region,
+  Price, Store, Barcode, and Notes.
+
+- **Age and ABV on the Edit Wishlist screen** — the full edit form now includes Age and
+  ABV fields, loaded from the server and saved back on submit.
+
+### Technical
+
+- `fragment_wishlist_detail.xml`: added Age and ABV side-by-side row between Region and
+  Price/Store.
+- `WishlistDetailFragment`: populates `tvAge` and `tvAbv`; ABV formatted with comma
+  decimal to match the rest of the app.
+- `fragment_edit_wishlist.xml`: added Age and ABV side-by-side row between Region and
+  Price/Store.
+- `EditWishlistFragment`: sets `etAge` and `etAbv` on load; reads and passes both to
+  `WhiskyRequest` on save.
+
+---
+
 ## [0.2.5] — 2026-05-15 📅 Sort by When You Last Poured
 
 ### Added
