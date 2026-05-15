@@ -1,8 +1,14 @@
 package com.whiskywise.app.ui.wishlist
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -12,17 +18,23 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import com.whiskywise.app.api.WhiskyWiseRepository
 import com.whiskywise.app.databinding.FragmentEditWishlistBinding
 import com.whiskywise.app.model.WhiskyRequest
 import com.whiskywise.app.ui.detail.BarcodeScanActivity
-import androidx.activity.result.contract.ActivityResultContracts
+import com.whiskywise.app.util.TokenStore
+import com.whiskywise.app.util.loadWhiskyPhoto
+import java.io.File
+import java.io.FileOutputStream
 
 /**
  * Edit screen for wishlist items.
- * Mirrors the server's wishlist_form.html exactly:
- * Name, Distillery, Region, Price, Store, Barcode, Wishlist Notes.
- * No tasting notes, score, status, radar or photos — those only make
- * sense for bottles you've actually opened.
+ * Mirrors the server's wishlist_form.html:
+ * Name, Distillery, Region, Age, ABV, Price, Store, Barcode, Notes, Cover Photo.
+ * The cover photo is stored as photo_front and becomes the Front Label photo
+ * when the item is promoted to the collection.
  */
 class EditWishlistFragment : Fragment() {
 
@@ -30,10 +42,34 @@ class EditWishlistFragment : Fragment() {
     private val binding get() = _binding!!
     private val vm: WishlistViewModel by viewModels()
 
+    private var pendingCoverUri: Uri? = null      // queued for upload on save
+    private var coverFileToUpload: File? = null   // local temp file
+    private var editingId: Int = -1
+
+    // ── Camera permission ─────────────────────────────────────────────────────
+    private val cameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) launchCamera()
+            else Snackbar.make(binding.root, "Camera permission required", Snackbar.LENGTH_SHORT).show()
+        }
+
+    // ── Camera capture ────────────────────────────────────────────────────────
+    private var cameraOutputUri: Uri? = null
+    private val cameraPicker =
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (!success) return@registerForActivityResult
+            val uri = cameraOutputUri ?: return@registerForActivityResult
+            handlePickedUri(uri)
+        }
+
+    // ── Gallery picker ────────────────────────────────────────────────────────
+    private val galleryPicker =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri ?: return@registerForActivityResult
+            handlePickedUri(uri)
+        }
+
     // ── Barcode scanner ───────────────────────────────────────────────────────
-    // BarcodeScanActivity handles its own camera permission request internally,
-    // so no additional permission code is needed here — identical pattern to
-    // EditWhiskyFragment.
     private val barcodeLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == android.app.Activity.RESULT_OK) {
@@ -52,10 +88,14 @@ class EditWishlistFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val id = arguments?.getInt("whiskyId", -1) ?: -1
+        editingId = arguments?.getInt("whiskyId", -1) ?: -1
 
-        // Trash icon in the toolbar — only shown when editing an existing item.
-        if (id > 0) {
+        val store     = TokenStore(requireContext())
+        val serverUrl = store.getServerUrl() ?: ""
+        val token     = store.getToken() ?: ""
+
+        // Trash icon — only when editing an existing item
+        if (editingId > 0) {
             val menuHost: MenuHost = requireActivity()
             menuHost.addMenuProvider(object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -63,15 +103,13 @@ class EditWishlistFragment : Fragment() {
                 }
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                     if (menuItem.itemId == R.id.action_delete) {
-                        confirmDelete(id); return true
+                        confirmDelete(editingId); return true
                     }
                     return false
                 }
             }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        }
 
-        if (id > 0) {
-            vm.loadItem(id)
+            vm.loadItem(editingId)
             vm.editItem.observe(viewLifecycleOwner) { w ->
                 if (w == null) return@observe
                 binding.etName.setText(w.name)
@@ -83,6 +121,10 @@ class EditWishlistFragment : Fragment() {
                 binding.etStore.setText(w.store)
                 binding.etBarcode.setText(w.barcode)
                 binding.etWishlistNotes.setText(w.wishlistNotes)
+                // Load existing cover photo
+                if (!w.photoFront.isNullOrBlank()) {
+                    binding.ivPhotoCover.loadWhiskyPhoto(requireContext(), w.photoFront, serverUrl, token)
+                }
             }
         }
 
@@ -98,13 +140,59 @@ class EditWishlistFragment : Fragment() {
         vm.editSaved.observe(viewLifecycleOwner) { saved ->
             if (saved) {
                 vm.clearEditSaved()
+                // Upload cover photo if one was picked
+                val file = coverFileToUpload
+                if (file != null && editingId > 0) {
+                    lifecycleScope.launch {
+                        WhiskyWiseRepository().uploadPhoto(editingId, "front", file)
+                    }
+                }
                 findNavController().popBackStack()
             }
         }
 
-        binding.btnSave.setOnClickListener { save(id) }
+        binding.btnSave.setOnClickListener { save(editingId) }
         binding.btnScanBarcode.setOnClickListener {
             barcodeLauncher.launch(Intent(requireContext(), BarcodeScanActivity::class.java))
+        }
+        binding.btnPickCover.setOnClickListener { showPhotoSourceDialog() }
+        binding.ivPhotoCover.setOnClickListener { showPhotoSourceDialog() }
+    }
+
+    private fun showPhotoSourceDialog() {
+        val options = arrayOf("📷  Take photo", "🖼️  Choose from gallery")
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle("Cover photo")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                            == PackageManager.PERMISSION_GRANTED) launchCamera()
+                        else cameraPermission.launch(Manifest.permission.CAMERA)
+                    }
+                    1 -> galleryPicker.launch("image/*")
+                }
+            }.show()
+    }
+
+    private fun launchCamera() {
+        val tmp = File(requireContext().cacheDir, "wishlist_cover_${System.currentTimeMillis()}.jpg")
+        val uri = FileProvider.getUriForFile(
+            requireContext(), "${requireContext().packageName}.fileprovider", tmp
+        )
+        cameraOutputUri = uri
+        cameraPicker.launch(uri)
+    }
+
+    private fun handlePickedUri(uri: Uri) {
+        try {
+            val tmp = File(requireContext().cacheDir, "wishlist_cover_${System.currentTimeMillis()}.jpg")
+            requireContext().contentResolver.openInputStream(uri)
+                ?.use { input -> FileOutputStream(tmp).use { input.copyTo(it) } }
+            coverFileToUpload = tmp
+            binding.ivPhotoCover.setImageURI(uri)
+        } catch (e: Exception) {
+            Snackbar.make(binding.root, "Could not read image", Snackbar.LENGTH_SHORT).show()
         }
     }
 
