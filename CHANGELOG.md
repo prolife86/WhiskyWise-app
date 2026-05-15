@@ -8,6 +8,39 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.2.7] — 2026-05-15 📸 Wishlist Gets a Face
+
+### Added
+
+- **Cover photo on the Wishlist Edit screen** — tap the photo slot or the 📷 button to
+  pick from your gallery or take a new shot. The photo is uploaded as `photo_front` and
+  shows on both the Edit and Detail screens.
+
+- **Cover photo on the Wishlist Detail screen** — if a cover photo has been set (from
+  the app or the web), it is shown at the top of the detail view.
+
+- **Photo becomes Front Label on promotion** — when a wishlist item is moved to the
+  collection the photo is already stored as `photo_front`, so it appears immediately as
+  the Front Label in the collection detail view. No re-upload required.
+
+### Technical
+
+- `fragment_edit_wishlist.xml`: added `ivPhotoCover` (ImageView) and `btnPickCover`
+  (MaterialButton overlay) in a 120×120 dp FrameLayout before the Save button.
+- `fragment_wishlist_detail.xml`: added full-width `ivPhotoCover` (200 dp height,
+  hidden when null) at the top of the detail view.
+- `EditWishlistFragment`: camera permission request, `TakePicture` launcher, gallery
+  launcher, `handlePickedUri()`, `launchCamera()`. Photo uploaded via
+  `WhiskyWiseRepository.uploadPhoto()` after item save completes.
+- `WishlistDetailFragment`: loads `photoFront` via `loadWhiskyPhoto()` extension.
+
+### Notes
+
+- Requires server v1.6.4 for photo upload to work.
+- No database changes.
+
+---
+
 ## [0.2.6] — 2026-05-15 🥃 Wishlist Knows More Now
 
 ### Added
