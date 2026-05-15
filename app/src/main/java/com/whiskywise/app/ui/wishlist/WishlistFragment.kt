@@ -120,6 +120,8 @@ class WishlistFragment : Fragment() {
         val etName       = dialogView.findViewById<TextInputEditText>(R.id.etName)
         val etDistillery = dialogView.findViewById<TextInputEditText>(R.id.etDistillery)
         val etRegion     = dialogView.findViewById<TextInputEditText>(R.id.etRegion)
+        val etAge        = dialogView.findViewById<TextInputEditText>(R.id.etAge)
+        val etAbv        = dialogView.findViewById<TextInputEditText>(R.id.etAbv)
         val etPrice      = dialogView.findViewById<TextInputEditText>(R.id.etPrice)
         val etStore      = dialogView.findViewById<TextInputEditText>(R.id.etStore)
         val etBarcode    = dialogView.findViewById<TextInputEditText>(R.id.etBarcode)
@@ -144,6 +146,8 @@ class WishlistFragment : Fragment() {
                     name          = name,
                     distillery    = etDistillery.text.toString().trim().ifBlank { null },
                     region        = etRegion.text.toString().trim().ifBlank { null },
+                    age           = etAge.text.toString().trim().ifBlank { null },
+                    abv           = etAbv.text.toString().replace(',', '.').toDoubleOrNull(),
                     price         = etPrice.text.toString().toDoubleOrNull(),
                     store         = etStore.text.toString().trim().ifBlank { null },
                     barcode       = etBarcode.text.toString().trim().ifBlank { null },
