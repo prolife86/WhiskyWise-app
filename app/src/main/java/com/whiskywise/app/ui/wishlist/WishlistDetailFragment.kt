@@ -14,7 +14,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentWishlistDetailBinding
+import com.whiskywise.app.util.TokenStore
 import com.whiskywise.app.util.formatPrice
+import com.whiskywise.app.util.loadWhiskyPhoto
 
 /**
  * Read-only detail screen for a wishlist item.
@@ -42,6 +44,9 @@ class WishlistDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val id = arguments?.getInt("whiskyId", -1) ?: -1
+        val store     = TokenStore(requireContext())
+        val serverUrl = store.getServerUrl() ?: ""
+        val token     = store.getToken() ?: ""
 
         // Toolbar: move to collection, edit, delete
         val menuHost: MenuHost = requireActivity()
@@ -68,11 +73,15 @@ class WishlistDetailFragment : Fragment() {
         vm.editItem.observe(viewLifecycleOwner) { w ->
             if (w == null) return@observe
 
+            if (!w.photoFront.isNullOrBlank()) {
+                binding.ivPhotoCover.visibility = View.VISIBLE
+                binding.ivPhotoCover.loadWhiskyPhoto(requireContext(), w.photoFront, serverUrl, token)
+            } else {
+                binding.ivPhotoCover.visibility = View.GONE
+            }
             binding.tvName.text       = w.name
             binding.tvDistillery.text = w.distillery ?: "—"
             binding.tvRegion.text     = w.region ?: "—"
-            binding.tvAge.text        = w.age ?: "—"
-            binding.tvAbv.text        = w.abv?.let { String.format("%.1f%%", it).replace('.', ',') } ?: "—"
             binding.tvPrice.text      = w.price.formatPrice()
             binding.tvStore.text      = w.store ?: "—"
 
