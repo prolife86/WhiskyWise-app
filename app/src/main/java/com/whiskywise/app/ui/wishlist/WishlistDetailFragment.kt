@@ -82,6 +82,8 @@ class WishlistDetailFragment : Fragment() {
             binding.tvName.text       = w.name
             binding.tvDistillery.text = w.distillery ?: "—"
             binding.tvRegion.text     = w.region ?: "—"
+            binding.tvAge.text        = w.age ?: "—"
+            binding.tvAbv.text        = w.abv?.let { String.format("%.1f%%", it).replace('.', ',') } ?: "—"
             binding.tvPrice.text      = w.price.formatPrice()
             binding.tvStore.text      = w.store ?: "—"
 
