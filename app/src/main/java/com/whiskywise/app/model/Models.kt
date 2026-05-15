@@ -158,4 +158,5 @@ data class WhiskyRequest(
     @SerializedName("radar_fiery")     val radarFiery: Int = 0,
     @SerializedName("wishlist_notes")  val wishlistNotes: String? = null,
     @SerializedName("last_tasted")     val lastTasted: String? = null,
+    val wishlist: Boolean? = null,
 )
