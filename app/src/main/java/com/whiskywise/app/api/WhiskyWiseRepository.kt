@@ -33,6 +33,21 @@ class WhiskyWiseRepository {
     suspend fun getStats(): Result<Stats> =
         safeCall { api.getStats() }.map { it.data }
 
+    suspend fun barcodeLookup(code: String): Result<BarcodeLookupResponse> =
+        safeCall { api.barcodeLookup(code) }.map { it }
+
+    /** Promote a wishlist item to the collection by flipping wishlist=false and setting status. */
+    suspend fun promoteToCollection(id: Int, status: String): Result<Whisky> {
+        // Fetch the current item first so we preserve name and all other fields
+        val current = getWhisky(id).getOrElse { return Result.failure(it) }
+        val req = WhiskyRequest(
+            name    = current.name,
+            wishlist = false,
+            status  = status,
+        )
+        return safeCall { api.updateWhisky(id, req) }.map { it.data }
+    }
+
     // ── Collection ────────────────────────────────────────────────────────────
 
     suspend fun getCollection(

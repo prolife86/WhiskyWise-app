@@ -11,10 +11,12 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.whiskywise.app.R
+import com.whiskywise.app.api.WhiskyWiseRepository
 import com.whiskywise.app.databinding.FragmentCollectionBinding
 import com.whiskywise.app.ui.detail.BarcodeScanActivity
 import com.whiskywise.app.util.TokenStore
@@ -56,7 +58,7 @@ class CollectionFragment : Fragment() {
                 val barcode = result.data
                     ?.getStringExtra(BarcodeScanActivity.EXTRA_BARCODE)
                     ?: return@registerForActivityResult
-                binding.searchView.setQuery(barcode, true)
+                handleScannedBarcode(barcode)
             }
         }
 
@@ -206,6 +208,49 @@ class CollectionFragment : Fragment() {
         }
 
         vm.load()
+    }
+
+    /**
+     * After a barcode scan on the collection screen:
+     * 1. Look it up via the API.
+     * 2. Found     → navigate straight to that whisky's detail page.
+     * 3. Not found → offer to add a new whisky with the barcode pre-filled.
+     * 4. Error     → fall back to a regular text search.
+     */
+    private fun handleScannedBarcode(barcode: String) {
+        val repo = WhiskyWiseRepository()
+        viewLifecycleOwner.lifecycleScope.launch {
+            repo.barcodeLookup(barcode).fold(
+                onSuccess = { result ->
+                    if (result.found && result.id != null) {
+                        // Already in collection — go straight to it
+                        findNavController().navigate(
+                            R.id.action_collection_to_detail,
+                            bundleOf("whiskyId" to result.id),
+                        )
+                    } else {
+                        // Not found — offer to add
+                        com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("Barcode not found")
+                            .setMessage("This barcode isn't in your collection yet.\n\nAdd a new whisky with it pre-filled?")
+                            .setPositiveButton("Add whisky") { _, _ ->
+                                findNavController().navigate(
+                                    R.id.action_collection_to_edit,
+                                    bundleOf("whiskyId" to -1, "prefillBarcode" to barcode),
+                                )
+                            }
+                            .setNegativeButton("Search instead") { _, _ ->
+                                binding.searchView.setQuery(barcode, true)
+                            }
+                            .show()
+                    }
+                },
+                onFailure = {
+                    // Network error — fall back to text search
+                    binding.searchView.setQuery(barcode, true)
+                },
+            )
+        }
     }
 
     override fun onResume() {

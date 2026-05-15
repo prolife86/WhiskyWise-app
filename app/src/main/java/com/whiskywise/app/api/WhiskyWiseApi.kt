@@ -29,6 +29,13 @@ interface WhiskyWiseApi {
     @GET("api/v1/stats")
     suspend fun getStats(): Response<StatsResponse>
 
+    // ── Barcode lookup ────────────────────────────────────────────────────────
+
+    @GET("api/barcode-lookup")
+    suspend fun barcodeLookup(
+        @Query("code") code: String,
+    ): Response<BarcodeLookupResponse>
+
     // ── Collection ────────────────────────────────────────────────────────────
 
     @GET("api/v1/collection")

@@ -94,6 +94,7 @@ class EditWhiskyFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         editingId = arguments?.getInt("whiskyId", -1) ?: -1
+        val prefillBarcode = arguments?.getString("prefillBarcode")
 
         wireSliders()
         wirePhotoButtons()
@@ -188,6 +189,11 @@ class EditWhiskyFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener { save() }
+
+        // Pre-fill barcode if we arrived from a "not found" scan prompt
+        if (!prefillBarcode.isNullOrBlank() && editingId < 0) {
+            binding.etBarcode.setText(prefillBarcode)
+        }
 
         // Last Tasted — open a DatePickerDialog on tap
         binding.etLastTasted.setOnClickListener {

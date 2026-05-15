@@ -87,6 +87,14 @@ class WishlistViewModel : ViewModel() {
         }
     }
 
+    /** Promote a wishlist item to the collection with the given status. */
+    fun promote(id: Int, status: String, onDone: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val ok = repo.promoteToCollection(id, status).isSuccess
+            onDone(ok)
+        }
+    }
+
     /** Clear the error after it has been shown to the user. */
     fun clearError() { _error.value = null }
 }
