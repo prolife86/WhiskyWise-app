@@ -71,6 +71,7 @@ data class TokenListResponse(val data: List<TokenListItem>)
 data class StatsResponse(val data: Stats)
 data class DeleteResponse(val data: Map<String, Int>)
 data class PhotoResponse(val data: Map<String, String?>)
+data class BarcodeLookupResponse(val found: Boolean, val id: Int? = null, val name: String? = null)
 
 data class CollectionResponse(
     val data: List<Whisky>,
