@@ -7,45 +7,63 @@ The app connects to a self-hosted [WhiskyWise](https://github.com/prolife86/Whis
 See that project's changelog for server-side changes.
 
 ---
-
+ 
 ## [0.2.4] — 2026-05-15 🛒 Scan, Know, Decide
-
+ 
 ### Added
-
+ 
 - **Barcode scan "not found" prompt** — scanning a barcode on the Collection screen
   that isn't in your collection now offers two choices: navigate to Add Whisky with
   the barcode pre-filled, or fall back to a regular text search. Previously the scanner
   just submitted a text search silently with no feedback. Matches the web UI behaviour
   introduced in server v1.5.9.
-
 - **Move to Collection from Wishlist Detail** — a new 🛒 toolbar icon on the Wishlist
   Detail screen opens a status picker (Stashed / Open / Finished). Confirming promotes
   the item to your collection, preserving all existing fields — name, distillery, price,
   notes, barcode, and everything else. Previously there was no way to promote a wishlist
   item from the app; you had to add the bottle manually as a new collection entry.
-
 - **Age and ABV in the wishlist quick-add dialog** — the Add to Wishlist dialog now
   includes Age and ABV fields alongside the existing Name, Distillery, Region, Price,
   Store, Barcode, and Notes fields. Previously Age and ABV were only available through
   the full edit screen after creating the entry, matching the server's wishlist form.
-
 ### Fixed
-
+ 
 - **Build error: `wishlist` field missing from `WhiskyRequest`** — the `promoteToCollection`
   function referenced `wishlist = false` on `WhiskyRequest`, which did not have that field.
   Added `val wishlist: Boolean? = null` to `WhiskyRequest`; existing callers are unaffected.
 - **Build error: coroutine `launch` unresolved in `CollectionFragment`** — `kotlinx.coroutines.launch`
   was not imported alongside `lifecycleScope`. Import added; `viewLifecycleOwner.` prefix
   removed from the call site (redundant inside a Fragment).
-
+- **Move to Collection wiped existing fields** — `serializeNulls()` is active on the Gson
+  instance, so the promote request was sending every unset field as `null`, overwriting the
+  barcode, name, and all other existing data on the server. The promote call now fetches the
+  full item first and maps every existing field into the request body before flipping
+  `wishlist=false`, preserving all data on promotion.
+- **Move to Collection used wrong endpoint** — `promoteToCollection` was calling
+  `PUT /api/v1/whisky/{id}` which filters `wishlist=False` server-side and returns 404 for
+  wishlist items. Fixed to use `PUT /api/v1/wishlist/{id}` which accepts wishlist items and
+  allows flipping the `wishlist` flag.
+- **Barcode prefill not delivered to Add Whisky screen** — `prefillBarcode` was passed via
+  `bundleOf` but not declared as an argument in `nav_graph.xml`. The Navigation Component
+  silently drops undeclared bundle keys, so the barcode arrived as null. Argument declared;
+  barcode now pre-fills correctly.
+- **Move to Collection icon showed a ➕** — `@android:drawable/ic_menu_add` (a plus in a
+  circle) was used for the wishlist promote action. Replaced with `ic_wishlist` (the
+  bookmark/star icon already in the app's drawables) which correctly signals the item's
+  origin rather than a generic add action.
+- **Barcode lookup always fell back to text search** — `/api/barcode-lookup` on the server
+  was protected by `@login_required` (session cookies only) instead of `@api_login_required`
+  (Bearer token + session). The app sends a Bearer token; the server returned 401; the
+  `onFailure` branch silently submitted a text search. Fixed server-side in v1.6.0.
 ### Technical
-
+ 
 - `WhiskyWiseApi`: added `barcodeLookup(@Query code)` mapping to `GET api/barcode-lookup`.
 - `Models.kt`: added `BarcodeLookupResponse(found, id?, name?)`; added `val wishlist: Boolean? = null`
   to `WhiskyRequest`.
 - `WhiskyWiseRepository`: added `barcodeLookup()` and `promoteToCollection()`. The promote
-  call fetches the current item first to preserve all fields, then PUTs with `wishlist=false`
-  and the chosen status.
+  call fetches the full current item, maps all existing fields into the request body, then
+  PUTs to `PUT /api/v1/wishlist/{id}` with `wishlist=false` and the chosen status — ensuring
+  no existing data is lost and the correct endpoint is used.
 - `WishlistViewModel`: added `promote(id, status, onDone)`.
 - `CollectionFragment`: barcode result now calls `handleScannedBarcode()` which runs a
   lookup coroutine before deciding whether to navigate, prompt, or fall back to search.
@@ -59,12 +77,13 @@ See that project's changelog for server-side changes.
 - `dialog_add_wishlist.xml`: added Age and ABV as a side-by-side row between Region and Price.
 - New `menu_wishlist_detail.xml` menu resource — keeps the promote action off collection
   detail pages, which continue to use the shared `menu_detail.xml`.
-
 ### Notes
-
-- No server changes required. Works with server v1.5.9+.
+ 
+- Requires server v1.6.0 or later for the barcode lookup to work correctly in the app
+  (the `/api/barcode-lookup` endpoint was fixed to accept Bearer tokens in v1.6.0).
+  All other changes work with any server version.
 - No database changes.
-
+  
 ---
 
 ## [0.2.3] — 2026-05-15 🔍 Filter Everything (and Lock the Backdoor)
