@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.whiskywise.app.R
@@ -219,7 +220,7 @@ class CollectionFragment : Fragment() {
      */
     private fun handleScannedBarcode(barcode: String) {
         val repo = WhiskyWiseRepository()
-        viewLifecycleOwner.lifecycleScope.launch {
+        lifecycleScope.launch {
             repo.barcodeLookup(barcode).fold(
                 onSuccess = { result ->
                     if (result.found && result.id != null) {
