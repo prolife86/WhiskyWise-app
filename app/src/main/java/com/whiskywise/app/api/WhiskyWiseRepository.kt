@@ -38,6 +38,8 @@ class WhiskyWiseRepository {
     suspend fun getCollection(
         query: String? = null,
         flavor: String? = null,
+        minScore: Float? = null,
+        maxPrice: Float? = null,
         status: String? = null,
         sort: String? = null,
         order: String? = null,
@@ -45,7 +47,7 @@ class WhiskyWiseRepository {
         limit: Int = 200,
         offset: Int = 0,
     ): Result<CollectionResponse> =
-        safeCall { api.getCollection(query, flavor, null, null, status, sort, order, limit, offset, retired) }
+        safeCall { api.getCollection(query, flavor, minScore, maxPrice, status, sort, order, limit, offset, retired) }
 
     // ── Whisky CRUD ───────────────────────────────────────────────────────────
 
