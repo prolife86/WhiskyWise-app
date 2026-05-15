@@ -12,7 +12,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | Feature | Details |
 |---|---|
 | 🔐 Secure login | Bearer token stored in EncryptedSharedPreferences (AES256-GCM) |
-| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated, retired filter, infinite scroll |
+| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated / last tasted, retired filter, infinite scroll |
 | 📝 Tasting notes | Full nose / palate / finish fields, last tasted date |
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
 | 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
@@ -260,7 +260,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | Feature | Details |
 |---|---|
 | 🔐 Secure login | Bearer token stored in EncryptedSharedPreferences (AES256-GCM) |
-| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated, retired filter, infinite scroll |
+| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated / last tasted, retired filter, infinite scroll |
 | 📝 Tasting notes | Full nose / palate / finish fields, last tasted date |
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
 | 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
