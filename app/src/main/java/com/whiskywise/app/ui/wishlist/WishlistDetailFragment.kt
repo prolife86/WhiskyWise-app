@@ -2,6 +2,7 @@ package com.whiskywise.app.ui.wishlist
 
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -23,6 +24,8 @@ import com.whiskywise.app.util.formatPrice
  *
  * Tasting notes (Nose, Palate, Finish), Score, Status, Radar and Photos are
  * intentionally absent — they belong to the collection detail screen.
+ *
+ * Toolbar actions: Move to Collection 🛒, Edit ✏️, Delete 🗑
  */
 class WishlistDetailFragment : Fragment() {
 
@@ -40,14 +43,15 @@ class WishlistDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val id = arguments?.getInt("whiskyId", -1) ?: -1
 
-        // Toolbar: edit (pencil) and delete (trash) icons.
+        // Toolbar: move to collection, edit, delete
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_detail, menu)
+                menuInflater.inflate(R.menu.menu_wishlist_detail, menu)
             }
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
+                    R.id.action_move_to_collection -> { showPromoteDialog(id); true }
                     R.id.action_edit -> {
                         findNavController().navigate(
                             R.id.action_wishlist_detail_to_edit_wishlist,
@@ -98,6 +102,35 @@ class WishlistDetailFragment : Fragment() {
         }
 
         if (id > 0) vm.loadItem(id)
+    }
+
+    private fun showPromoteDialog(id: Int) {
+        val statusLabels = arrayOf(
+            "📦 Stashed — bought, not yet opened",
+            "🔓 Open — currently being enjoyed",
+            "🏁 Finished — bottle is empty",
+        )
+        val statusKeys = arrayOf("stashed", "open", "finished")
+        var selectedIndex = 0
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Move to Collection")
+            .setSingleChoiceItems(statusLabels, 0) { _, which ->
+                selectedIndex = which
+            }
+            .setPositiveButton("Move") { _, _ ->
+                val status = statusKeys[selectedIndex]
+                vm.promote(id, status) { ok ->
+                    if (ok) {
+                        Snackbar.make(binding.root, "Moved to collection", Snackbar.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    } else {
+                        Snackbar.make(binding.root, "Failed to move to collection", Snackbar.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun confirmDelete(id: Int) {
