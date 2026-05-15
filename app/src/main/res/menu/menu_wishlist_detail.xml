@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_move_to_collection"
         android:title="Move to Collection"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/ic_wishlist"
         app:showAsAction="always" />
 
     <item
