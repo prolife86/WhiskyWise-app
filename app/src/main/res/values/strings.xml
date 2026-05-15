@@ -53,4 +53,37 @@
         <item>Updated ↑</item>
         <item>Updated ↓</item>
     </string-array>
+
+    <!-- Wishlist sort options (no Updated column on wishlist) -->
+    <string-array name="wishlist_sort_labels">
+        <item>Distillery ↑</item>
+        <item>Distillery ↓</item>
+        <item>Name ↑</item>
+        <item>Name ↓</item>
+        <item>Price ↑</item>
+        <item>Price ↓</item>
+        <item>Score ↑</item>
+        <item>Score ↓</item>
+    </string-array>
+
+    <!-- Flavour filter labels for collection spinner (index 0 = All = null filter) -->
+    <string-array name="flavor_filter_labels">
+        <item>All flavours</item>
+        <item>Floral</item>
+        <item>Fresh</item>
+        <item>Fruity</item>
+        <item>Malty</item>
+        <item>Medicinal</item>
+        <item>Oily</item>
+        <item>Peaty</item>
+        <item>Smoky</item>
+        <item>Spicy</item>
+        <item>Sweet</item>
+        <item>Vanilla</item>
+        <item>Vegetative</item>
+        <item>Woody</item>
+        <item>Mixed</item>
+        <item>Undefinable</item>
+        <item>Complicated</item>
+    </string-array>
 </resources>

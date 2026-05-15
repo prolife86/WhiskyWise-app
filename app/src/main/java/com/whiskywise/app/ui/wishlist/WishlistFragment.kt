@@ -84,7 +84,7 @@ class WishlistFragment : Fragment() {
         }
 
         // Sort spinner
-        val sortLabels = resources.getStringArray(R.array.sort_labels)
+        val sortLabels = resources.getStringArray(R.array.wishlist_sort_labels)
         val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortLabels)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerSort.adapter = spinnerAdapter

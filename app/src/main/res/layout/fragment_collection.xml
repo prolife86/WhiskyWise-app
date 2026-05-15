@@ -95,6 +95,74 @@
 
     </LinearLayout>
 
+    <!-- Second filter row: flavour | min score | max price -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/surface"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="6dp">
+
+        <Spinner
+            android:id="@+id/spinnerFlavor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:background="@color/surface"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:entries="@array/flavor_filter_labels"
+            android:dropDownWidth="match_parent" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="24dp"
+            android:background="@color/divider"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp" />
+
+        <EditText
+            android:id="@+id/etMinScore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:hint="Min score"
+            android:textSize="12sp"
+            android:textColor="@color/on_surface"
+            android:textColorHint="@color/on_surface_dim"
+            android:background="@color/surface"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:maxLines="1" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="24dp"
+            android:background="@color/divider"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp" />
+
+        <EditText
+            android:id="@+id/etMaxPrice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:hint="Max €"
+            android:textSize="12sp"
+            android:textColor="@color/on_surface"
+            android:textColorHint="@color/on_surface_dim"
+            android:background="@color/surface"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:maxLines="1" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/errorBanner"
         android:layout_width="match_parent"
@@ -138,6 +206,18 @@
                     android:visibility="gone" />
             </FrameLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Loading-more footer: visible while fetching the next page -->
+        <ProgressBar
+            android:id="@+id/loadingMoreBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="80dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/amber"
+            android:visibility="gone" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

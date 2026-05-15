@@ -78,6 +78,13 @@ class WishlistDetailFragment : Fragment() {
             }
 
             binding.tvWishlistNotes.text = w.wishlistNotes?.ifBlank { "—" } ?: "—"
+
+            if (!w.lastTasted.isNullOrBlank()) {
+                binding.layoutLastTasted.visibility = View.VISIBLE
+                binding.tvLastTasted.text = w.lastTasted
+            } else {
+                binding.layoutLastTasted.visibility = View.GONE
+            }
         }
 
         vm.isLoading.observe(viewLifecycleOwner) {

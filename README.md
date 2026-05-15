@@ -12,8 +12,8 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | Feature | Details |
 |---|---|
 | 🔐 Secure login | Bearer token stored in EncryptedSharedPreferences (AES256-GCM) |
-| 🥃 Collection | Browse, search, filter by status, sort by name / distillery / price / score / updated, retired filter |
-| 📝 Tasting notes | Full nose / palate / finish fields |
+| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated, retired filter, infinite scroll |
+| 📝 Tasting notes | Full nose / palate / finish fields, last tasted date |
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
 | 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
 | 📋 Wishlist | Browse, add, view and edit wishlist items |
@@ -27,7 +27,7 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 
 For running the app (APK install or release build)
 - Android 8.0 (API 26) or later
-- A running [WhiskyWise](https://github.com/prolife86/WhiskyWise) server ≥ v1.5.4
+- A running [WhiskyWise](https://github.com/prolife86/WhiskyWise) server ≥ v1.5.9
 
 For development (Android Studio)
 - Android Studio Meerkat (2024.3) or later
@@ -142,6 +142,7 @@ app/
 
 - The Bearer token is stored in Android `EncryptedSharedPreferences` (AES256-GCM).
 - Your password is sent only once at login and is never persisted.
+- `android:allowBackup` is disabled — the token and server URL are never included in Android or Google backups.
 - HTTP is permitted to support local network / Home Assistant setups. Use HTTPS in production.
 - The app sends `X-Client-Version` on every request so the server can track which app version is behind each token.
 - Tokens and browser sessions can be revoked individually from Settings, or all at once via Log out.

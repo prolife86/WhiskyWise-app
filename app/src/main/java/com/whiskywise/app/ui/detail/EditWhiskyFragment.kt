@@ -126,6 +126,7 @@ class EditWhiskyFragment : Fragment() {
                     statuses.indexOf(w.status ?: "stashed").coerceAtLeast(0)
                 )
                 binding.checkRetired.isChecked = w.retired
+                binding.etLastTasted.setText(w.lastTasted ?: "")
 
                 // Index 0 = "— Select —" sentinel; actual flavours start at index 1.
                 val flavors = resources.getStringArray(com.whiskywise.app.R.array.flavor_options)
@@ -187,6 +188,25 @@ class EditWhiskyFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener { save() }
+
+        // Last Tasted — open a DatePickerDialog on tap
+        binding.etLastTasted.setOnClickListener {
+            val cal = java.util.Calendar.getInstance()
+            val existing = binding.etLastTasted.text.toString().trim()
+            if (existing.length == 10) {
+                try {
+                    val parts = existing.split("-")
+                    cal.set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+                } catch (_: Exception) {}
+            }
+            android.app.DatePickerDialog(
+                requireContext(),
+                { _, y, m, d -> binding.etLastTasted.setText("%04d-%02d-%02d".format(y, m + 1, d)) },
+                cal.get(java.util.Calendar.YEAR),
+                cal.get(java.util.Calendar.MONTH),
+                cal.get(java.util.Calendar.DAY_OF_MONTH),
+            ).show()
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -333,6 +353,7 @@ class EditWhiskyFragment : Fragment() {
             notes          = binding.etNotes.text.toString().trim().ifBlank { null },
             status         = statuses[binding.spinnerStatus.selectedItemPosition],
             retired        = binding.checkRetired.isChecked,
+            lastTasted     = binding.etLastTasted.text.toString().trim().ifBlank { null },
             flavorProfile  = binding.spinnerFlavor.selectedItem
                                  .toString()
                                  .takeUnless { it.startsWith("—") },

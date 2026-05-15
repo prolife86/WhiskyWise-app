@@ -48,6 +48,7 @@ data class Whisky(
     @SerializedName("photo_barcode")   val photoBarcode: String? = null,
     val wishlist: Boolean = false,
     @SerializedName("wishlist_notes")  val wishlistNotes: String? = null,
+    @SerializedName("last_tasted")     val lastTasted: String? = null,
     @SerializedName("created_at")      val createdAt: String? = null,
     @SerializedName("updated_at")      val updatedAt: String? = null,
 ) {
@@ -120,6 +121,7 @@ data class Stats(
     val total: Int,
     val open: Int,
     val stashed: Int,
+    val finished: Int = 0,
     @SerializedName("wishlist_count") val wishlistCount: Int,
     val top10: List<Whisky>,
     @SerializedName("dominant_flavours") val dominantFlavours: List<String>,
@@ -154,4 +156,5 @@ data class WhiskyRequest(
     @SerializedName("radar_medicinal") val radarMedicinal: Int = 0,
     @SerializedName("radar_fiery")     val radarFiery: Int = 0,
     @SerializedName("wishlist_notes")  val wishlistNotes: String? = null,
+    @SerializedName("last_tasted")     val lastTasted: String? = null,
 )

@@ -99,6 +99,12 @@ class DetailFragment : Fragment() {
             binding.tvFlavor.text     = w.flavorProfile?.replaceFirstChar { it.uppercase() } ?: "—"
             binding.tvCreatedAt.text  = w.createdAt.formatDate()
             binding.tvUpdatedAt.text  = w.updatedAt.formatDate()
+            if (!w.lastTasted.isNullOrBlank()) {
+                binding.layoutLastTasted.visibility = View.VISIBLE
+                binding.tvLastTasted.text = w.lastTasted.formatDate()
+            } else {
+                binding.layoutLastTasted.visibility = View.GONE
+            }
 
             if (!w.barcode.isNullOrBlank()) {
                 binding.layoutBarcode.visibility = View.VISIBLE

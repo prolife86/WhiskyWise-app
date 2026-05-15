@@ -150,6 +150,19 @@
                 android:textColor="@color/on_surface_dim" android:textSize="13sp"/>
         </LinearLayout>
 
+        <!-- Last Tasted date -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Last Tasted (YYYY-MM-DD)" android:layout_marginBottom="12dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etLastTasted"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="true"
+                android:clickable="true" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Tasting notes -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
