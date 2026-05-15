@@ -7,6 +7,29 @@ The app connects to a self-hosted [WhiskyWise](https://github.com/prolife86/Whis
 See that project's changelog for server-side changes.
 
 ---
+
+## [0.2.5] — 2026-05-15 📅 Sort by When You Last Poured
+
+### Added
+
+- **"Last Tasted" sort option on the Collection screen** — the sort spinner now includes
+  Last Tasted ↑ and Last Tasted ↓ alongside the existing Name, Distillery, Price, Score,
+  and Updated options. Bottles with no last tasted date sort last. Requires server v1.6.1+.
+
+### Technical
+
+- `sortKeys` in `CollectionFragment`: added `"last_tasted" to "asc"` and
+  `"last_tasted" to "desc"` entries.
+- `sort_labels` in `strings.xml`: added `Last Tasted ↑` and `Last Tasted ↓` items —
+  indices kept in sync with `sortKeys`.
+
+### Notes
+
+- Requires server v1.6.1 or later. On older servers the sort parameter is silently
+  ignored and the collection falls back to the default sort.
+- No database changes.
+
+---
  
 ## [0.2.4] — 2026-05-15 🛒 Scan, Know, Decide
  
