@@ -8,6 +8,27 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.2.8] — 2026-05-16 🏷 Status Where It Belongs
+
+### Fixed
+
+- **"Stashed" showing on wishlist cards** — the Wishlist screen reuses the same
+  adapter as the Collection. Wishlist items default to `stashed` on the server,
+  so the status pill was appearing on every wishlist card. Status is a collection
+  concept and has no meaning on the wishlist — it is now hidden on wishlist items.
+
+### Technical
+
+- `WhiskyAdapter`: checks `whisky.wishlist` before rendering the status pill —
+  `GONE` for wishlist items, `VISIBLE` with status text for collection items.
+
+### Notes
+
+- No server changes required.
+- No database changes.
+
+---
+
 ## [0.2.7] — 2026-05-15 📸 Wishlist Gets a Face
 
 ### Added
