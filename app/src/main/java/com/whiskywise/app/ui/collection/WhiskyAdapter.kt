@@ -31,7 +31,13 @@ class WhiskyAdapter(
             b.tvName.text        = whisky.name
             b.tvDistillery.text  = whisky.distillery ?: "Unknown distillery"
             b.tvScore.text       = whisky.score.formatScore()
-            b.tvStatus.text      = whisky.status?.replaceFirstChar { it.uppercase() } ?: ""
+            // Status pill is only meaningful for collection entries — hide it for wishlist items
+            if (whisky.wishlist) {
+                b.tvStatus.visibility = android.view.View.GONE
+            } else {
+                b.tvStatus.visibility = android.view.View.VISIBLE
+                b.tvStatus.text = whisky.status?.replaceFirstChar { it.uppercase() } ?: ""
+            }
             b.tvRegion.text      = whisky.region ?: ""
 
             b.ivPhoto.loadWhiskyPhoto(b.root.context, whisky.photoFront, serverUrl, token, updatedAt = whisky.updatedAt)
