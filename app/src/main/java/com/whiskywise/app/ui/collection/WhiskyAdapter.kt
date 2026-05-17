@@ -30,15 +30,18 @@ class WhiskyAdapter(
         fun bind(whisky: Whisky) {
             b.tvName.text        = whisky.name
             b.tvDistillery.text  = whisky.distillery ?: "Unknown distillery"
-            b.tvScore.text       = whisky.score.formatScore()
-            // Status pill is only meaningful for collection entries — hide it for wishlist items
+            b.tvRegion.text      = whisky.region ?: ""
+
+            // Score and status are collection concepts — hide both for wishlist items
             if (whisky.wishlist) {
+                b.tvScore.visibility  = android.view.View.GONE
                 b.tvStatus.visibility = android.view.View.GONE
             } else {
+                b.tvScore.visibility  = android.view.View.VISIBLE
+                b.tvScore.text        = whisky.score.formatScore()
                 b.tvStatus.visibility = android.view.View.VISIBLE
-                b.tvStatus.text = whisky.status?.replaceFirstChar { it.uppercase() } ?: ""
+                b.tvStatus.text       = whisky.status?.replaceFirstChar { it.uppercase() } ?: ""
             }
-            b.tvRegion.text      = whisky.region ?: ""
 
             b.ivPhoto.loadWhiskyPhoto(b.root.context, whisky.photoFront, serverUrl, token, updatedAt = whisky.updatedAt)
 
