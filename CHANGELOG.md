@@ -8,6 +8,20 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.3.1] — 2026-05-18 🔇 Silent Warning
+
+### Fixed
+
+- `Extensions.kt`: replaced deprecated two-argument `Locale("nl", "NL")` constructor
+  with `Locale.forLanguageTag("nl-NL")`. Clears the compiler warning introduced in
+  Java 19 / Kotlin 1.9+ with no behaviour change — decimal commas remain.
+
+### Notes
+
+- No UI changes. No server changes. No database changes.
+
+---
+
 ## [0.3.0] — 2026-05-18 🏪 Store Ready
 
 ### Changed
