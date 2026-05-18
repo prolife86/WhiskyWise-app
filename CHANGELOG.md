@@ -8,6 +8,36 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.3.0] — 2026-05-18 🏪 Store Ready
+
+### Changed
+
+- **targetSdk bumped to 36 (Android 16)** — meets Google Play's mandatory API level
+  requirement for all new app submissions and updates from 2025 onward.
+- **compileSdk bumped to 36** — consistent with targetSdk.
+
+### Technical
+
+- `app/build.gradle`: `compileSdk` and `targetSdk` updated from 35 → 36.
+- `.github/workflows/android.yml`: AAB signing step added using `jarsigner`.
+  The AAB is signed with the upload key before being attached to the GitHub
+  Release. Google Play App Signing re-signs it with the distribution key for
+  delivery to devices — no distribution key is stored in CI.
+- AAB signature verification step added after signing.
+
+### Notes
+
+- **Google Play submission format**: submit the signed `.aab` file (not the APK)
+  to the Google Play Console. The AAB is the required format for new app listings.
+- **Google Play App Signing**: enrol via Play Console → Release → Setup →
+  App signing. Google holds the distribution key; you only manage the upload key
+  (stored as `KEYSTORE_BASE64` / `KEY_ALIAS` / `KEYSTORE_PASSWORD` / `KEY_PASSWORD`
+  in GitHub Actions secrets).
+- No code or UI changes in this release.
+- No server changes. No database changes.
+
+---
+
 ## [0.2.9] — 2026-05-17 📊 Tabs, Stats & Sharing
 
 ### Added
