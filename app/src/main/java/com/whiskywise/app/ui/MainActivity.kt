@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.collectionFragment,
                 R.id.wishlistFragment,
+                R.id.statisticsFragment,
                 R.id.settingsFragment,
             )
         )

@@ -2,4 +2,6 @@
 <paths>
     <!-- Temp files written to context.cacheDir for photo capture -->
     <cache-path name="photo_capture" path="." />
+    <!-- Share card JPEGs served to other apps via FileProvider -->
+    <cache-path name="shares" path="shares/" />
 </paths>

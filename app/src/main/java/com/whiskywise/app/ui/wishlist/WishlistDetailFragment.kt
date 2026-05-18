@@ -2,21 +2,23 @@ package com.whiskywise.app.ui.wishlist
 
 import android.os.Bundle
 import android.view.*
-import android.widget.ArrayAdapter
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentWishlistDetailBinding
 import com.whiskywise.app.util.TokenStore
+import com.whiskywise.app.util.WhiskyShareCard
 import com.whiskywise.app.util.formatPrice
 import com.whiskywise.app.util.loadWhiskyPhoto
+import kotlinx.coroutines.launch
 
 /**
  * Read-only detail screen for a wishlist item.
@@ -27,7 +29,7 @@ import com.whiskywise.app.util.loadWhiskyPhoto
  * Tasting notes (Nose, Palate, Finish), Score, Status, Radar and Photos are
  * intentionally absent — they belong to the collection detail screen.
  *
- * Toolbar actions: Move to Collection 🛒, Edit ✏️, Delete 🗑
+ * Toolbar actions: Share 📤, Move to Collection 🛒, Edit ✏️, Delete 🗑
  */
 class WishlistDetailFragment : Fragment() {
 
@@ -48,7 +50,7 @@ class WishlistDetailFragment : Fragment() {
         val serverUrl = store.getServerUrl() ?: ""
         val token     = store.getToken() ?: ""
 
-        // Toolbar: move to collection, edit, delete
+        // Toolbar: share, move to collection, edit, delete
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -56,6 +58,13 @@ class WishlistDetailFragment : Fragment() {
             }
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
+                    R.id.action_share -> {
+                        val whisky = vm.editItem.value ?: return false
+                        lifecycleScope.launch {
+                            WhiskyShareCard.share(requireContext(), whisky, serverUrl, token, isWishlist = true)
+                        }
+                        true
+                    }
                     R.id.action_move_to_collection -> { showPromoteDialog(id); true }
                     R.id.action_edit -> {
                         findNavController().navigate(

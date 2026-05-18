@@ -8,6 +8,53 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.2.9] — 2026-05-17 📊 Tabs, Stats & Sharing
+
+### Added
+
+- **Statistics tab** — a dedicated fourth tab sits between Wishlist and Settings.
+  Shows total bottles in your collection plus a 2×2 card grid of Open / Stashed /
+  Finished / Wishlisted counts, and proportional breakdown bars. Numbers reload
+  every time you visit the tab. Data comes from the existing `GET /api/v1/stats`
+  endpoint — no server changes required.
+
+- **Share card** — tap the share icon on any collection or wishlist detail page
+  to generate a JPEG card for that bottle. The card includes the front photo
+  (loaded from the server with your auth token), name, distillery, region, age,
+  ABV, price, score, and tasting notes. Android's share sheet handles the rest —
+  send via WhatsApp, Messages, or anything else. Wishlist cards are labelled
+  "MY WISHLIST".
+
+### Changed
+
+- Bottom navigation now has four items: **Collection · Wishlist · Statistics · Settings**.
+  Settings retains the gear icon and all its existing content (server URL, tokens,
+  sessions, logout).
+
+### Technical
+
+- New `ui/statistics/StatisticsFragment` + `StatisticsViewModel` — mirrors the
+  standalone app's statistics screen, wired to `WhiskyWiseRepository.getStats()`.
+- New `fragment_statistics.xml` layout — hero total card, 2×2 status cards,
+  proportional breakdown bars.
+- New `util/WhiskyShareCard` — renders the share card off-screen, writes a JPEG to
+  `cacheDir/shares/`, and serves it via `FileProvider`. Photos are loaded via Glide
+  with a `Bearer` token header.
+- New drawables: `ic_stats.xml` (bar-chart), `ic_share.xml` (share).
+- New layouts: `card_share_whisky.xml`, `gradient_photo_fade.xml`, `bg_status_badge.xml`.
+- `file_paths.xml` updated: added `<cache-path name="shares" path="shares/" />`.
+- `proguard-rules.pro` updated: keep rules for `CardShareWhiskyBinding` and
+  `WhiskyShareCard` so R8 does not strip the off-screen inflate path.
+- `nav_graph.xml` / `bottom_nav_menu.xml` / `MainActivity` / `strings.xml` updated
+  for the new four-tab layout.
+
+### Notes
+
+- No server changes required.
+- No database changes.
+
+---
+
 ## [0.2.8] — 2026-05-16 🏷 Status Where It Belongs
 
 ### Fixed

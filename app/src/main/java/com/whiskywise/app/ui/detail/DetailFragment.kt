@@ -11,6 +11,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -18,10 +19,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentDetailBinding
 import com.whiskywise.app.util.TokenStore
+import com.whiskywise.app.util.WhiskyShareCard
 import com.whiskywise.app.util.formatAbv
 import com.whiskywise.app.util.formatDate
 import com.whiskywise.app.util.formatPrice
 import com.whiskywise.app.util.formatScore
+import kotlinx.coroutines.launch
 
 class DetailFragment : Fragment() {
 
@@ -51,7 +54,6 @@ class DetailFragment : Fragment() {
             override fun onPageSelected(position: Int) = updateDots(position)
         })
 
-        // Inflate toolbar icons and wire each one directly — no overflow menu needed.
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -59,6 +61,13 @@ class DetailFragment : Fragment() {
             }
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
+                    R.id.action_share -> {
+                        val whisky = vm.whisky.value ?: return false
+                        lifecycleScope.launch {
+                            WhiskyShareCard.share(requireContext(), whisky, serverUrl, token, isWishlist = false)
+                        }
+                        true
+                    }
                     R.id.action_edit -> {
                         if (isWishlist) {
                             findNavController().navigate(
