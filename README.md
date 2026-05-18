@@ -7,6 +7,16 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 
 ---
 
+## Distribution
+
+WhiskyWise is distributed via the **Google Play Store** as an Android App Bundle (AAB).
+App signing is managed via **Google Play App Signing** — the upload key lives in GitHub
+Actions secrets; Google holds the distribution key.
+
+Sideloading via the signed APK attached to each GitHub Release remains available for
+self-hosters who prefer it.
+
+
 ## Features
 
 | Feature | Details |
