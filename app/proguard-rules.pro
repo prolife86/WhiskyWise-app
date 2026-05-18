@@ -28,3 +28,9 @@
 
 # AndroidX Security / EncryptedSharedPreferences
 -keep class androidx.security.crypto.** { *; }
+
+# ── Share card ────────────────────────────────────────────────────────────────
+# WhiskyShareCard inflates CardShareWhiskyBinding off-screen; keep the binding
+# and the layout's view classes so R8 doesn't strip them from release builds.
+-keep class com.whiskywise.app.databinding.CardShareWhiskyBinding { *; }
+-keep class com.whiskywise.app.util.WhiskyShareCard { *; }

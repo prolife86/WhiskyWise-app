@@ -12,11 +12,12 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | Feature | Details |
 |---|---|
 | 🔐 Secure login | Bearer token stored in EncryptedSharedPreferences (AES256-GCM) |
-| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated / last tasted, retired filter, infinite scroll |
+| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated / last tasted, retired filter, infinite scroll; share card on detail |
 | 📝 Tasting notes | Full nose / palate / finish fields, last tasted date |
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
 | 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
-| 📋 Wishlist | Browse, add (with name, distillery, region, age, ABV, price, store, barcode, notes), view and edit wishlist items; move to collection with one tap |
+| 📋 Wishlist | Browse, add (with name, distillery, region, age, ABV, price, store, barcode, notes), view and edit wishlist items; move to collection with one tap; share card |
+| 📊 Statistics | Total bottles, Open / Stashed / Finished / Wishlisted counts, proportional breakdown bars |
 | ⚙️ Settings | Server info, browser sessions + API tokens with per-entry revoke, app version, logout |
 | 🌐 Self-hosted | Works with HTTP (local network) and HTTPS |
 | 🔖 Barcode | Scan barcodes via camera or enter manually; "not found" prompt to add new entry |
@@ -260,11 +261,12 @@ A native Android companion app for the [WhiskyWise](https://github.com/prolife86
 | Feature | Details |
 |---|---|
 | 🔐 Secure login | Bearer token stored in EncryptedSharedPreferences (AES256-GCM) |
-| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated / last tasted, retired filter, infinite scroll |
+| 🥃 Collection | Browse, search, filter by status / dominant flavour / min score / max price, sort by name / distillery / price / score / updated / last tasted, retired filter, infinite scroll; share card on detail |
 | 📝 Tasting notes | Full nose / palate / finish fields, last tasted date |
 | 📡 Radar chart | Native canvas widget matching the web flavour chart |
 | 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
-| 📋 Wishlist | Browse, add, view and edit wishlist items; move to collection with one tap |
+| 📋 Wishlist | Browse, add, view and edit wishlist items; move to collection with one tap; share card |
+| 📊 Statistics | Total bottles, Open / Stashed / Finished / Wishlisted counts, proportional breakdown bars |
 | ⚙️ Settings | Server info, browser sessions + API tokens with per-entry revoke, app version, logout |
 | 🌐 Self-hosted | Works with HTTP (local network) and HTTPS |
 | 🔖 Barcode | Scan barcodes via camera or enter manually; "not found" prompt to add new entry |

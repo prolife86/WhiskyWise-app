@@ -3,6 +3,7 @@
     <string name="app_name">WhiskyWise</string>
     <string name="nav_collection">Collection</string>
     <string name="nav_wishlist">Wishlist</string>
+    <string name="nav_statistics">Statistics</string>
     <string name="nav_settings">Settings</string>
 
     <string-array name="status_options">

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- ── Hero: total bottles ── -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="28dp"
+                android:paddingBottom="28dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TOTAL BOTTLES"
+                    android:textColor="@color/on_surface_dim"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.15"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="—"
+                    android:textColor="@color/amber"
+                    android:textSize="64sp"
+                    android:lineSpacingMultiplier="1.0"
+                    android:includeFontPadding="false"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="IN YOUR COLLECTION"
+                    android:textColor="@color/on_surface_dim"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.1"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ── Section label: Collection ── -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="COLLECTION"
+            android:textColor="@color/amber"
+            android:textSize="11sp"
+            android:letterSpacing="0.15"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="2dp" />
+
+        <!-- ── 2×2 stat cards ── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
+
+            <!-- Open -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="5dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🥃" android:textSize="20sp" android:layout_marginBottom="6dp"/>
+                    <TextView android:id="@+id/tvOpen"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="@color/on_surface"
+                        android:textSize="32sp" android:includeFontPadding="false"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="OPEN" android:textColor="@color/on_surface_dim"
+                        android:textSize="11sp" android:letterSpacing="0.08" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Stashed -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="5dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="📦" android:textSize="20sp" android:layout_marginBottom="6dp"/>
+                    <TextView android:id="@+id/tvStashed"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="@color/on_surface"
+                        android:textSize="32sp" android:includeFontPadding="false"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="STASHED" android:textColor="@color/on_surface_dim"
+                        android:textSize="11sp" android:letterSpacing="0.08" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <!-- Finished -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="5dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="🏁" android:textSize="20sp" android:layout_marginBottom="6dp"/>
+                    <TextView android:id="@+id/tvFinished"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="@color/on_surface"
+                        android:textSize="32sp" android:includeFontPadding="false"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="FINISHED" android:textColor="@color/on_surface_dim"
+                        android:textSize="11sp" android:letterSpacing="0.08" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Wishlisted -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="5dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="📋" android:textSize="20sp" android:layout_marginBottom="6dp"/>
+                    <TextView android:id="@+id/tvWishlisted"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="@color/amber"
+                        android:textSize="32sp" android:includeFontPadding="false"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="WISHLISTED" android:textColor="@color/on_surface_dim"
+                        android:textSize="11sp" android:letterSpacing="0.08" android:layout_marginTop="2dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <!-- ── Section label: Breakdown ── -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BREAKDOWN"
+            android:textColor="@color/amber"
+            android:textSize="11sp"
+            android:letterSpacing="0.15"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="2dp" />
+
+        <!-- ── Breakdown bars ── -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Stashed bar -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginBottom="5dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Stashed"
+                            android:textColor="@color/on_surface" android:textSize="13sp"/>
+                        <TextView android:id="@+id/tvBarStashedCount"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="—" android:textColor="@color/on_surface_dim" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <FrameLayout android:layout_width="match_parent" android:layout_height="4dp"
+                        android:background="@color/divider">
+                        <View android:id="@+id/barStashed"
+                            android:layout_width="0dp" android:layout_height="match_parent"
+                            android:background="@color/amber" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Open bar -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:layout_marginBottom="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginBottom="5dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Open"
+                            android:textColor="@color/on_surface" android:textSize="13sp"/>
+                        <TextView android:id="@+id/tvBarOpenCount"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="—" android:textColor="@color/on_surface_dim" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <FrameLayout android:layout_width="match_parent" android:layout_height="4dp"
+                        android:background="@color/divider">
+                        <View android:id="@+id/barOpen"
+                            android:layout_width="0dp" android:layout_height="match_parent"
+                            android:background="#E8A050" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Finished bar -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:layout_marginBottom="5dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:text="Finished"
+                            android:textColor="@color/on_surface" android:textSize="13sp"/>
+                        <TextView android:id="@+id/tvBarFinishedCount"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="—" android:textColor="@color/on_surface_dim" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <FrameLayout android:layout_width="match_parent" android:layout_height="4dp"
+                        android:background="@color/divider">
+                        <View android:id="@+id/barFinished"
+                            android:layout_width="0dp" android:layout_height="match_parent"
+                            android:background="#6A5A4A" />
+                    </FrameLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+</ScrollView>

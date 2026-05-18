@@ -131,6 +131,13 @@
             app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
+    <!-- Statistics tab -->
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.whiskywise.app.ui.statistics.StatisticsFragment"
+        android:label="Statistics"
+        tools:layout="@layout/fragment_statistics" />
+
     <!-- Settings tab -->
     <fragment
         android:id="@+id/settingsFragment"
