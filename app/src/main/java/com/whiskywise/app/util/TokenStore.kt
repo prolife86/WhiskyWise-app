@@ -54,6 +54,9 @@ class TokenStore(private val context: Context) {
     fun getToken(): String? = prefs.getString(KEY_TOKEN, null)
     fun getServerUrl(): String? = prefs.getString(KEY_SERVER_URL, null)
 
+    fun saveCurrencySymbol(symbol: String) = prefs.edit().putString(KEY_CURRENCY_SYMBOL, symbol).apply()
+    fun getCurrencySymbol(): String = prefs.getString(KEY_CURRENCY_SYMBOL, "€") ?: "€"
+
     fun isLoggedIn(): Boolean = getToken() != null && getServerUrl() != null
 
     fun clear() {
@@ -61,7 +64,8 @@ class TokenStore(private val context: Context) {
     }
 
     companion object {
-        private const val KEY_SERVER_URL = "server_url"
-        private const val KEY_TOKEN      = "token"
+        private const val KEY_SERVER_URL      = "server_url"
+        private const val KEY_TOKEN           = "token"
+        private const val KEY_CURRENCY_SYMBOL = "currency_symbol"
     }
 }
