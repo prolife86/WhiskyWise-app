@@ -20,22 +20,25 @@ Connect to your self-hosted WhiskyWise server and browse, manage, and share ever
 Browse your full collection from anywhere. Filter by status, dominant flavour, minimum score, or maximum price. Sort by name, distillery, price, score, last updated, or last tasted. Search instantly across all your bottles. Scroll through everything with smooth infinite loading.
 
 **WISHLIST**
-Keep track of bottles you want to try. Add notes, price targets, and store hints. When you finally pick one up, move it to your collection in one tap and choose its opening status on the spot.
+Keep track of bottles you want to try. Add notes, price targets, store hints, and a cover photo. When you finally pick one up, move it to your collection in one tap and choose its opening status on the spot.
 
 **STATISTICS**
 See your collection at a glance — total bottles, a breakdown of Open, Stashed, and Finished, and how many are waiting on your wishlist. Numbers update every time you visit.
 
 **DETAIL PAGES**
-Every bottle gets a full detail view: tasting notes (nose, palate, finish), flavour profile, radar chart, ABV, age, region, score, price, store, barcode, and photo gallery with front, back, and cask shots.
+Every bottle gets a full detail view: tasting notes (nose, palate, finish), flavour profile, radar chart, ABV, age, region, score, price, store, barcode, and a swipeable photo gallery with front, back, cask, and barcode shots. Photos always load at the correct orientation, even after rotation.
 
 **SHARE**
 Tap the share button on any collection or wishlist bottle to generate a beautifully formatted card — photo included — and send it via WhatsApp, Messages, or anywhere else Android lets you share.
 
 **BARCODE SCANNER**
-Add new bottles faster by scanning the barcode with your camera. The app pre-fills what it can and lets you complete the rest.
+Scan a barcode to instantly check whether it's in your collection. Not found? The app offers to open a new entry with the barcode pre-filled, or fall back to a text search.
+
+**CURRENCY**
+Prices display in whatever currency your server admin has configured — EUR, GBP, USD, and more. The symbol is fetched automatically every time the app opens, so a change on the server is reflected immediately.
 
 **SECURE BY DEFAULT**
-Your credentials are stored in Android EncryptedSharedPreferences (AES256-GCM). All communication with your server uses Bearer token authentication over HTTPS.
+Your credentials are stored in Android EncryptedSharedPreferences (AES256-GCM). All communication with your server uses Bearer token authentication. View and revoke individual sessions and tokens directly from the app's Settings screen.
 
 **SELF-HOSTED**
 WhiskyWise is a companion app for the open-source WhiskyWise server. You run the server; you own the data. No cloud subscription, no third-party data sharing, no ads.
@@ -65,7 +68,7 @@ Everyone (no age-restricted content; the app does not sell or promote alcohol, i
 | Field | Value |
 |---|---|
 | Package name | `com.whiskywise.app` |
-| Current version | 0.3.0 |
+| Current version | 0.3.4 |
 | Minimum Android | 8.0 (API 26) |
 | Target Android | 16 (API 36) |
 | Build format | Android App Bundle (AAB) |
@@ -85,6 +88,6 @@ A privacy policy URL is required by Google Play. Host the text above (or a versi
 
 ---
 
-## What's New (v0.3.0)
+## What's New (v0.3.4)
 
-Play Store ready. The app now targets Android 16 (API 36) as required for new submissions, is delivered as a signed Android App Bundle, and uses Google Play App Signing. No changes to features or UI.
+Prices now display in whatever currency your server admin has configured — EUR, GBP, USD, and more. The symbol is fetched automatically every time the app opens, so a server-side change is picked up immediately. The price filter hint in the collection view updates to match. Share cards also no longer show a stale pre-rotation photo from cache.
