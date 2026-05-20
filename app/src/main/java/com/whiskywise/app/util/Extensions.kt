@@ -78,7 +78,8 @@ fun ImageView.loadWhiskyPhoto(
 
 fun Double?.formatScore(): String = if (this == null) "—" else String.format(DISPLAY_LOCALE, "%.1f", this)
 fun Double?.formatAbv(): String   = if (this == null) "—" else String.format(DISPLAY_LOCALE, "%.1f%%", this)
-fun Double?.formatPrice(): String = if (this == null) "—" else String.format(DISPLAY_LOCALE, "€%.2f", this)
+fun Double?.formatPrice(currencySymbol: String = "€"): String =
+    if (this == null) "—" else "$currencySymbol${String.format(DISPLAY_LOCALE, "%.2f", this)}"
 
 /**
  * Format an ISO 8601 date-time string (e.g. "2026-05-07T14:32:11+00:00")
