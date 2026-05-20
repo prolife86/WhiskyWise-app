@@ -8,6 +8,40 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.3.2] — 2026-05-20 💱 Your Currency, Your Rules
+
+### Changed
+
+- **Price display now uses the server-configured currency symbol** — previously
+  hardcoded to `€` throughout the app. The symbol is read from the server's
+  `GET /api/v1/stats` response (`currency_symbol` field, added in server v1.6.6)
+  and stored locally in `EncryptedSharedPreferences`. Detail pages, wishlist
+  detail, and share cards all reflect the server's choice automatically after
+  the next stats refresh. Defaults to `€` if the server pre-dates v1.6.6.
+
+### Technical
+
+- `Models.kt`: added `currencySymbol` (`@SerializedName("currency_symbol")`,
+  default `"€"`) and `currencyCode` (`@SerializedName("currency_code")`,
+  default `"EUR"`) fields to `Stats`.
+- `TokenStore`: added `saveCurrencySymbol(symbol)` and `getCurrencySymbol()`
+  backed by the existing `EncryptedSharedPreferences` store.
+- `StatisticsViewModel`: changed from `ViewModel` to `AndroidViewModel` to
+  access `Application` context. Calls `tokenStore.saveCurrencySymbol()` after
+  a successful stats fetch.
+- `Extensions.kt`: `formatPrice()` now accepts an optional `currencySymbol`
+  parameter (default `"€"`) instead of a hardcoded `€` prefix.
+- `DetailFragment`, `WishlistDetailFragment`, `WhiskyShareCard`: pass
+  `TokenStore(context).getCurrencySymbol()` to `formatPrice()`.
+
+### Notes
+
+- Requires server v1.6.6 for the currency to change. Against older servers
+  the app defaults to `€` with no visible difference.
+- No database changes.
+
+---
+
 ## [0.3.1] — 2026-05-18 🔇 Silent Warning
 
 ### Fixed
