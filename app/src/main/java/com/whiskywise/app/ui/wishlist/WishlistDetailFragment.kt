@@ -93,7 +93,7 @@ class WishlistDetailFragment : Fragment() {
             binding.tvRegion.text     = w.region ?: "—"
             binding.tvAge.text        = w.age ?: "—"
             binding.tvAbv.text        = w.abv?.let { String.format("%.1f%%", it).replace('.', ',') } ?: "—"
-            binding.tvPrice.text      = w.price.formatPrice()
+            binding.tvPrice.text      = w.price.formatPrice(TokenStore(requireContext()).getCurrencySymbol())
             binding.tvStore.text      = w.store ?: "—"
 
             if (!w.barcode.isNullOrBlank()) {

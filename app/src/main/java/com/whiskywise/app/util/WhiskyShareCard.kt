@@ -122,7 +122,7 @@ object WhiskyShareCard {
         // ── Stats row ─────────────────────────────────────────────────────────
         b.tvAge.text   = w.age ?: "—"
         b.tvAbv.text   = w.abv.formatAbv()
-        b.tvPrice.text = w.price.formatPrice()
+        b.tvPrice.text = w.price.formatPrice(TokenStore(context).getCurrencySymbol())
         b.tvScore.text = w.score.formatScore()
 
         // ── Tasting notes ─────────────────────────────────────────────────────

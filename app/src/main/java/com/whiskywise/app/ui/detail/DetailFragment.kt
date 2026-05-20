@@ -99,7 +99,7 @@ class DetailFragment : Fragment() {
             binding.tvScore.text      = w.score.formatScore()
             binding.tvStatus.text     = w.status?.replaceFirstChar { it.uppercase() } ?: "—"
             binding.tvRetiredBadge.visibility = if (w.retired) View.VISIBLE else View.GONE
-            binding.tvPrice.text      = w.price.formatPrice()
+            binding.tvPrice.text      = w.price.formatPrice(TokenStore(requireContext()).getCurrencySymbol())
             binding.tvStore.text      = w.store ?: "—"
             binding.tvNose.text       = w.nose?.ifBlank { "—" } ?: "—"
             binding.tvPalate.text     = w.palate?.ifBlank { "—" } ?: "—"

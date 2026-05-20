@@ -1,16 +1,19 @@
 package com.whiskywise.app.ui.statistics
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.whiskywise.app.api.WhiskyWiseRepository
 import com.whiskywise.app.model.Stats
+import com.whiskywise.app.util.TokenStore
 import kotlinx.coroutines.launch
 
-class StatisticsViewModel : ViewModel() {
+class StatisticsViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val repo = WhiskyWiseRepository()
+    private val repo      = WhiskyWiseRepository()
+    private val tokenStore = TokenStore(app)
 
     private val _stats = MutableLiveData<Stats?>()
     val stats: LiveData<Stats?> = _stats
@@ -21,7 +24,13 @@ class StatisticsViewModel : ViewModel() {
     fun load() {
         viewModelScope.launch {
             repo.getStats().fold(
-                onSuccess = { _stats.value = it },
+                onSuccess = { stats ->
+                    // Persist the server's currency symbol so all screens can use it
+                    if (stats.currencySymbol.isNotBlank()) {
+                        tokenStore.saveCurrencySymbol(stats.currencySymbol)
+                    }
+                    _stats.value = stats
+                },
                 onFailure = { _error.value = it.message },
             )
         }
