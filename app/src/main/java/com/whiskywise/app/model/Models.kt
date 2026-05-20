@@ -126,6 +126,8 @@ data class Stats(
     @SerializedName("wishlist_count") val wishlistCount: Int,
     val top10: List<Whisky>,
     @SerializedName("dominant_flavours") val dominantFlavours: List<String>,
+    @SerializedName("currency_symbol") val currencySymbol: String = "€",
+    @SerializedName("currency_code")   val currencyCode: String   = "EUR",
 )
 
 // ── Request bodies ────────────────────────────────────────────────────────────
