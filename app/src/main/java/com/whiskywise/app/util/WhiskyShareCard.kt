@@ -83,8 +83,12 @@ object WhiskyShareCard {
         if (!photoPath.isNullOrBlank() && serverUrl.isNotBlank()) {
             b.photoContainer.visibility = View.VISIBLE
             try {
-                val photoUrl = "$serverUrl/$photoPath".replace("//", "/")
+                val baseUrl = "$serverUrl/$photoPath".replace("//", "/")
                     .replace(":/", "://")
+                val cacheBuster = w.updatedAt?.let {
+                    "?t=${it.replace(":", "").replace("-", "").replace("+", "")}"
+                } ?: ""
+                val photoUrl = "$baseUrl$cacheBuster"
                 val glideUrl = GlideUrl(
                     photoUrl,
                     LazyHeaders.Builder()

@@ -16,23 +16,39 @@ See that project's changelog for server-side changes.
   hardcoded to `€` throughout the app. The symbol is read from the server's
   `GET /api/v1/stats` response (`currency_symbol` field, added in server v1.6.6)
   and stored locally in `EncryptedSharedPreferences`. Detail pages, wishlist
-  detail, and share cards all reflect the server's choice automatically after
-  the next stats refresh. Defaults to `€` if the server pre-dates v1.6.6.
+  detail, and share cards all reflect the server's choice automatically.
+  Defaults to `€` if the server pre-dates v1.6.6.
+
+### Fixed
+
+- **Currency change on the server not reflected in the app** — the symbol was
+  only fetched when the Statistics tab was visited. The currency is now fetched
+  silently from `/api/v1/stats` every time `MainActivity` starts — on fresh
+  launch, after returning from background, and after login. Failures are silent;
+  the previously stored symbol remains.
+
+- **Share card shows stale photo after rotation** — the share card loaded the
+  front photo with no cache-busting, so Glide served the pre-rotation image from
+  disk cache. The URL now appends `?t=<updatedAt>`, matching the strategy already
+  used by `loadWhiskyPhoto()`.
+
+- **"Max €" filter hint hardcoded in the collection filter bar** — the price
+  filter input showed `Max €` regardless of the configured currency. The hint
+  is now set in code from `TokenStore`.
 
 ### Technical
 
-- `Models.kt`: added `currencySymbol` (`@SerializedName("currency_symbol")`,
-  default `"€"`) and `currencyCode` (`@SerializedName("currency_code")`,
-  default `"EUR"`) fields to `Stats`.
-- `TokenStore`: added `saveCurrencySymbol(symbol)` and `getCurrencySymbol()`
-  backed by the existing `EncryptedSharedPreferences` store.
-- `StatisticsViewModel`: changed from `ViewModel` to `AndroidViewModel` to
-  access `Application` context. Calls `tokenStore.saveCurrencySymbol()` after
-  a successful stats fetch.
-- `Extensions.kt`: `formatPrice()` now accepts an optional `currencySymbol`
-  parameter (default `"€"`) instead of a hardcoded `€` prefix.
+- `Models.kt`: added `currencySymbol` and `currencyCode` fields to `Stats`.
+- `TokenStore`: added `saveCurrencySymbol()` and `getCurrencySymbol()`.
+- `Extensions.kt`: `formatPrice()` accepts an optional `currencySymbol` parameter.
+- `MainActivity`: added `refreshCurrencySymbol()` — fire-and-forget coroutine
+  that fetches stats and persists the currency symbol on every app open.
+- `StatisticsViewModel`: plain `ViewModel` — currency persistence moved to `MainActivity`.
 - `DetailFragment`, `WishlistDetailFragment`, `WhiskyShareCard`: pass
   `TokenStore(context).getCurrencySymbol()` to `formatPrice()`.
+- `WhiskyShareCard`: photo URL includes `?t=<updatedAt>` cache-buster.
+- `CollectionFragment`: `etMaxPrice.hint` set dynamically from `TokenStore`.
+- `fragment_collection.xml`: hardcoded `android:hint="Max €"` removed.
 
 ### Notes
 

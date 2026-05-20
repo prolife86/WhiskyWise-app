@@ -188,6 +188,7 @@ class CollectionFragment : Fragment() {
         }
 
         // ── Max price input ───────────────────────────────────────────────────
+        binding.etMaxPrice.hint = "Max ${TokenStore(requireContext()).getCurrencySymbol()}"
         if (vm.currentMaxPrice != null) binding.etMaxPrice.setText(vm.currentMaxPrice.toString())
         binding.etMaxPrice.doAfterTextChanged { text ->
             val v = text?.toString()?.toFloatOrNull()
