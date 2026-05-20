@@ -4,15 +4,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.whiskywise.app.R
+import com.whiskywise.app.api.WhiskyWiseRepository
 import com.whiskywise.app.databinding.ActivityMainBinding
 import com.whiskywise.app.ui.login.LoginActivity
 import com.whiskywise.app.util.TokenStore
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,6 +54,8 @@ class MainActivity : AppCompatActivity() {
         // Toolbar title + back arrow automatically follow the nav controller.
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.bottomNav.setupWithNavController(navController)
+
+        refreshCurrencySymbol()
     }
 
     /** Let the nav controller handle the Up (back arrow) button in the toolbar. */
@@ -63,6 +68,21 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
+    }
+
+    /**
+     * Silently fetch /api/v1/stats and persist the server's currency symbol.
+     * Called on every app open so a server-side currency change is picked up
+     * without requiring the user to visit the Statistics tab.
+     */
+    private fun refreshCurrencySymbol() {
+        lifecycleScope.launch {
+            WhiskyWiseRepository().getStats().onSuccess { stats ->
+                if (stats.currencySymbol.isNotBlank()) {
+                    TokenStore(this@MainActivity).saveCurrencySymbol(stats.currencySymbol)
+                }
+            }
+        }
     }
 
     private fun findNavController() =
