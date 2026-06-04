@@ -9,10 +9,19 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.whiskywise.app.R
 import java.util.Locale
 
-// Locale used for all decimal display throughout the app.
-// Using a fixed locale (Dutch) ensures decimal commas are always shown,
-// regardless of the device's system locale setting.
-internal val DISPLAY_LOCALE = Locale.forLanguageTag("nl-NL")
+// Currencies that use dot-decimal notation (e.g. 1,000.00).
+// All other currencies use comma-decimal notation (e.g. 1.000,00).
+private val DOT_DECIMAL_CURRENCIES = setOf("USD", "GBP", "AUD", "CAD", "JPY")
+
+// Fixed locales used for number formatting — we control the separator explicitly
+// rather than relying on the device locale, so output is consistent regardless
+// of where the user's phone is set to.
+internal val LOCALE_DOT   = Locale.forLanguageTag("en-US")   // dot decimal,   comma thousands
+internal val LOCALE_COMMA = Locale.forLanguageTag("nl-NL")   // comma decimal, dot thousands
+
+/** Returns the correct display Locale for a given ISO 4217 currency code. */
+internal fun localeFor(currencyCode: String): Locale =
+    if (currencyCode.uppercase() in DOT_DECIMAL_CURRENCIES) LOCALE_DOT else LOCALE_COMMA
 
 /**
  * Load a whisky photo from the server into this ImageView.
@@ -76,10 +85,18 @@ fun ImageView.loadWhiskyPhoto(
     }
 }
 
-fun Double?.formatScore(): String = if (this == null) "—" else String.format(DISPLAY_LOCALE, "%.1f", this)
-fun Double?.formatAbv(): String   = if (this == null) "—" else String.format(DISPLAY_LOCALE, "%.1f%%", this)
-fun Double?.formatPrice(currencySymbol: String = "€"): String =
-    if (this == null) "—" else "$currencySymbol${String.format(DISPLAY_LOCALE, "%.2f", this)}"
+fun Double?.formatScore(currencyCode: String = "EUR"): String =
+    if (this == null) "—" else String.format(localeFor(currencyCode), "%.1f", this)
+
+fun Double?.formatAbv(currencyCode: String = "EUR"): String =
+    if (this == null) "—" else String.format(localeFor(currencyCode), "%.1f%%", this)
+
+fun Double?.formatPrice(currencySymbol: String = "€", currencyCode: String = "EUR"): String =
+    if (this == null) "—" else "$currencySymbol${String.format(localeFor(currencyCode), "%,.2f", this)}"
+
+/** Format a decimal for an edit-form input field (no symbol, no thousands grouping). */
+fun Double?.formatForEdit(places: Int, currencyCode: String = "EUR"): String =
+    if (this == null) "" else String.format(localeFor(currencyCode), "%.${places}f", this)
 
 /**
  * Format an ISO 8601 date-time string (e.g. "2026-05-07T14:32:11+00:00")
