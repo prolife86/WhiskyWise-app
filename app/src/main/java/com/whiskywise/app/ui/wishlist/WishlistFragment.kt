@@ -66,7 +66,7 @@ class WishlistFragment : Fragment() {
         }
 
         val store = TokenStore(requireContext())
-        adapter.setCredentials(store.getServerUrl() ?: "", store.getToken() ?: "")
+        adapter.setCredentials(store.getServerUrl() ?: "", store.getToken() ?: "", store.getCurrencyCode())
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
         binding.swipeRefresh.setOnRefreshListener { vm.load() }
