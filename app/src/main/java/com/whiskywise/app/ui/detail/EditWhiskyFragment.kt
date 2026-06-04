@@ -20,6 +20,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentEditWhiskyBinding
 import com.whiskywise.app.model.WhiskyRequest
+import com.whiskywise.app.util.LOCALE_DOT
+import com.whiskywise.app.util.LOCALE_COMMA
+import com.whiskywise.app.util.formatForEdit
 import com.whiskywise.app.util.TokenStore
 import com.whiskywise.app.util.loadWhiskyPhoto
 import java.io.File
@@ -108,13 +111,19 @@ class EditWhiskyFragment : Fragment() {
             vm.whisky.observe(viewLifecycleOwner) { w ->
                 if (w == null) return@observe
 
+                val ctx   = requireContext()
+                val store = TokenStore(ctx)
+                val url   = store.getServerUrl() ?: ""
+                val token = store.getToken() ?: ""
+                val currencyCode = store.getCurrencyCode()
+
                 binding.etName.setText(w.name)
                 binding.etDistillery.setText(w.distillery)
                 binding.etRegion.setText(w.region)
                 binding.etAge.setText(w.age)
-                binding.etAbv.setText(w.abv?.let { String.format(com.whiskywise.app.util.DISPLAY_LOCALE, "%.1f", it) })
-                binding.etScore.setText(w.score?.let { String.format(com.whiskywise.app.util.DISPLAY_LOCALE, "%.1f", it) })
-                binding.etPrice.setText(w.price?.let { String.format(com.whiskywise.app.util.DISPLAY_LOCALE, "%.2f", it) })
+                binding.etAbv.setText(w.abv?.formatForEdit(1, currencyCode))
+                binding.etScore.setText(w.score?.formatForEdit(1, currencyCode))
+                binding.etPrice.setText(w.price?.formatForEdit(2, currencyCode))
                 binding.etStore.setText(w.store)
                 binding.etBarcode.setText(w.barcode)
                 binding.etNose.setText(w.nose)
@@ -141,11 +150,6 @@ class EditWhiskyFragment : Fragment() {
                 setSlider(binding.seekFruity,    binding.tvFruity,    w.radarFruity)
                 setSlider(binding.seekMedicinal, binding.tvMedicinal, w.radarMedicinal)
                 setSlider(binding.seekFiery,     binding.tvFiery,     w.radarFiery)
-
-                val ctx   = requireContext()
-                val store = TokenStore(ctx)
-                val url   = store.getServerUrl() ?: ""
-                val token = store.getToken() ?: ""
 
                 // Consume the pending cache-skip slot (set by rotatePhoto) so
                 // Glide bypasses its disk cache for only the rotated photo.

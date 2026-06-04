@@ -8,6 +8,55 @@ See that project's changelog for server-side changes.
 
 ---
 
+## [0.3.3] — 2026-06-03 🔣 Right Separator, Right Currency
+
+### Fixed
+
+- **Decimal and thousands separators now respect the server-configured currency** —
+  the app was unconditionally formatting all numbers with a decimal comma (e.g.
+  `8,5` score, `€129,99`) regardless of which currency the server was set to.
+  USD, GBP, AUD, CAD, and JPY now correctly use dot-decimal with comma thousands
+  (e.g. `8.5`, `$1,000.00`), while EUR, CHF, SEK, NOK, DKK, and custom currencies
+  keep comma-decimal with dot thousands (e.g. `8,5`, `€1.000,00`).
+- **All display surfaces updated** — score badges in the collection list,
+  detail page (score, ABV, price), wishlist detail (ABV, price), and share cards
+  all use the correct separators.
+- **Edit form pre-fill corrected** — ABV, score, and price fields in both the
+  whisky edit form and the wishlist edit form are now pre-filled with the correct
+  locale-aware separators. The `EditWishlistFragment` price field was also
+  previously showing a raw dot-decimal float (`129.99`) regardless of locale —
+  this is now fixed.
+- **Share card ABV, price, and score were still using hardcoded defaults** —
+  `WhiskyShareCard.kt` was not updated in v0.3.3. All three format calls
+  (`formatAbv`, `formatPrice`, `formatScore`) were missing the `currencyCode`
+  argument, so share cards always rendered with comma-decimal regardless of the
+  configured currency. Now correctly reads `currencyCode` from `TokenStore` and
+  passes it to all three formatters.
+
+### Technical
+
+- `TokenStore` now persists `currency_code` alongside `currency_symbol`.
+  `saveCurrencyCode()` / `getCurrencyCode()` added; defaults to `"EUR"`.
+- `MainActivity.refreshCurrencySymbol()` now also saves `currencyCode` from
+  `GET /api/v1/stats` every time the app opens.
+- `Extensions.kt`: replaced the single `DISPLAY_LOCALE` constant with
+  `LOCALE_DOT` (`en-US`) and `LOCALE_COMMA` (`nl-NL`), plus a `localeFor(currencyCode)`
+  helper that returns the correct one. All three format functions (`formatScore`,
+  `formatAbv`, `formatPrice`) now accept a `currencyCode` parameter (defaults to
+  `"EUR"` for backwards compatibility). New `formatForEdit(places, currencyCode)`
+  extension added for form input pre-fill (no symbol, no thousands grouping).
+- `WhiskyAdapter.setCredentials()` now accepts an optional `currencyCode` parameter
+  and passes it to `formatScore()` in `bind()`.
+
+### Notes
+
+- Requires server v1.6.7 or later for correct `currency_code` in the API response.
+  On older servers the app falls back to `"EUR"` (comma-decimal) — same behaviour
+  as before this release.
+- No API changes.
+
+---
+
 ## [0.3.2] — 2026-05-20 💱 Your Currency, Your Rules
 
 ### Changed

@@ -45,6 +45,8 @@ class DetailFragment : Fragment() {
         val store     = TokenStore(requireContext())
         val serverUrl = store.getServerUrl() ?: ""
         val token     = store.getToken() ?: ""
+        val currencySymbol = store.getCurrencySymbol()
+        val currencyCode   = store.getCurrencyCode()
 
         photoPagerAdapter = PhotoPagerAdapter(requireContext(), serverUrl, token)
         binding.viewPagerPhotos.adapter = photoPagerAdapter
@@ -95,11 +97,11 @@ class DetailFragment : Fragment() {
             binding.tvDistillery.text = w.distillery ?: "—"
             binding.tvRegion.text     = w.region ?: "—"
             binding.tvAge.text        = w.age ?: "—"
-            binding.tvAbv.text        = w.abv.formatAbv()
-            binding.tvScore.text      = w.score.formatScore()
+            binding.tvAbv.text        = w.abv.formatAbv(currencyCode)
+            binding.tvScore.text      = w.score.formatScore(currencyCode)
             binding.tvStatus.text     = w.status?.replaceFirstChar { it.uppercase() } ?: "—"
             binding.tvRetiredBadge.visibility = if (w.retired) View.VISIBLE else View.GONE
-            binding.tvPrice.text      = w.price.formatPrice(TokenStore(requireContext()).getCurrencySymbol())
+            binding.tvPrice.text      = w.price.formatPrice(currencySymbol, currencyCode)
             binding.tvStore.text      = w.store ?: "—"
             binding.tvNose.text       = w.nose?.ifBlank { "—" } ?: "—"
             binding.tvPalate.text     = w.palate?.ifBlank { "—" } ?: "—"

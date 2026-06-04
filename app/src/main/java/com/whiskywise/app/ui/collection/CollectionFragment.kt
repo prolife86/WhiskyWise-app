@@ -79,7 +79,7 @@ class CollectionFragment : Fragment() {
         }
 
         val store = TokenStore(requireContext())
-        adapter.setCredentials(store.getServerUrl() ?: "", store.getToken() ?: "")
+        adapter.setCredentials(store.getServerUrl() ?: "", store.getToken() ?: "", store.getCurrencyCode())
 
         val layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.layoutManager = layoutManager
