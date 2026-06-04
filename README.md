@@ -25,7 +25,7 @@ self-hosters who prefer it.
 | 📸 Photos | Add front / back / cask photos via camera or gallery; rotate saved photos |
 | 📋 Wishlist | Browse, add (with name, distillery, region, age, ABV, price, store, barcode, notes), view and edit wishlist items; cover photo; move to collection with one tap; share card |
 | 📊 Statistics | Total bottles, Open / Stashed / Finished / Wishlisted counts, proportional breakdown bars |
-| 💱 Currency | Automatically follows the server-configured currency symbol — updates on every app open |
+| 💱 Currency | Follows the server-configured currency symbol and decimal/thousands separators — updates on every app open |
 | ⚙️ Settings | Server URL, browser sessions + API tokens with per-entry revoke, app version, logout |
 | 🌐 Self-hosted | Works with HTTP (local network) and HTTPS |
 | 🔖 Barcode | Scan barcodes via camera or enter manually; "not found" prompt to add new entry or search |
@@ -109,12 +109,12 @@ app/
     ├── model/
     │   └── Models.kt                 # Data classes mirroring the API schema
     ├── util/
-    │   ├── TokenStore.kt             # EncryptedSharedPreferences — token, server URL, currency symbol
-    │   ├── Extensions.kt             # Glide photo loader, number formatters (formatPrice, formatAbv, formatScore)
+    │   ├── TokenStore.kt             # EncryptedSharedPreferences — token, server URL, currency symbol + code
+    │   ├── Extensions.kt             # Glide photo loader, locale-aware number formatters (formatPrice, formatAbv, formatScore, formatForEdit)
     │   └── WhiskyShareCard.kt        # Off-screen card renderer → JPEG → share sheet
     └── ui/
         ├── login/LoginActivity
-        ├── MainActivity              # Bottom nav host; fetches currency symbol on every open
+        ├── MainActivity              # Bottom nav host; fetches currency symbol + code on every open
         ├── collection/               # List, search, filter, infinite scroll
         ├── detail/                   # View, edit, RadarView, BarcodeScanActivity, photo upload/rotate
         ├── wishlist/                 # Browse, add, wishlist-specific detail + edit, promote to collection
@@ -152,7 +152,7 @@ app/
 
 ## Currency
 
-The app automatically uses whatever currency the server admin has configured in ⚙ Settings on the server. The symbol is fetched from `/api/v1/stats` every time the app opens and stored locally — no manual configuration needed in the app.
+The app automatically uses whatever currency the server admin has configured in ⚙ Settings on the server. The symbol and currency code are fetched from `/api/v1/stats` every time the app opens and stored locally — no manual configuration needed in the app. The correct decimal and thousands separators are applied automatically: dot-decimal for USD, GBP, AUD, CAD, and JPY; comma-decimal for EUR, CHF, SEK, NOK, DKK, and custom currencies.
 
 Requires server ≥ v1.6.6. Against older servers the app defaults to `€` with no visible difference.
 
