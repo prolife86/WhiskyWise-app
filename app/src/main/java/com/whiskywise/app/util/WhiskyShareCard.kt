@@ -125,9 +125,10 @@ object WhiskyShareCard {
 
         // ── Stats row ─────────────────────────────────────────────────────────
         b.tvAge.text   = w.age ?: "—"
-        b.tvAbv.text   = w.abv.formatAbv()
-        b.tvPrice.text = w.price.formatPrice(TokenStore(context).getCurrencySymbol())
-        b.tvScore.text = w.score.formatScore()
+        val store = TokenStore(context)
+        b.tvAbv.text   = w.abv.formatAbv(store.getCurrencyCode())
+        b.tvPrice.text = w.price.formatPrice(store.getCurrencySymbol(), store.getCurrencyCode())
+        b.tvScore.text = w.score.formatScore(store.getCurrencyCode())
 
         // ── Tasting notes ─────────────────────────────────────────────────────
         val hasNose   = !w.nose?.trim().isNullOrBlank()
