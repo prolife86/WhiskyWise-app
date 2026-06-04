@@ -18,16 +18,20 @@ See that project's changelog for server-side changes.
   USD, GBP, AUD, CAD, and JPY now correctly use dot-decimal with comma thousands
   (e.g. `8.5`, `$1,000.00`), while EUR, CHF, SEK, NOK, DKK, and custom currencies
   keep comma-decimal with dot thousands (e.g. `8,5`, `€1.000,00`).
-
 - **All display surfaces updated** — score badges in the collection list,
   detail page (score, ABV, price), wishlist detail (ABV, price), and share cards
   all use the correct separators.
-
 - **Edit form pre-fill corrected** — ABV, score, and price fields in both the
   whisky edit form and the wishlist edit form are now pre-filled with the correct
   locale-aware separators. The `EditWishlistFragment` price field was also
   previously showing a raw dot-decimal float (`129.99`) regardless of locale —
   this is now fixed.
+- **Share card ABV, price, and score were still using hardcoded defaults** —
+  `WhiskyShareCard.kt` was not updated in v0.3.3. All three format calls
+  (`formatAbv`, `formatPrice`, `formatScore`) were missing the `currencyCode`
+  argument, so share cards always rendered with comma-decimal regardless of the
+  configured currency. Now correctly reads `currencyCode` from `TokenStore` and
+  passes it to all three formatters.
 
 ### Technical
 
