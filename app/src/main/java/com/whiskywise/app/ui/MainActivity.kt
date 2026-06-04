@@ -78,8 +78,12 @@ class MainActivity : AppCompatActivity() {
     private fun refreshCurrencySymbol() {
         lifecycleScope.launch {
             WhiskyWiseRepository().getStats().onSuccess { stats ->
+                val store = TokenStore(this@MainActivity)
                 if (stats.currencySymbol.isNotBlank()) {
-                    TokenStore(this@MainActivity).saveCurrencySymbol(stats.currencySymbol)
+                    store.saveCurrencySymbol(stats.currencySymbol)
+                }
+                if (stats.currencyCode.isNotBlank()) {
+                    store.saveCurrencyCode(stats.currencyCode)
                 }
             }
         }
