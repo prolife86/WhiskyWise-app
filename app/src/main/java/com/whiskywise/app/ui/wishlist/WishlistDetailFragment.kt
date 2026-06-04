@@ -16,6 +16,7 @@ import com.whiskywise.app.R
 import com.whiskywise.app.databinding.FragmentWishlistDetailBinding
 import com.whiskywise.app.util.TokenStore
 import com.whiskywise.app.util.WhiskyShareCard
+import com.whiskywise.app.util.formatAbv
 import com.whiskywise.app.util.formatPrice
 import com.whiskywise.app.util.loadWhiskyPhoto
 import kotlinx.coroutines.launch
@@ -49,6 +50,8 @@ class WishlistDetailFragment : Fragment() {
         val store     = TokenStore(requireContext())
         val serverUrl = store.getServerUrl() ?: ""
         val token     = store.getToken() ?: ""
+        val currencySymbol = store.getCurrencySymbol()
+        val currencyCode   = store.getCurrencyCode()
 
         // Toolbar: share, move to collection, edit, delete
         val menuHost: MenuHost = requireActivity()
@@ -92,8 +95,8 @@ class WishlistDetailFragment : Fragment() {
             binding.tvDistillery.text = w.distillery ?: "—"
             binding.tvRegion.text     = w.region ?: "—"
             binding.tvAge.text        = w.age ?: "—"
-            binding.tvAbv.text        = w.abv?.let { String.format("%.1f%%", it).replace('.', ',') } ?: "—"
-            binding.tvPrice.text      = w.price.formatPrice(TokenStore(requireContext()).getCurrencySymbol())
+            binding.tvAbv.text        = w.abv.formatAbv(currencyCode)
+            binding.tvPrice.text      = w.price.formatPrice(currencySymbol, currencyCode)
             binding.tvStore.text      = w.store ?: "—"
 
             if (!w.barcode.isNullOrBlank()) {
