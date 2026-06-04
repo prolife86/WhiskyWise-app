@@ -25,6 +25,7 @@ import com.whiskywise.app.databinding.FragmentEditWishlistBinding
 import com.whiskywise.app.model.WhiskyRequest
 import com.whiskywise.app.ui.detail.BarcodeScanActivity
 import com.whiskywise.app.util.TokenStore
+import com.whiskywise.app.util.formatForEdit
 import com.whiskywise.app.util.loadWhiskyPhoto
 import java.io.File
 import java.io.FileOutputStream
@@ -116,8 +117,8 @@ class EditWishlistFragment : Fragment() {
                 binding.etDistillery.setText(w.distillery)
                 binding.etRegion.setText(w.region)
                 binding.etAge.setText(w.age)
-                binding.etAbv.setText(w.abv?.let { String.format("%.1f", it).replace('.', ',') })
-                binding.etPrice.setText(w.price?.toString())
+                binding.etAbv.setText(w.abv?.formatForEdit(1, store.getCurrencyCode()))
+                binding.etPrice.setText(w.price?.formatForEdit(2, store.getCurrencyCode()))
                 binding.etStore.setText(w.store)
                 binding.etBarcode.setText(w.barcode)
                 binding.etWishlistNotes.setText(w.wishlistNotes)
