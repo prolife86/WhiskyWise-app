@@ -20,10 +20,12 @@ class WhiskyAdapter(
     // is too expensive to repeat for every visible list item.
     private var serverUrl: String = ""
     private var token: String = ""
+    private var currencyCode: String = "EUR"
 
-    fun setCredentials(serverUrl: String, token: String) {
-        this.serverUrl = serverUrl
-        this.token = token
+    fun setCredentials(serverUrl: String, token: String, currencyCode: String = "EUR") {
+        this.serverUrl    = serverUrl
+        this.token        = token
+        this.currencyCode = currencyCode
     }
 
     inner class VH(private val b: ItemWhiskyBinding) : RecyclerView.ViewHolder(b.root) {
@@ -38,7 +40,7 @@ class WhiskyAdapter(
                 b.tvStatus.visibility = android.view.View.GONE
             } else {
                 b.tvScore.visibility  = android.view.View.VISIBLE
-                b.tvScore.text        = whisky.score.formatScore()
+                b.tvScore.text        = whisky.score.formatScore(currencyCode)
                 b.tvStatus.visibility = android.view.View.VISIBLE
                 b.tvStatus.text       = whisky.status?.replaceFirstChar { it.uppercase() } ?: ""
             }
