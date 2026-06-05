@@ -176,7 +176,7 @@ Version numbers are never edited by hand. The git release tag is the single sour
 ### How it works
 
 ```
-GitHub Release published (e.g. v0.3.2)
+GitHub Release published (e.g. v0.3.3)
         │
         ▼
 extract-version job
@@ -208,7 +208,7 @@ sign-and-publish job  (release events only)
 ### Creating a release
 
 1. Go to **Releases → Draft a new release**
-2. Create a new tag: `v0.3.2`
+2. Create a new tag: `v0.3.3`
 3. Paste the release notes and click **Publish release**
 4. The workflow builds, signs, and attaches the APK and AAB automatically
 
@@ -241,7 +241,7 @@ The easiest way is to use the included **Generate Keystore** workflow, which run
 | `close-blank-issues.yml` | Issue opened | Closes issues not using a template |
 | `close-issues-on-release.yml` | Release published | Closes issues labelled `awaiting release` |
 
-All actions run on **Node.js 24** and are up to date as of May 2026.
+All actions run on **Node.js 24** and are up to date as of June 2026.
 
 ---
 
