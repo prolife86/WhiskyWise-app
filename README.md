@@ -241,7 +241,7 @@ The easiest way is to use the included **Generate Keystore** workflow, which run
 | `close-blank-issues.yml` | Issue opened | Closes issues not using a template |
 | `close-issues-on-release.yml` | Release published | Closes issues labelled `awaiting release` |
 
-All actions run on **Node.js 24** and are up to date as of June 2026.
+All actions run on **Node.js 24**.
 
 ---
 
